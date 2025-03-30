@@ -1,40 +1,45 @@
+/* Naranja #f8b732
+Azul #33526d  */
 .contact-form-container {
-  width: 100%;
-  max-width: 400px;
-  margin: 20px auto;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .contact-form {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .contact-form label {
-  font-weight: bold;
-  margin-top: 10px;
+    font-weight: bold;
+    margin-top: 10px;
 }
 
 .contact-form input {
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
 .submit-button {
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #33526d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #33526d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-.submit-button:hover {
-  background-color:#33526d;
+.submit-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
 }
