@@ -14,7 +14,7 @@ Desarrollar una función que posibilite a los trabajadores sociales documentar l
 
 Habilitar un módulo para documentar las intervenciones de la Fundación Antivirus, asegurando un control detallado de las tutorías, talleres y otros programas de asistencia brindados a los becarios.
 
-## Técnicas y herramientas## 
+## Técnicas y herramientas ## 
 - React.js
 - JWT 
 - JavaScript
