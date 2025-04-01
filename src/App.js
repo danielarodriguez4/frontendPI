@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Datoscontacto.css';
 import './index.css';
+import Botones from './Botones';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -64,39 +65,51 @@ const ContactForm = () => {
     };
 
     return (
-        <div className="contact-form-container">
-            <h2>Datos del Estudiante</h2>
-            <form onSubmit={handleSubmit} className="contact-form">
-                <label>Nombre Completo</label>
-                <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
-
-                <label>Número de Identificación</label>
-                <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} required />
-
-                <label>Número de Celular</label>
-                <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
-
-                <label>Correo Personal</label>
-                <input type="email" name="personalEmail" value={formData.personalEmail} onChange={handleChange} required />
-
-                <label>Correo Institucional</label>
-                <input type="email" name="institutionalEmail" value={formData.institutionalEmail} onChange={handleChange} required />
-
-                <label>Lugar de Residencia</label>
-                <input type="text" name="residence" value={formData.residence} onChange={handleChange} required />
-
-                <label>Semestre</label>
-                <input type="text" name="semester" value={formData.semester} onChange={handleChange} required />
-
-                <label>Universidad</label>
-                <input type="text" name="university" value={formData.university} onChange={handleChange} required />
-
-                <button type="submit" className="submit-button" disabled={loading}>
-                    {loading ? "Guardando..." : "Guardar"}
-                </button>
-            </form>
+        <div className="container">
+            <div className="sidebar">
+            <Botones  />
+                <div  className='logo-container'> 
+                <img src={"/logo.png"} className="logo" alt="logo" />
+                </div>  
+            </div>
+    
+            <div className="white-square">
+                <div className="contact-form-container">
+                    <h2>Datos del Estudiante</h2>
+                    <form onSubmit={handleSubmit} className="contact-form">
+                        <label>Nombre Completo</label>
+                        <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
+    
+                        <label>Número de Identificación</label>
+                        <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} required />
+    
+                        <label>Número de Celular</label>
+                        <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
+    
+                        <label>Correo Personal</label>
+                        <input type="email" name="personalEmail" value={formData.personalEmail} onChange={handleChange} required />
+    
+                        <label>Correo Institucional</label>
+                        <input type="email" name="institutionalEmail" value={formData.institutionalEmail} onChange={handleChange} required />
+    
+                        <label>Lugar de Residencia</label>
+                        <input type="text" name="residence" value={formData.residence} onChange={handleChange} required />
+    
+                        <label>Semestre</label>
+                        <input type="text" name="semester" value={formData.semester} onChange={handleChange} required />
+    
+                        <label>Universidad</label>
+                        <input type="text" name="university" value={formData.university} onChange={handleChange} required />
+    
+                        <button type="submit" className="submit-button" disabled={loading}>
+                            {loading ? "Guardando..." : "Guardar"}
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     );
+    
 };
 
 export default ContactForm;

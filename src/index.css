@@ -1,20 +1,69 @@
+/*Fondo de la página*/
+.white-square {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Distribución flexible */
+  grid-gap: 20px; /* Espacio entre elementos */
+  width: calc(100% - 220px);
+  height: 100vh;
+  background-color: white;
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 10px;
+  border-radius: 10px;
+  padding: 50px; /* Espaciado interno */
+  overflow-y: auto; /* Agregar scroll si hay mucho contenido */
+  transition: width 0.3s ease-in-out;
+}
+
+/* Ajustes responsivos */
+@media screen and (max-width: 768px) {
+  .white-square {
+    grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
+    width: calc(100% - 70px);
+    margin-left: 70px;
+  }
+}
+
+
+/* Ajustes para móviles */
+@media screen and (max-width: 480px) {
+  .white-square {
+    width: 100%; /* Ocupa todo el ancho */
+    margin: 0;
+    margin-top: 60px; /* Deja espacio para la sidebar superior */
+    padding-top: 50px;
+  }
+}
+
+
+.container {
+  display: flex;
+  height: 100vh; /* Que ocupe toda la pantalla */
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  background-image: url('C:\Users\Daniela Rodríguez\frontendpi\public\udea.jpg'); /* Ajuste en la ruta */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed; /* Mantiene la imagen fija al hacer scroll */
+  width: 100vw; /* Asegura que cubra todo el ancho */
+  height: 100vh; /* Asegura que cubra toda la altura */
 }
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
+/*Estilos para el contenedor del form*/
 .student-form-container {
   max-width: 400px;
-  margin: 0 auto;
+  width: 90%;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -25,6 +74,7 @@ code {
 .student-form-container h2 {
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 20px;
   color: #333;
 }
 
@@ -60,4 +110,93 @@ code {
   color: red;
   font-size: 0.9em;
   margin-top: 5px;
+}
+
+ /*Barra lateral con opciones*/
+ /* Estilos base de la sidebar */
+.sidebar {
+  width: 220px;
+  height: 100vh; /* Ocupar toda la altura */
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: #33526d;
+  padding: 20px;
+  transition: width 0.3s ease-in-out;
+  z-index: 1000; /* Asegurar que esté sobre el contenido */
+}
+
+/* Ajustes para pantallas medianas */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 70px; /* Sidebar más angosta */
+    padding: 10px;
+  }
+
+  .sidebar ul {
+    padding: 0;
+    text-align: center;
+  }
+
+  .sidebar ul li a {
+    font-size: 0; /* Oculta el texto */
+  }
+
+  .sidebar:hover {
+    width: 200px; /* Se expande al pasar el mouse */
+  }
+
+  .sidebar:hover ul li a {
+    font-size: 14px; /* Muestra el texto al expandirse */
+  }
+
+  .white-square {
+    width: calc(100% - 70px);
+    margin-left: 70px;
+  }
+}
+
+/* Ajustes para móviles pequeños */
+@media screen and (max-width: 480px) {
+  .sidebar {
+    width: 100%;
+    height: 50px; /* Se convierte en barra superior */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+    padding: 5px;
+  }
+
+  .sidebar ul {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .sidebar ul li {
+    margin: 0 5px;
+  }
+}
+
+
+.logo-container {
+  width: 150px;
+  height: 150px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 20px;  /* Ajusta según sea necesario */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2; /* Para que quede sobre el sidebar */
+}
+
+/* Estilos del logo */
+.logo { 
+  width: 120px;
+  height: 120px;
 }
