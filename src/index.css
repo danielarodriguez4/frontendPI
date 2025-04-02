@@ -1,8 +1,24 @@
 /*Fondo de la página*/
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  background-image: url('C:\Users\Daniela Rodríguez\frontendpi\public\udea.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; /* Evita scroll en el body */
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+/*Contenedor principal (fondo blanco)*/
 .white-square {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Distribución flexible */
-  grid-gap: 20px; /* Espacio entre elementos */
   width: calc(100% - 220px);
   height: 100vh;
   background-color: white;
@@ -11,174 +27,105 @@
   top: 0;
   margin: 10px;
   border-radius: 10px;
-  padding: 50px; /* Espaciado interno */
-  overflow-y: auto; /* Agregar scroll si hay mucho contenido */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
   transition: width 0.3s ease-in-out;
 }
 
-/* Ajustes responsivos */
-@media screen and (max-width: 768px) {
-  .white-square {
-    grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
-    width: calc(100% - 70px);
-    margin-left: 70px;
-  }
-}
-
-
-/* Ajustes para móviles */
-@media screen and (max-width: 480px) {
-  .white-square {
-    width: 100%; /* Ocupa todo el ancho */
-    margin: 0;
-    margin-top: 60px; /* Deja espacio para la sidebar superior */
-    padding-top: 50px;
-  }
-}
-
-
-.container {
+/* Estilos para el grid del formulario */
+.form-grid {
+  width: 100%;
+  height: 100%;
   display: flex;
-  height: 100vh; /* Que ocupe toda la pantalla */
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  background-image: url('C:\Users\Daniela Rodríguez\frontendpi\public\udea.jpg'); /* Ajuste en la ruta */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-attachment: fixed; /* Mantiene la imagen fija al hacer scroll */
-  width: 100vw; /* Asegura que cubra todo el ancho */
-  height: 100vh; /* Asegura que cubra toda la altura */
-}
-
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-/*Estilos para el contenedor del form*/
-.student-form-container {
-  max-width: 400px;
-  width: 90%;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
-}
-
-.student-form-container h2 {
+/* Título del formulario */
+.form-grid h2 {
   text-align: center;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  color: #333;
-}
-
-.student-form-container label {
-  display: block;
-  margin-top: 10px;
+  font-size: 30px;
+  margin-bottom: 15px;
+  color: #33526d;
   font-weight: bold;
+  border-bottom: 2px solid #33526d;
+  padding-bottom: 8px;
+  width: 100%;
 }
 
-.student-form-container input {
+/* Estilos para el formulario */
+.contact-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 15px;
+  width: 100%;
+  flex: 1;
+  padding: 0 10px;
+}
+
+/* Cada par label-input */
+.contact-form > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cada label ocupa una celda completa */
+.contact-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 3px;
+  color: #333;
+  font-size: 18px;
+}
+
+/* Cada input ocupa una celda completa */
+.contact-form input {
   width: 100%;
   padding: 8px;
-  margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 15px;
 }
 
-.student-form-container button {
-  width: 100%;
+/* El botón ocupa dos columnas */
+.contact-form .submit-button {
+  grid-column: 1 / -1;
+  width: 40%;
   padding: 10px;
-  margin-top: 20px;
-  background-color: #007bff;
+  background-color: #33526d;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 18px;
+  margin: 10px auto 0;
+  display: block;
 }
 
-.student-form-container button:hover {
-  background-color: #0056b3;
-}
-.student-form-container .error-message {
-  color: red;
-  font-size: 0.9em;
-  margin-top: 5px;
+.contact-form .submit-button:hover {
+  background-color: #2a4359;
 }
 
- /*Barra lateral con opciones*/
- /* Estilos base de la sidebar */
+.contact-form .submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/*Barra lateral con opciones*/
 .sidebar {
   width: 220px;
-  height: 100vh; /* Ocupar toda la altura */
+  height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
   background-color: #33526d;
   padding: 20px;
   transition: width 0.3s ease-in-out;
-  z-index: 1000; /* Asegurar que esté sobre el contenido */
+  z-index: 1000;
 }
-
-/* Ajustes para pantallas medianas */
-@media screen and (max-width: 768px) {
-  .sidebar {
-    width: 70px; /* Sidebar más angosta */
-    padding: 10px;
-  }
-
-  .sidebar ul {
-    padding: 0;
-    text-align: center;
-  }
-
-  .sidebar ul li a {
-    font-size: 0; /* Oculta el texto */
-  }
-
-  .sidebar:hover {
-    width: 200px; /* Se expande al pasar el mouse */
-  }
-
-  .sidebar:hover ul li a {
-    font-size: 14px; /* Muestra el texto al expandirse */
-  }
-
-  .white-square {
-    width: calc(100% - 70px);
-    margin-left: 70px;
-  }
-}
-
-/* Ajustes para móviles pequeños */
-@media screen and (max-width: 480px) {
-  .sidebar {
-    width: 100%;
-    height: 50px; /* Se convierte en barra superior */
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-direction: row;
-    padding: 5px;
-  }
-
-  .sidebar ul {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-  }
-
-  .sidebar ul li {
-    margin: 0 5px;
-  }
-}
-
 
 .logo-container {
   width: 150px;
@@ -189,14 +136,77 @@ code {
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 20px;  /* Ajusta según sea necesario */
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 2; /* Para que quede sobre el sidebar */
+  z-index: 2;
 }
 
-/* Estilos del logo */
 .logo { 
   width: 120px;
   height: 120px;
+}
+
+/* Ajustes responsivos */
+@media screen and (max-width: 992px) {
+  .contact-form {
+    grid-gap: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+    padding: 10px;
+  }
+
+  .white-square {
+    width: calc(100% - 70px);
+    margin-left: 70px;
+    padding: 15px;
+  }
+  
+  .contact-form {
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 8px;
+  }
+  
+  .contact-form label {
+    font-size: 14px;
+  }
+  
+  .contact-form input {
+    padding: 6px;
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sidebar {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+    padding: 5px;
+  }
+  
+  .white-square {
+    width: 100%;
+    margin: 0;
+    margin-top: 60px;
+    padding: 10px;
+    height: calc(100vh - 60px);
+  }
+  
+  .contact-form {
+    grid-template-columns: 1fr;
+    padding: 0 5px;
+  }
+  
+  .form-grid h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
 }

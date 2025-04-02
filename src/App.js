@@ -67,39 +67,55 @@ const ContactForm = () => {
     return (
         <div className="container">
             <div className="sidebar">
-            <Botones  />
-                <div  className='logo-container'> 
-                <img src={"/logo.png"} className="logo" alt="logo" />
+                <Botones />
+                <div className='logo-container'> 
+                    <img src="/logo.png" className="logo" alt="logo" />
                 </div>  
             </div>
     
             <div className="white-square">
-                <div className="contact-form-container">
-                    <h2>Datos del Estudiante</h2>
+                <div className="form-grid">     
+                    <h2>Datos del estudiante</h2>
                     <form onSubmit={handleSubmit} className="contact-form">
-                        <label>Nombre Completo</label>
-                        <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
+                        <div>
+                            <label>Nombre completo</label>
+                            <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
+                        </div>
     
-                        <label>Número de Identificación</label>
-                        <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} required />
+                        <div>
+                            <label>Número de identificación</label>
+                            <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} required />
+                        </div>
     
-                        <label>Número de Celular</label>
-                        <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
+                        <div>
+                            <label>Número de celular</label>
+                            <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
+                        </div>
     
-                        <label>Correo Personal</label>
-                        <input type="email" name="personalEmail" value={formData.personalEmail} onChange={handleChange} required />
+                        <div>
+                            <label>Correo personal</label>
+                            <input type="email" name="personalEmail" value={formData.personalEmail} onChange={handleChange} required />
+                        </div>
     
-                        <label>Correo Institucional</label>
-                        <input type="email" name="institutionalEmail" value={formData.institutionalEmail} onChange={handleChange} required />
+                        <div>
+                            <label>Correo institucional</label>
+                            <input type="email" name="institutionalEmail" value={formData.institutionalEmail} onChange={handleChange} required />
+                        </div>
     
-                        <label>Lugar de Residencia</label>
-                        <input type="text" name="residence" value={formData.residence} onChange={handleChange} required />
+                        <div>
+                            <label>Lugar de residencia</label>
+                            <input type="text" name="residence" value={formData.residence} onChange={handleChange} required />
+                        </div>
     
-                        <label>Semestre</label>
-                        <input type="text" name="semester" value={formData.semester} onChange={handleChange} required />
+                        <div>
+                            <label>Semestre</label>
+                            <input type="text" name="semester" value={formData.semester} onChange={handleChange} required />
+                        </div>
     
-                        <label>Universidad</label>
-                        <input type="text" name="university" value={formData.university} onChange={handleChange} required />
+                        <div>
+                            <label>Universidad</label>
+                            <input type="text" name="university" value={formData.university} onChange={handleChange} required />
+                        </div>
     
                         <button type="submit" className="submit-button" disabled={loading}>
                             {loading ? "Guardando..." : "Guardar"}
