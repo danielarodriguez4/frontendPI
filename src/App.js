@@ -32,7 +32,7 @@ const ContactForm = () => {
         const token = localStorage.getItem('jwt');
 
         if (!token) {
-            alert('No tienes permiso para realizar esta acción. Inicia sesión.');
+            alert('No tienes permiso para realizar esta acción.');
             return;
         }
 
