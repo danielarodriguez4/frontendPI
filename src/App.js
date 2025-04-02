@@ -39,7 +39,7 @@ const ContactForm = () => {
         setLoading(true); 
 
         try {
-            await axios.post(`${API_URL}/students`, formData, {
+            await axios.post(`${API_URL}/api/info`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -75,7 +75,7 @@ const ContactForm = () => {
     
             <div className="white-square">
                 <div className="form-grid">     
-                    <h2>Datos del estudiante</h2>
+                    <h2>Registrar estudiante</h2>
                     <form onSubmit={handleSubmit} className="contact-form">
                         <div>
                             <label>Nombre completo</label>
