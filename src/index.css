@@ -65,6 +65,17 @@ body {
   padding: 0 10px;
 }
 
+
+select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
 /* Cada par label-input */
 .contact-form > div {
   display: flex;
