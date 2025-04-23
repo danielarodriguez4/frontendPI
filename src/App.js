@@ -3,6 +3,7 @@ import axios from 'axios';
 import './Datoscontacto.css';
 import './index.css';
 import Botones from './Botones';
+import StudentTable from './StudentTable';
 
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -25,6 +26,7 @@ const ContactForm = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const [currentView, setCurrentView] = useState('registrar');
 
     const handleChange = (e) => {
         setFormData({
@@ -41,10 +43,8 @@ const ContactForm = () => {
             alert('No tienes permiso para realizar esta acción.');
             return;
         }
-
         setLoading(true);
 
-        // Construir dirección completa
         const fullAddress = `${formData.streetType} ${formData.streetNumber} #${formData.buildingNumber}` +
             (formData.apartment ? ` Apt ${formData.apartment}` : '') +
             `, ${formData.municipality}`;
@@ -61,14 +61,17 @@ const ContactForm = () => {
             university: formData.university
         };
 
+        console.log("API_URL:", API_URL);
+        console.log("Data to send:", dataToSend);
         try {
-            await axios.post(`${API_URL}/api/info`, dataToSend, {
+            await axios.post(`${API_URL}/api/v0/user/1`, dataToSend, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                }        
             });
             alert('Datos guardados con éxito');
+            console.log('Token JWT:', token);
 
             setFormData({
                 firstName: '',
@@ -89,17 +92,22 @@ const ContactForm = () => {
             console.error('Error al enviar los datos', error);
             alert('Hubo un error al guardar los datos');
         }
-
         setLoading(false);
+    };
+
+    const handleNavigate = (view) => {
+        setCurrentView(view);
     };
 
     return (
         <div className="container">
             <div className="sidebar">
                 <img src="/logo1.png" className="logo" alt="logo" />
-                <Botones />
+                <Botones onNavigate={handleNavigate} />
             </div>
-                <div className="form-grid">     
+            <div className="form-grid">  
+                {currentView === 'registrar' && (
+                    <div>  
                     <h2>Registrar estudiante</h2>
                     <form onSubmit={handleSubmit} className="contact-form">
                         <div>
@@ -203,7 +211,11 @@ const ContactForm = () => {
                             {loading ? "Guardando..." : "Guardar"}
                         </button>
                     </form>
-                </div>
+                    </div>
+                )}
+
+                {currentView === 'editar' && <StudentTable />} {/* Vista de estudiantes */}
+            </div>
         </div>
     );
 };
