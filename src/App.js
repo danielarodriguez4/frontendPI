@@ -4,6 +4,7 @@ import './Datoscontacto.css';
 import './index.css';
 import Botones from './Botones';
 
+
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ContactForm = () => {
@@ -95,13 +96,9 @@ const ContactForm = () => {
     return (
         <div className="container">
             <div className="sidebar">
+                <img src="/logo1.png" className="logo" alt="logo" />
                 <Botones />
-                <div className='logo-container'> 
-                    <img src="/logo.png" className="logo" alt="logo" />
-                </div>  
             </div>
-
-            <div className="white-square">
                 <div className="form-grid">     
                     <h2>Registrar estudiante</h2>
                     <form onSubmit={handleSubmit} className="contact-form">
@@ -207,7 +204,6 @@ const ContactForm = () => {
                         </button>
                     </form>
                 </div>
-            </div>
         </div>
     );
 };

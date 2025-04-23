@@ -1,5 +1,3 @@
-/* Naranja #f8b732
-Azul #33526d  */
 .contact-form-container {
     width: 100%;
     max-width: 400px;
@@ -68,4 +66,23 @@ Azul #33526d  */
     min-width: 180px;
     display: flex;
     flex-direction: column;
+}
+
+
+@media screen and (max-width: 768px) {
+  .white-container {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .white-container {
+    margin: 0;
+    width: 100%;
+    height: calc(100vh - 60px); /* espacio si sidebar está arriba */
+    margin-top: 60px;
+    padding: 10px;
+  }
 }

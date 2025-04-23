@@ -1,46 +1,35 @@
 .button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 250px;
-    gap: 20px;
-    font-family: Arial; 
-    font-size: 10px; 
-  }
-  
-  .button {
-    padding: 0px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 2px; 
-    transition: background-color 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  font-family: Arial;
+  font-size: 30px;
+}
 
-  }
-  
-  .button:hover {
-    background-color: #3E8E41; 
-  }
+.button {
+  padding: 0px 20px;
+  background-color: #1cc88a !important;
+  color:white;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.2s ease-in-out;
+}
 
+.button:hover {
+  background-color: #17a55f !important; 
+}
+
+.images {
+  width: 70px;
+  height: auto;
+  max-width: 100%;
+  display: block;
+  margin-bottom: 0px;
+}
+
+@media (max-width: 600px) {
   .images {
-    width: 60px; 
-    height: auto; 
-    max-width: 100%; 
-    display: block; 
-    margin-bottom: 0px; 
+    width: 40px;
   }
-  
-  .button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px; 
-  }
-  
-  @media (max-width: 600px) {
-    .images {
-      width: 40px; 
-    }
-  }
-  
+}
