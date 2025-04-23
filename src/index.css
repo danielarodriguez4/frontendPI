@@ -74,6 +74,11 @@ select {
   width: 100%;
   box-sizing: border-box;
 }
+.required-asterisk {
+  color: red;
+  font-size: 18px;
+  margin-left: 4px;
+}
 
 
 /* Cada par label-input */

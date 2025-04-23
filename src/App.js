@@ -14,7 +14,11 @@ const ContactForm = () => {
         phoneNumber: '',
         personalEmail: '',
         institutionalEmail: '',
-        residence: '',
+        streetType: '',
+        streetNumber: '',
+        buildingNumber: '',
+        apartment: '',
+        municipality: '',
         semester: '',
         university: ''
     });
@@ -37,16 +41,34 @@ const ContactForm = () => {
             return;
         }
 
-        setLoading(true); 
+        setLoading(true);
+
+        // Construir dirección completa
+        const fullAddress = `${formData.streetType} ${formData.streetNumber} #${formData.buildingNumber}` +
+            (formData.apartment ? ` Apt ${formData.apartment}` : '') +
+            `, ${formData.municipality}`;
+
+        const dataToSend = {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            idNumber: formData.idNumber,
+            phoneNumber: formData.phoneNumber,
+            personalEmail: formData.personalEmail,
+            institutionalEmail: formData.institutionalEmail,
+            residence: fullAddress, 
+            semester: formData.semester,
+            university: formData.university
+        };
 
         try {
-            await axios.post(`${API_URL}/api/info`, formData, {
+            await axios.post(`${API_URL}/api/info`, dataToSend, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
             alert('Datos guardados con éxito');
+
             setFormData({
                 firstName: '',
                 lastName: '',
@@ -54,7 +76,11 @@ const ContactForm = () => {
                 phoneNumber: '',
                 personalEmail: '',
                 institutionalEmail: '',
-                residence: '',
+                streetType: '',
+                streetNumber: '',
+                buildingNumber: '',
+                apartment: '',
+                municipality: '',
                 semester: '',
                 university: ''
             });
@@ -74,54 +100,91 @@ const ContactForm = () => {
                     <img src="/logo.png" className="logo" alt="logo" />
                 </div>  
             </div>
-    
+
             <div className="white-square">
                 <div className="form-grid">     
                     <h2>Registrar estudiante</h2>
                     <form onSubmit={handleSubmit} className="contact-form">
-                    <div>
-                            <label>Nombre</label>
+                        <div>
+                            <label>Nombre <span className="required-asterisk">*</span></label>
                             <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required />
                         </div>
 
                         <div>
-                            <label>Apellido</label>
+                            <label>Apellido <span className="required-asterisk">*</span></label>
                             <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required />
                         </div>
-    
+
                         <div>
-                            <label>Número de identificación</label>
+                            <label>Número de identificación <span className="required-asterisk">*</span></label>
                             <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} required />
                         </div>
-    
+
                         <div>
-                            <label>Número de celular</label>
+                            <label>Número de celular <span className="required-asterisk">*</span></label>
                             <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
                         </div>
-    
+
                         <div>
-                            <label>Correo personal</label>
+                            <label>Correo personal <span className="required-asterisk">*</span></label>
                             <input type="email" name="personalEmail" value={formData.personalEmail} onChange={handleChange} required />
                         </div>
-    
+
                         <div>
-                            <label>Correo institucional</label>
+                            <label>Correo institucional <span className="required-asterisk">*</span></label>
                             <input type="email" name="institutionalEmail" value={formData.institutionalEmail} onChange={handleChange} required />
                         </div>
-    
+
+                        <fieldset className="direccion-group">
+                            <legend>Dirección de residencia</legend>
+
+                            <div className="direccion-row">
+                                <div className="direccion-col">
+                                    <label>Tipo de vía <span className="required-asterisk">*</span></label>
+                                    <select name="streetType" value={formData.streetType} onChange={handleChange} required>
+                                        <option value="">Seleccione</option>
+                                        <option value="Avenida">Avenida</option>
+                                        <option value="Calle">Calle</option>
+                                        <option value="Carrera">Carrera</option>
+                                        <option value="Transversal">Transversal</option>
+                                    </select>
+                                </div>
+
+                                <div className="direccion-col">
+                                    <label>Número de vía <span className="required-asterisk">*</span></label>
+                                    <input type="text" name="streetNumber" value={formData.streetNumber} onChange={handleChange} required />
+                                </div>
+
+                                <div className="direccion-col">
+                                    <label># de casa o edificio <span className="required-asterisk">*</span></label>
+                                    <input type="text" name="buildingNumber" value={formData.buildingNumber} onChange={handleChange} required />
+                                </div>
+                            </div>
+
+                            <div className="direccion-row">
+                                <div className="direccion-col">
+                                    <label>Apartamento (si aplica)</label>
+                                    <input type="text" name="apartment" value={formData.apartment} onChange={handleChange} />
+                                </div>
+
+                                <div className="direccion-col">
+                                    <label>Municipio <span className="required-asterisk">*</span></label>
+                                    <select name="municipality" value={formData.municipality} onChange={handleChange} required>
+                                        <option value="">Seleccione</option>
+                                        <option value="Bello">Bello</option>
+                                        <option value="Medellín">Medellín</option>
+                                        <option value="Itagüí">Itagüí</option>
+                                        <option value="Sabaneta">Sabaneta</option>
+                                        <option value="La Estrella">La Estrella</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+
                         <div>
-                            <label>Lugar de residencia</label>
-                            <input type="text" name="residence" value={formData.residence} onChange={handleChange} required />
-                        </div>
-    
-                        <div>
-                            <label>Semestre</label>
-                            <select
-                                name="semester"
-                                value={formData.semester}
-                                onChange={handleChange}
-                                required
-                            >
+                            <label>Semestre <span className="required-asterisk">*</span></label>
+                            <select name="semester" value={formData.semester} onChange={handleChange} required>
                                 <option value="">Seleccione</option>
                                 {[...Array(9)].map((_, i) => (
                                     <option key={i + 1} value={i + 1}>{i + 1}</option>
@@ -130,13 +193,8 @@ const ContactForm = () => {
                         </div>
 
                         <div>
-                            <label>Universidad</label>
-                            <select
-                                name="university"
-                                value={formData.university}
-                                onChange={handleChange}
-                                required
-                            >
+                            <label>Universidad <span className="required-asterisk">*</span></label>
+                            <select name="university" value={formData.university} onChange={handleChange} required>
                                 <option value="">Seleccione</option>
                                 <option value="Universidad de Antioquia">Universidad de Antioquia</option>
                                 <option value="Universidad Nacional">Universidad Nacional</option>
@@ -144,8 +202,6 @@ const ContactForm = () => {
                             </select>
                         </div>
 
-
-    
                         <button type="submit" className="submit-button" disabled={loading}>
                             {loading ? "Guardando..." : "Guardar"}
                         </button>
@@ -154,7 +210,6 @@ const ContactForm = () => {
             </div>
         </div>
     );
-    
 };
 
 export default ContactForm;

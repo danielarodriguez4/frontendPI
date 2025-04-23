@@ -43,3 +43,29 @@ Azul #33526d  */
     background-color: #aaa;
     cursor: not-allowed;
 }
+
+.direccion-group {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 6px;
+}
+
+.direccion-group legend {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.direccion-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.direccion-col {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+}
