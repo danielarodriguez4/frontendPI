@@ -1,20 +1,34 @@
+.tabla-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    overflow-x: visible; /* Eliminamos el scroll horizontal */
+}
+
 .tabla-estudiantes table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
+    table-layout: auto; /* Esto permitirá que las columnas se ajusten al contenido */
 }
 
 .tabla-estudiantes th, .tabla-estudiantes td {
     border: 1px solid #ddd;
     padding: 0.5rem;
-    text-align: left;
+    text-align: center;
+    font-size: 18px; /* Mantenemos el tamaño original de la fuente */
+    white-space: nowrap; /* Evitamos que el texto se envuelva */
+    overflow: visible; /* Permitimos que el texto sea visible completamente */
 }
 
 .tabla-estudiantes th {
-    background-color: #645252;
+    background-color: #3b61d0;
+    color: white;
+    font-weight: bold;
 }
 
 .tabla-estudiantes input {
     width: 100%;
     padding: 4px;
+    box-sizing: border-box;
 }

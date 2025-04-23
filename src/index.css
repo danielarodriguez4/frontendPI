@@ -9,7 +9,7 @@ body {
   background-attachment: fixed;
   width: 100vw;
   height: 100vh;
-  overflow: auto; /* Evita scroll en el body */
+  overflow: auto;
 }
 
 .container {
