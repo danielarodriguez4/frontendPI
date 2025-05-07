@@ -1,34 +1,57 @@
-.tabla-container {
-    width: 100%;
-    margin: 0 auto;
+.tabla-estudiantes {
     padding: 20px;
-    overflow-x: visible; /* Eliminamos el scroll horizontal */
+    background-color: #f9f9f9;
+}
+
+.titulo-tabla {
+    color: #2a4ca4;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.tabla-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow-x: auto;
 }
 
 .tabla-estudiantes table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
-    table-layout: auto; /* Esto permitirá que las columnas se ajusten al contenido */
+    table-layout: auto;
 }
 
-.tabla-estudiantes th, .tabla-estudiantes td {
+.tabla-estudiantes th,
+.tabla-estudiantes td {
+    padding: 12px;
     border: 1px solid #ddd;
-    padding: 0.5rem;
     text-align: center;
-    font-size: 18px; /* Mantenemos el tamaño original de la fuente */
-    white-space: nowrap; /* Evitamos que el texto se envuelva */
-    overflow: visible; /* Permitimos que el texto sea visible completamente */
+    white-space: nowrap;
 }
 
 .tabla-estudiantes th {
     background-color: #3b61d0;
     color: white;
     font-weight: bold;
+    font-size: 16px;
+}
+
+.tabla-estudiantes tbody tr:hover {
+    background-color: #f1f5ff;
 }
 
 .tabla-estudiantes input {
     width: 100%;
-    padding: 4px;
-    box-sizing: border-box;
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.acciones {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
 }

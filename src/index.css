@@ -1,4 +1,4 @@
-/*Fondo de la página*/
+/* Fondo de la página */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
@@ -7,32 +7,73 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-attachment: fixed;
-  width: 100vw;
-  height: 100vh;
-  overflow: auto;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+html {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 .container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  position: relative;
 }
 
-/* Estilos para el grid del formulario */
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background-color: #3b61d0;
+  padding: 20px;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 90px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo { 
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+}
+
+/* Contenedor principal */
 .form-grid {
-  width: 100%;
   flex: 1;
+  padding: 20px;
+  margin-left: 0;
+  transition: all 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  box-sizing: border-box;
 }
 
+/* Dashboard container - ajustes específicos para el dashboard */
+.dashboard-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
 /* Título del formulario */
 .form-grid h2 {
   text-align: center;
-  font-size: 40px;
+  font-size: 32px;
   margin-bottom: 15px;
   color: #33526d;
   font-weight: bold;
@@ -47,25 +88,23 @@ body {
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 15px;
   width: 100%;
-  flex: 1;
   padding: 0 10px;
 }
 
-
 select {
   padding: 10px;
-  font-size: 20px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
 }
+
 .required-asterisk {
   color: red;
-  font-size: 18px;
+  font-size: 16px;
   margin-left: 4px;
 }
-
 
 /* Cada par label-input */
 .contact-form > div {
@@ -79,7 +118,7 @@ select {
   font-weight: bold;
   margin-bottom: 3px;
   color: #333;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 /* Cada input ocupa una celda completa */
@@ -89,7 +128,7 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 /* El botón ocupa dos columnas */
@@ -102,13 +141,13 @@ select {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 18px;
   margin: 10px auto 0;
   display: block;
 }
 
 .contact-form .submit-button:hover {
-  background-color: #1cc88a;
+  background-color: #19a979;
 }
 
 .contact-form .submit-button:disabled {
@@ -116,88 +155,42 @@ select {
   cursor: not-allowed;
 }
 
-/*Barra lateral con opciones*/
-.sidebar {
-  width: 300px;
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  background-color: #3b61d0;
-  padding: 20px;
-  transition: width 0.3s ease-in-out;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; 
-  align-items: center;     
-  text-align: center;  
-  gap: 150px;
-}
-
-
-.logo { 
-  width: 200px;
-  height: 200px;
-}
-
 /* Ajustes responsivos */
-@media screen and (max-width: 992px) {
-  .contact-form {
-    grid-gap: 10px;
+@media screen and (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+  
+  .logo {
+    width: 140px;
+    height: 140px;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .sidebar {
-    width: 70px;
-    padding: 10px;
-  }
-
-  .white-square {
-    width: calc(100% - 70px);
-    margin-left: 70px;
-    padding: 15px;
+  .container {
+    flex-direction: column;
   }
   
-  .contact-form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 15px;
-    width: 100%;
-    flex: 1;
-    padding: 0 10px;
-    box-sizing: border-box;
-  }
-  
-  
-  .contact-form label {
-    font-size: 20px;
-  }
-  
-  .contact-form input {
-    padding: 6px;
-    font-size: 18px;
-  }
-}
-
-@media screen and (max-width: 480px) {
   .sidebar {
     width: 100%;
-    height: 50px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    min-height: auto;
     flex-direction: row;
-    padding: 5px;
+    justify-content: space-between;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    gap: 100px;
   }
   
-  .white-square {
-    width: 100%;
-    margin: 0;
-    margin-top: 60px;
-    padding: 10px;
-    height: calc(100vh - 60px);
+  .logo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .form-grid {
+    padding: 15px;
+    margin-left: 0;
   }
   
   .contact-form {
@@ -205,8 +198,37 @@ select {
     padding: 0 5px;
   }
   
+  /* Ajustes para dashboard en vista móvil */
+  .dashboard-container .chart-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .dashboard-container .chart-container {
+    grid-column: auto !important;
+  }
+  
+  .dashboard-container svg {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sidebar {
+    padding: 5px 10px;
+  }
+  
+  .logo {
+    width: 60px;
+    height: 60px;
+  }
+  
   .form-grid h2 {
-    font-size: 20px;
+    font-size: 24px;
     margin-bottom: 10px;
+  }
+  
+  .contact-form .submit-button {
+    width: 100%;
   }
 }

@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import './StudentTable.css';
 import { Button } from '@mui/material';
-import './Botones.css';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
 
 const StudentTable = () => {
     const [students, setStudents] = useState([
         { id: 1, firstName: 'Juan', lastName: 'Pérez', institutionalEmail: 'juan.perez@udea.edu.co', personalEmail: 'juan@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad de Antioquia' },
         { id: 2, firstName: 'Ana', lastName: 'García', institutionalEmail: 'ana.garcia@udea.edu.co', personalEmail: 'ana@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad Antioquia' },
         { id: 3, firstName: 'Luis', lastName: 'Martínez', institutionalEmail: 'luis.martinez@udea.edu.co', personalEmail: 'luis@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad Antioquia' },
+        { id: 4, firstName: 'Fernanda', lastName: 'Chacón', institutionalEmail: 'fernanda.chacon@udea.edu.co', personalEmail: 'fernanda@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad Antioquia' },
     ]);
 
     const [editingStudent, setEditingStudent] = useState(null);
@@ -33,8 +36,8 @@ const StudentTable = () => {
 
     return (
         <div className="tabla-estudiantes">
-            <h2>Estudiantes registrados</h2>
-            <div className="tabla-container"> {/* Aquí agregamos el contenedor */}
+            <h2 className="titulo-tabla">Estudiantes registrados</h2>
+            <div className="tabla-container">
                 <table>
                     <thead>
                         <tr>
@@ -43,7 +46,7 @@ const StudentTable = () => {
                             <th>Correo institucional</th>
                             <th>Correo personal</th>
                             <th>Universidad</th>
-                            <th>Número de teléfono</th>
+                            <th>Teléfono</th>
                             <th>Dirección</th>
                             <th>Acciones</th>
                         </tr>
@@ -59,9 +62,9 @@ const StudentTable = () => {
                                     <td><input name="university" value={formData.university} onChange={handleChange} /></td>
                                     <td><input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} /></td>
                                     <td><input name="fullAddress" value={formData.fullAddress} onChange={handleChange} /></td>
-                                    <td>
-                                        <Button className="button" onClick={handleSave}>Guardar</Button>
-                                        <Button className="button" onClick={() => setEditingStudent(null)}>Cancelar</Button>
+                                    <td className="acciones">
+                                        <Button onClick={handleSave} color="success" variant="contained" size="small" style={{ marginRight: 5 }}><SaveIcon /></Button>
+                                        <Button onClick={() => setEditingStudent(null)} color="error" variant="contained" size="small"><CloseIcon /></Button>
                                     </td>
                                 </tr>
                             ) : (
@@ -73,8 +76,8 @@ const StudentTable = () => {
                                     <td>{student.university}</td>
                                     <td>{student.phoneNumber}</td>
                                     <td>{student.fullAddress}</td>
-                                    <td>
-                                        <Button className="button" onClick={() => handleEditClick(student)}>Editar</Button>
+                                    <td className="acciones">
+                                        <Button onClick={() => handleEditClick(student)} variant="contained" size="small" color="primary"><EditIcon /></Button>
                                     </td>
                                 </tr>
                             )

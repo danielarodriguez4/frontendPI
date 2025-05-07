@@ -4,11 +4,17 @@ import './Datoscontacto.css';
 import './index.css';
 import Botones from './Botones';
 import StudentTable from './StudentTable';
+import UserInfoBar from './UserInfoBar';
+import DashboardMetrica from './DashboardMetrica';
 
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ContactForm = () => {
+    const user = {
+        name: 'Daniel León',
+        role: 'Administrador'
+    };
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -106,6 +112,7 @@ const ContactForm = () => {
                 <Botones onNavigate={handleNavigate} />
             </div>
             <div className="form-grid">  
+            <UserInfoBar name={user.name} role={user.role} />
                 {currentView === 'registrar' && (
                     <div>  
                     <h2>Registrar estudiante</h2>
@@ -215,6 +222,7 @@ const ContactForm = () => {
                 )}
 
                 {currentView === 'editar' && <StudentTable />} {/* Vista de estudiantes */}
+                {currentView === 'metricas' && <DashboardMetrica />} {/* Vista de métricas */}
             </div>
         </div>
     );
