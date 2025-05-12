@@ -46,11 +46,6 @@ Habilitar un módulo para documentar las intervenciones de la Fundación Antivir
   │   ├── StudentTable.css
   │   ├── index.css
   │   ├── UserInfoBar.css
-  │       ├── train.py
-  │       ├── predict.py
-  │       ├── start.sh
-  │       ├── client.py
-  │       ├── apirest.py
-  │   ├── Dockerfile
-  │   ├── README.md
+  ├── Dockerfile
+  ├── README.md
 ```
