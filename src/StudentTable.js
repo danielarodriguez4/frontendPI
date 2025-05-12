@@ -1,3 +1,4 @@
+/*Lógica para la tabla de visualización de los estudiantes*/
 import React, { useEffect, useState } from 'react';
 import './StudentTable.css';
 import { Button } from '@mui/material';
@@ -5,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 
+/*Datos de forma local. El backend debe retornar los datos de todos los estudiantes registrados*/
 const StudentTable = () => {
     const [students, setStudents] = useState([
         { id: 1, firstName: 'Juan', lastName: 'Pérez', institutionalEmail: 'juan.perez@udea.edu.co', personalEmail: 'juan@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad de Antioquia' },
@@ -16,6 +18,7 @@ const StudentTable = () => {
     const [editingStudent, setEditingStudent] = useState(null);
     const [formData, setFormData] = useState({});
 
+/*Manejo de datos. Opciones para guardar o cancelar la petición para cambios en los datos*/
     const handleEditClick = (student) => {
         setEditingStudent(student.id);
         setFormData({ ...student });
@@ -33,7 +36,7 @@ const StudentTable = () => {
         alert('Estudiante actualizado correctamente');
         setEditingStudent(null);
     };
-
+/* Datos a mostrar en la table */
     return (
         <div className="tabla-estudiantes">
             <h2 className="titulo-tabla">Estudiantes registrados</h2>

@@ -1,3 +1,5 @@
+/*Diseño de los botones*/
+
 .button-container {
   display: flex;
   flex-direction: column;

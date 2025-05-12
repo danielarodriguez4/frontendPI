@@ -1,3 +1,4 @@
+/*Lógica para mostrar el nombre y rol de usuario en la parte superior derecha*/
 import React from 'react';
 import './UserInfoBar.css';
 

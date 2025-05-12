@@ -1,3 +1,4 @@
+/* Componente para registrar estudiantes. Aquí se encuentra toda la lógica de la visualización del form */
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Datoscontacto.css';
@@ -10,11 +11,13 @@ import DashboardMetrica from './DashboardMetrica';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
+/*El back debe regresar en esta sección el nombre y rol de la persona que ingresó. De momento, se hace de forma local */
 const ContactForm = () => {
     const user = {
         name: 'Daniel León',
         role: 'Administrador'
     };
+/*Datos que se envían al backend luego de llenar el form*/
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -50,7 +53,8 @@ const ContactForm = () => {
             return;
         }
         setLoading(true);
-
+/*Envía todos los detalles de la dirección del estudiante como un solo string al back. Se hace con la finalidad de
+mantener un solo formato de direcciones */
         const fullAddress = `${formData.streetType} ${formData.streetNumber} #${formData.buildingNumber}` +
             (formData.apartment ? ` Apt ${formData.apartment}` : '') +
             `, ${formData.municipality}`;
@@ -67,6 +71,7 @@ const ContactForm = () => {
             university: formData.university
         };
 
+/*Endpoint al que se envía la información registrada */
         console.log("API_URL:", API_URL);
         console.log("Data to send:", dataToSend);
         try {
@@ -220,7 +225,7 @@ const ContactForm = () => {
                     </form>
                     </div>
                 )}
-
+{/*Manejo del bambio de vistas */}
                 {currentView === 'editar' && <StudentTable />} {/* Vista de estudiantes */}
                 {currentView === 'metricas' && <DashboardMetrica />} {/* Vista de métricas */}
             </div>
