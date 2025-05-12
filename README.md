@@ -19,3 +19,38 @@ Habilitar un módulo para documentar las intervenciones de la Fundación Antivir
 - JWT 
 - JavaScript
 
+## Estructura del proyecto
+```bash
+  frontendPI/
+  ├── public
+  │   ├── acompañar.png
+  │   ├── editar.png
+  │   ├── index.html
+  │   ├── logo1.png
+  │   ├── manifest.json
+  │   ├── metricas.png
+  │   ├── registrar.png
+  │   ├── udea.jpg
+  ├── src
+  │   ├── Componentes
+  │       ├── App.js
+  │       ├── Botones.js
+  │       ├── DashboardMetrica.js
+  │       ├── index.js
+  │       ├── setupTest.js
+  │       ├── StudentTable.js
+  │       ├── UserInfoBar.js
+  ├── Diseños
+  │   ├── Botones.css
+  │   ├── Datoscontacto.css
+  │   ├── StudentTable.css
+  │   ├── index.css
+  │   ├── UserInfoBar.css
+  │       ├── train.py
+  │       ├── predict.py
+  │       ├── start.sh
+  │       ├── client.py
+  │       ├── apirest.py
+  │   ├── Dockerfile
+  │   ├── README.md
+```
