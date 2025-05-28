@@ -1,24 +1,29 @@
-/*Lógica para la tabla de visualización de los estudiantes*/
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './StudentTable.css';
 import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 
-/*Datos de forma local. El backend debe retornar los datos de todos los estudiantes registrados*/
 const StudentTable = () => {
-    const [students, setStudents] = useState([
-        { id: 1, firstName: 'Juan', lastName: 'Pérez', institutionalEmail: 'juan.perez@udea.edu.co', personalEmail: 'juan@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad de Antioquia' },
-        { id: 2, firstName: 'Ana', lastName: 'García', institutionalEmail: 'ana.garcia@udea.edu.co', personalEmail: 'ana@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad Antioquia' },
-        { id: 3, firstName: 'Luis', lastName: 'Martínez', institutionalEmail: 'luis.martinez@udea.edu.co', personalEmail: 'luis@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad Antioquia' },
-        { id: 4, firstName: 'Fernanda', lastName: 'Chacón', institutionalEmail: 'fernanda.chacon@udea.edu.co', personalEmail: 'fernanda@test.com', phoneNumber: '1234', fullAddress: 'Calle 60 #5-7', university: 'Universidad Antioquia' },
-    ]);
-
+    const [students, setStudents] = useState([]);
     const [editingStudent, setEditingStudent] = useState(null);
     const [formData, setFormData] = useState({});
 
-/*Manejo de datos. Opciones para guardar o cancelar la petición para cambios en los datos*/
+    useEffect(() => {
+        const fetchStudent = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v0/user/1`);
+                setStudents([response.data]); // Guardamos como array aunque solo sea un estudiante
+            } catch (error) {
+                console.error('Error al obtener el estudiante:', error);
+            }
+        };
+
+        fetchStudent();
+    }, []);
+
     const handleEditClick = (student) => {
         setEditingStudent(student.id);
         setFormData({ ...student });
@@ -36,7 +41,7 @@ const StudentTable = () => {
         alert('Estudiante actualizado correctamente');
         setEditingStudent(null);
     };
-/* Datos a mostrar en la table */
+
     return (
         <div className="tabla-estudiantes">
             <h2 className="titulo-tabla">Estudiantes registrados</h2>
@@ -58,13 +63,13 @@ const StudentTable = () => {
                         {students.map((student) =>
                             editingStudent === student.id ? (
                                 <tr key={student.id}>
-                                    <td><input name="firstName" value={formData.firstName} onChange={handleChange} /></td>
-                                    <td><input name="lastName" value={formData.lastName} onChange={handleChange} /></td>
-                                    <td><input name="institutionalEmail" value={formData.institutionalEmail} onChange={handleChange} /></td>
-                                    <td><input name="personalEmail" value={formData.personalEmail} onChange={handleChange} /></td>
-                                    <td><input name="university" value={formData.university} onChange={handleChange} /></td>
-                                    <td><input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} /></td>
-                                    <td><input name="fullAddress" value={formData.fullAddress} onChange={handleChange} /></td>
+                                    <td><input name="firstName" value={formData.firstName || ''} onChange={handleChange} /></td>
+                                    <td><input name="lastName" value={formData.lastName || ''} onChange={handleChange} /></td>
+                                    <td><input name="institutionalEmail" value={formData.institutionalEmail || ''} onChange={handleChange} /></td>
+                                    <td><input name="personalEmail" value={formData.personalEmail || ''} onChange={handleChange} /></td>
+                                    <td><input name="university" value={formData.university || ''} onChange={handleChange} /></td>
+                                    <td><input name="phoneNumber" value={formData.phoneNumber || ''} onChange={handleChange} /></td>
+                                    <td><input name="fullAddress" value={formData.fullAddress || ''} onChange={handleChange} /></td>
                                     <td className="acciones">
                                         <Button onClick={handleSave} color="success" variant="contained" size="small" style={{ marginRight: 5 }}><SaveIcon /></Button>
                                         <Button onClick={() => setEditingStudent(null)} color="error" variant="contained" size="small"><CloseIcon /></Button>

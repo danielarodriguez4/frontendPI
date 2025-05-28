@@ -19,9 +19,9 @@ const ContactForm = () => {
     };
 /*Datos que se envían al backend luego de llenar el form*/
     const [formData, setFormData] = useState({
+        idNumber: '',
         firstName: '',
         lastName: '',
-        idNumber: '',
         phoneNumber: '',
         personalEmail: '',
         institutionalEmail: '',
@@ -33,6 +33,8 @@ const ContactForm = () => {
         semester: '',
         university: ''
     });
+
+
 
     const [loading, setLoading] = useState(false);
     const [currentView, setCurrentView] = useState('registrar');
@@ -60,27 +62,29 @@ mantener un solo formato de direcciones */
             `, ${formData.municipality}`;
 
         const dataToSend = {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            idNumber: formData.idNumber,
-            phoneNumber: formData.phoneNumber,
-            personalEmail: formData.personalEmail,
-            institutionalEmail: formData.institutionalEmail,
-            residence: fullAddress, 
-            semester: formData.semester,
-            university: formData.university
+            id_number: formData.idNumber,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            phone_number: formData.phoneNumber,
+            email: formData.personalEmail,
+            institution_email: formData.institutionalEmail,
+            residence_address: fullAddress,
+            semester: parseInt(formData.semester, 10),
+            university_id: formData.university
         };
 
+
+
 /*Endpoint al que se envía la información registrada */
-        console.log("API_URL:", API_URL);
-        console.log("Data to send:", dataToSend);
+
         try {
-            await axios.post(`${API_URL}/api/v0/user/1`, dataToSend, {
+            const response = await axios.post(`${API_URL}/api/v0/user`, dataToSend, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }        
+                }
             });
+
             alert('Datos guardados con éxito');
             console.log('Token JWT:', token);
 
@@ -103,6 +107,7 @@ mantener un solo formato de direcciones */
             console.error('Error al enviar los datos', error);
             alert('Hubo un error al guardar los datos');
         }
+
         setLoading(false);
     };
 
