@@ -33,19 +33,21 @@ Habilitar un módulo para documentar las intervenciones de la Fundación Antivir
   │   ├── udea.jpg
   ├── src
   │   ├── Componentes
-  │       ├── App.js
   │       ├── Botones.js
   │       ├── DashboardMetrica.js
-  │       ├── index.js
   │       ├── setupTest.js
   │       ├── StudentTable.js
   │       ├── UserInfoBar.js
-  ├── Diseños
-  │   ├── Botones.css
-  │   ├── Datoscontacto.css
-  │   ├── StudentTable.css
-  │   ├── index.css
-  │   ├── UserInfoBar.css
+  │   ├── Estilos
+  │       ├── Botones.css
+  │       ├── Datoscontacto.css
+  │       ├── StudentTable.css
+  │       ├── UserInfoBar.css
   ├── Dockerfile
+  ├── App.js
+  ├── index.js
+  ├── index.css
+  ├── cloudrun.yaml
+  ├── skaffold.yaml
   ├── README.md
 ```
