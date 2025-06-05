@@ -24,6 +24,7 @@ input, select {
   margin-top: 5px;
 }
 
+
 button {
   margin-top: 20px;
   padding: 10px;
@@ -32,4 +33,11 @@ button {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.observaciones-textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 5px;
 }
