@@ -1,0 +1,35 @@
+.form-container {
+  margin: 40px auto;
+  padding: 20px;
+  width: 50%;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+input, select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 5px;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #003865;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

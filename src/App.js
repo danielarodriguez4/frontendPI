@@ -1,12 +1,13 @@
 /* Componente para registrar estudiantes. Aquí se encuentra toda la lógica de la visualización del form */
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Datoscontacto.css';
+import './Estilos/Datoscontacto.css';
 import './index.css';
-import Botones from './Botones';
-import StudentTable from './StudentTable';
-import UserInfoBar from './UserInfoBar';
-import DashboardMetrica from './DashboardMetrica';
+import Botones from './Componentes/Botones';
+import StudentTable from './Componentes/StudentTable';
+import UserInfoBar from './Componentes/UserInfoBar';
+import DashboardMetrica from './Componentes/DashboardMetrica';
+import AgregarAcompañamiento from './Componentes/AgregarAcompanamiento';
 
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -233,6 +234,7 @@ mantener un solo formato de direcciones */
 {/*Manejo del bambio de vistas */}
                 {currentView === 'editar' && <StudentTable />} {/* Vista de estudiantes */}
                 {currentView === 'metricas' && <DashboardMetrica />} {/* Vista de métricas */}
+                {currentView === 'acompañar' && <AgregarAcompañamiento />} {/* Vista de métricas */}
             </div>
         </div>
     );
