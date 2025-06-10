@@ -17,11 +17,9 @@ const StudentTable = () => {
                 console.log('Fetching students from:', `${process.env.REACT_APP_BACKEND_URL}/api/v0/user/all`);
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v0/user/all`);
                 console.log('Response data:', response.data);
-                
-                // Si response.data es un array, úsalo directamente
-                // Si está envuelto en un objeto, accede a la propiedad correcta
+
                 const studentsData = Array.isArray(response.data) ? response.data : response.data.data || response.data.users || [];
-                
+
                 setStudents(studentsData);
             } catch (error) {
                 console.error('Error al obtener los estudiantes:', error);
@@ -42,6 +40,8 @@ const StudentTable = () => {
     };
 
     const handleSave = () => {
+        // Lógica para guardar los cambios en el backend
+        // Después de guardar, actualiza el estado local y sale del modo edición
         const updatedStudents = students.map((student) =>
             student.id === editingStudent ? { ...student, ...formData } : student
         );
@@ -50,15 +50,18 @@ const StudentTable = () => {
         setEditingStudent(null);
     };
 
-    // Agregar loading state
+    // Nueva función para navegar al perfil del estudiante
+    const handleStudentNameClick = (studentId) => {
+    };
+
     if (students.length === 0) {
         return <div>Cargando estudiantes...</div>;
     }
 
     return (
         <div className="tabla-estudiantes">
-            <h2 className="titulo-tabla">Estudiantes registrados</h2>
-            <div className="tabla-container">
+            <div className="tabla-content">
+                <h2 className="titulo-tabla">Estudiantes registrados</h2>
                 <table>
                     <thead>
                         <tr>
@@ -106,7 +109,12 @@ const StudentTable = () => {
                                 <tr key={student.id}>
                                     <td>{student.id}</td>
                                     <td>{student.id_number}</td>
-                                    <td>{student.first_name}</td>
+                                    <td
+                                        onClick={() => handleStudentNameClick(student.id)}
+                                        style={{ cursor: 'pointer', color: '#3b61d0', textDecoration: 'underline' }} // Estilos para que parezca un enlace
+                                    >
+                                        {student.first_name}
+                                    </td>
                                     <td>{student.last_name}</td>
                                     <td>{student.institution_email}</td>
                                     <td>{student.email}</td>

@@ -124,15 +124,15 @@ const ContactForm = () => {
     };
 
     return (
-        <div className="container">
+        <div className="container-form">
             <div className="sidebar">
                 <img src="/logo1.png" className="logo" alt="logo" />
                 <Botones onNavigate={handleNavigate} />
             </div>
-            <div className="form-grid">  
+            <div className="form-grid"> 
                 <UserInfoBar name={user.name} role={user.role} />
                 {currentView === 'registrar' && (
-                    <div>  
+                    <div> 
                         <h2>Registrar estudiante</h2>
                         <form onSubmit={handleSubmit} className="contact-form">
                             <div>

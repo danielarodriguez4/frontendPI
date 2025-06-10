@@ -1,8 +1,7 @@
 /*Diseños para el form*/
 .contact-form-container {
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
+ 
+
     padding: 20px;
     background-color: #f4f4f4;
     border-radius: 8px;
@@ -10,32 +9,48 @@
 }
 
 .contact-form {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+    padding: 0 10px;
 }
 
 .contact-form label {
     font-weight: bold;
-    margin-top: 10px;
+    margin-bottom: 3px;
+    display: block;
+    color: #333;
+    font-size: 16px;
 }
 
-.contact-form input {
+.contact-form input,
+.contact-form select {
+    width: 100%;
     padding: 8px;
-    margin-top: 5px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 4px;
+    box-sizing: border-box;
     font-size: 16px;
+}
+
+.contact-form > div {
+    display: flex;
+    flex-direction: column;
 }
 
 .submit-button {
-    margin-top: 20px;
+    grid-column: 1 / -1;
+    width: 40%;
     padding: 10px;
-    background-color: #33526d;
+    background-color: #1cc88a;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
+    margin: 10px auto 0;
+    display: block;
 }
 
 .submit-button:disabled {
@@ -44,6 +59,7 @@
 }
 
 .direccion-group {
+    grid-column: 1 / -1;
     border: 1px solid #ccc;
     padding: 1rem;
     margin-bottom: 1.5rem;
@@ -69,21 +85,22 @@
     flex-direction: column;
 }
 
-
+/* Ajustes responsivos */
 @media screen and (max-width: 768px) {
-  .white-container {
-    margin-left: 70px;
-    width: calc(100% - 70px);
-    padding: 20px;
-  }
+    /* Aquí también puedes ajustar el ancho del .contact-form-container para móvil */
+    .contact-form-container {
+        width: 95%; /* Ocupa casi todo el ancho en pantallas pequeñas */
+    }
+    .contact-form {
+        grid-template-columns: 1fr;
+        padding: 0 5px;
+    }
+    .submit-button {
+        width: 100%;
+        margin: 10px auto 0;
+    }
 }
 
 @media screen and (max-width: 480px) {
-  .white-container {
-    margin: 0;
-    width: 100%;
-    height: calc(100vh - 60px); /* espacio si sidebar está arriba */
-    margin-top: 60px;
-    padding: 10px;
-  }
+    /* Puedes agregar ajustes específicos para pantallas aún más pequeñas si es necesario */
 }

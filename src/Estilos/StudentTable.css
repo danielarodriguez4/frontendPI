@@ -56,3 +56,9 @@
     justify-content: center;
     gap: 5px;
 }
+
+.student-name-clickable {
+    cursor: pointer;
+    color: #3b61d0; 
+    text-decoration: underline;
+}

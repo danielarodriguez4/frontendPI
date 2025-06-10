@@ -2,7 +2,7 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  background-color: white;
+  background-color: white; /* Asegúrate de que el body sea blanco */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -21,9 +21,8 @@ html {
   box-sizing: inherit;
 }
 
-.container {
+.container-form {
   display: flex;
-  min-height: 100vh;
   position: relative;
 }
 
@@ -43,34 +42,26 @@ html {
   z-index: 1000;
 }
 
-.logo { 
+.logo {
   width: 160px;
   height: 160px;
   object-fit: contain;
 }
 
-/* Contenedor principal */
+/* Contenedor principal - form-grid (la parte blanca) */
 .form-grid {
-  flex: 1;
-  padding: 20px;
+  flex: 1; 
   margin-left: 0;
   transition: all 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
+  max-width: calc(100% - 12px); 
+  width: 100%; 
+  margin: 12px; 
+  box-sizing: border-box; 
 }
 
-/* Dashboard container - ajustes específicos para el dashboard */
-.dashboard-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
 
-/* Título del formulario */
 .form-grid h2 {
   text-align: center;
   font-size: 32px;
@@ -82,7 +73,7 @@ html {
   width: 100%;
 }
 
-/* Estilos para el formulario */
+
 .contact-form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -188,10 +179,17 @@ select {
     height: 80px;
   }
   
-  .form-grid {
-    padding: 15px;
+ .form-grid {
+    flex: 1;
+    padding: 20px;
     margin-left: 0;
-  }
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    max-width: none; 
+    width: 100%;
+    margin: 0 auto;
+}
   
   .contact-form {
     grid-template-columns: 1fr;
