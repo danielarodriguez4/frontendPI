@@ -14,7 +14,7 @@ const StudentTable = () => {
     useEffect(() => {
         const fetchStudent = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v0/user/1`);
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v0/user/all`);
                 setStudents([response.data]); // Guardamos como array aunque solo sea un estudiante
             } catch (error) {
                 console.error('Error al obtener el estudiante:', error);
