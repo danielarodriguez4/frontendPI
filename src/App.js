@@ -8,8 +8,7 @@ import StudentTable from './Componentes/StudentTable';
 import UserInfoBar from './Componentes/UserInfoBar';
 import DashboardMetrica from './Componentes/DashboardMetrica';
 import AgregarAcompañamiento from './Componentes/AgregarAcompanamiento';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import Swal from 'sweetalert2';
 
 /*El back debe regresar en esta sección el nombre y rol de la persona que ingresó. De momento, se hace de forma local */
 const ContactForm = () => {
@@ -69,8 +68,7 @@ const ContactForm = () => {
 
         /*Endpoint al que se envía la información registrada */
         try {
-            const response = await axios.post(
-                `${API_URL}/api/v0/user/`, 
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student`, 
                 dataToSend, 
                 {
                     headers: {
@@ -83,6 +81,13 @@ const ContactForm = () => {
             alert('Datos guardados con éxito');
             console.log('Token JWT:', token);
             console.log('Usuario creado exitosamente:', response.data);
+            Swal.fire({
+            title: 'Error',
+            text: 'Datos creados exitosamente',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#d33'
+        });
 
             // Limpiar el formulario después del envío exitoso
             setFormData({
@@ -102,6 +107,13 @@ const ContactForm = () => {
             });
         } catch (error) {
             console.error('Error al enviar los datos:', error);
+            Swal.fire({
+            title: 'Error',
+            text: 'Error al enviar los datos',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#d33'
+        });
             
             // Manejo específico del error
             if (error.response) {
@@ -109,10 +121,22 @@ const ContactForm = () => {
                 alert(`Error del servidor: ${error.response.status} - ${error.response.data.message || 'Error desconocido'}`);
             } else if (error.request) {
                 console.error('No se recibió respuesta del servidor');
-                alert('No se pudo conectar con el servidor. Verifica tu conexión.');
+                Swal.fire({
+                title: 'Error',
+                text: 'No hay conexión',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33'
+             });
             } else {
                 console.error('Error al configurar la petición:', error.message);
-                alert('Hubo un error al procesar la solicitud');
+                Swal.fire({
+                title: 'Error',
+                text: 'No se pudo configurar',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33'
+            });
             }
         }
 

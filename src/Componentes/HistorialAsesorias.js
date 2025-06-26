@@ -6,6 +6,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import '../Estilos/HistorialAsesorias.css';
+import Swal from 'sweetalert2';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -21,7 +22,7 @@ const HistorialAsesorias = ({ estudianteId, onVolver }) => {
                 const token = localStorage.getItem('jwt');
                 
                 const response = await axios.get(
-                    `${API_URL}/api/v0/asesorias/estudiante/${estudianteId}`,
+                    `${API_URL}/asesorias/estudiante/${estudianteId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
