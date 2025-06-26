@@ -15,6 +15,8 @@ const AgregarAcompanamiento = () => {
 
   // Estado para almacenar la lista de estudiantes
   const [students, setStudents] = useState([]);
+  const [companions, setCompanions] = useState([]);
+
 
   // Función para obtener lista de estudiantes
   const fetchStudents = async () => {
@@ -40,7 +42,6 @@ const AgregarAcompanamiento = () => {
   console.log('Respuesta del backend:', response.data);
 
 
-
       
       setStudents(filteredStudents);
     } catch (error) {
@@ -54,6 +55,40 @@ const AgregarAcompanamiento = () => {
       });
     }
   };
+
+  const fetchCompanions = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/api/v1/companion/all`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log('Profesionales obtenidos:', response.data);
+
+    const filteredCompanions = (response.data.data || []).map(companion => ({
+    id: companion.id,
+    first_name: companion.first_name,
+    last_name: companion.last_name
+    }));
+
+    setCompanions(filteredCompanions);
+  } catch (error) {
+    console.error('Error fetching companions:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Error al cargar la lista de profesionales',
+      icon: 'error',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#d33',
+    });
+  }
+};
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -110,6 +145,7 @@ const AgregarAcompanamiento = () => {
   // Cargar estudiantes al montar el componente
   useEffect(() => {
     fetchStudents();
+    fetchCompanions();
   }, []);
 
   return (
@@ -145,13 +181,25 @@ const AgregarAcompanamiento = () => {
         </select>
 
         <label>Profesional Responsable:</label>
-        <input 
-          name="profesional" 
-          value={formData.profesional} 
-          onChange={handleChange} 
-          placeholder="Nombre del profesional"
-          required 
-        />
+        <select
+          name="profesional"
+          value={formData.profesional}
+          onChange={handleChange}
+          required
+          style={{ minHeight: '40px', padding: '8px' }}
+        >
+          <option value="">Seleccione un profesional</option>
+          {companions.length > 0 ? (
+            companions.map((companion) => (
+              <option key={companion.id} value={companion.id}>
+                {companion.name}
+              </option>
+            ))
+          ) : (
+            <option value="" disabled>Cargando profesionales...</option>
+          )}
+        </select>
+
 
         <label>Fecha:</label>
         <input 
