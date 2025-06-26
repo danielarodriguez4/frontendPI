@@ -8,6 +8,7 @@ import StudentTable from './Componentes/StudentTable';
 import UserInfoBar from './Componentes/UserInfoBar';
 import DashboardMetrica from './Componentes/DashboardMetrica';
 import AgregarAcompañamiento from './Componentes/AgregarAcompanamiento';
+import StudentProfile from './Componentes/StudentProfile';
 import Swal from 'sweetalert2';
 
 /*El back debe regresar en esta sección el nombre y rol de la persona que ingresó. De momento, se hace de forma local */
@@ -36,6 +37,7 @@ const ContactForm = () => {
 
     const [loading, setLoading] = useState(false);
     const [currentView, setCurrentView] = useState('registrar');
+    const [selectedStudentId, setSelectedStudentId] = useState(null);
 
     const handleChange = (e) => {
         setFormData({
@@ -298,9 +300,15 @@ const ContactForm = () => {
                     </div>
                 )}
                 {/*Manejo del cambio de vistas */}
-                {currentView === 'editar' && <StudentTable />} {/* Vista de estudiantes */}
+                {currentView === 'editar' && (
+                <StudentTable
+                    onNavigateToProfile={(studentId) => {
+                    setSelectedStudentId(studentId);
+                    setCurrentView('perfil');
+                    }}/> )}
                 {currentView === 'metricas' && <DashboardMetrica />} {/* Vista de métricas */}
                 {currentView === 'acompañar' && <AgregarAcompañamiento />} {/* Vista de acompañamiento */}
+                {currentView === 'perfil' && selectedStudentId && (<StudentProfile studentId={selectedStudentId} />)}
             </div>
         </div>
     );

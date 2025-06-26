@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // Para obtener el ID del estudiante de la URL
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import '../Estilos/StudentProfile.css'; // Crearemos este archivo CSS
-import { CircularProgress, Typography, Paper, Divider, Box, Card, CardContent } from '@mui/material'; // Componentes de Material-UI para una mejor UI
+import '../Estilos/StudentProfile.css'; 
+import { CircularProgress, Typography, Paper, Divider, Box, Card, CardContent } from '@mui/material'; 
 
 const StudentProfile = () => {
-    const { studentId } = useParams(); // Obtiene el parámetro 'studentId' de la URL
+    const { studentId } = useParams(); 
     const [studentInfo, setStudentInfo] = useState(null);
     const [advisoryHistory, setAdvisoryHistory] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,15 +17,13 @@ const StudentProfile = () => {
                 setLoading(true);
                 setError(null);
 
-                // 1. Fetch info del estudiante
-                const studentResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v0/user/${studentId}`);
-                setStudentInfo(studentResponse.data.data || studentResponse.data); // Ajusta según la estructura real de tu API
+                // Fetch info del estudiante
+                const studentResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student/id}`);
+                setStudentInfo(studentResponse.data.data || studentResponse.data); 
 
-                // 2. Fetch historial de asesorías
-                // Asegúrate de que esta URL sea la correcta para obtener el historial por estudiante.
-                // Podría ser '/api/v0/advisory/student/{id}' o similar.
-                const advisoryResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v0/advisory/student/${studentId}`);
-                setAdvisoryHistory(advisoryResponse.data.data || advisoryResponse.data); // Ajusta según la estructura real de tu API
+                // Fetch historial de asesorías
+                const advisoryResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student`);
+                setAdvisoryHistory(advisoryResponse.data.data || advisoryResponse.data); 
 
             } catch (err) {
                 console.error('Error fetching student data:', err);
@@ -38,7 +36,7 @@ const StudentProfile = () => {
         if (studentId) {
             fetchStudentData();
         }
-    }, [studentId]); // Dependencia: re-ejecutar si studentId cambia
+    }, [studentId]); 
 
     if (loading) {
         return (

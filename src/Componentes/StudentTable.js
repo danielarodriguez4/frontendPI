@@ -7,10 +7,13 @@ import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import Swal from 'sweetalert2';
 
-const StudentTable = () => {
+
+
+const StudentTable = ({ onNavigateToProfile }) => {
     const [students, setStudents] = useState([]);
     const [editingStudent, setEditingStudent] = useState(null);
     const [formData, setFormData] = useState({});
+    
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -113,13 +116,37 @@ const StudentTable = () => {
                                     <td><input name="created_at" value={formData.created_at || ''} onChange={handleChange} disabled /></td>
                                     <td><input name="updated_at" value={formData.updated_at || ''} onChange={handleChange} disabled /></td>
                                     <td className="acciones">
-                                        <Button onClick={handleSave} color="success" variant="contained" size="small" style={{ marginRight: 5 }}>
-                                            <SaveIcon />
-                                        </Button>
-                                        <Button onClick={() => setEditingStudent(null)} color="error" variant="contained" size="small">
-                                            <CloseIcon />
-                                        </Button>
+                                    <Button
+                                        onClick={handleSave}
+                                        color="success"
+                                        variant="contained"
+                                        size="small"
+                                        style={{ marginRight: 5 }}
+                                    >
+                                        <SaveIcon />
+                                    </Button>
+
+                                    <Button
+                                        onClick={() => setEditingStudent(null)}
+                                        color="error"
+                                        variant="contained"
+                                        size="small"
+                                        style={{ marginRight: 5 }}
+                                    >
+                                        <CloseIcon />
+                                    </Button>
+
+                                    <Button
+                                        onClick={() => onNavigateToProfile(student.id)}
+                                        color="secondary"
+                                        variant="outlined"
+                                        size="small"
+                                    >
+                                        Ver perfil
+                                    </Button>
                                     </td>
+
+
                                 </tr>
                             ) : (
                                 <tr key={student.id}>
