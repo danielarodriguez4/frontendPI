@@ -89,7 +89,6 @@ const AgregarAcompanamiento = () => {
   }
 };
 
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -192,7 +191,7 @@ const AgregarAcompanamiento = () => {
           {companions.length > 0 ? (
             companions.map((companion) => (
               <option key={companion.id} value={companion.id}>
-                {companion.name}
+                {companion.first_name} {companion.last_name}
               </option>
             ))
           ) : (
