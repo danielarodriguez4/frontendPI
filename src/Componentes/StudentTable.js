@@ -5,6 +5,8 @@ import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 import Swal from 'sweetalert2';
 
 
@@ -136,14 +138,24 @@ const StudentTable = ({ onNavigateToProfile }) => {
                                         <CloseIcon />
                                     </Button>
 
+                                    {/* Botón Ver perfil */}
                                     <Button
-                                        onClick={() => onNavigateToProfile(student.id)}
-                                        color="secondary"
-                                        variant="outlined"
-                                        size="small"
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: '#FFD700',
+                                        color: 'white',
+                                        minWidth: '40px',
+                                        padding: '6px',
+                                        '&:hover': { backgroundColor: '#FFC107' },
+                                        marginRight: '5px'
+                                    }}
+                                    size="small"
+                                    onClick={() => window.location.href = `/student/${student.id}`}
                                     >
-                                        Ver perfil
+                                    <VisibilityIcon />
                                     </Button>
+
+
                                     </td>
 
 

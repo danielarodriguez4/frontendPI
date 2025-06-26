@@ -49,6 +49,7 @@ function Botones({ onNavigate }) {
         >
           {buttonData.text4}
         </Button>
+
       </div>
     </div>
   );
