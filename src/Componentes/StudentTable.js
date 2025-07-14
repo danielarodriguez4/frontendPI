@@ -58,7 +58,7 @@ const StudentTable = ({ onNavigateToProfile }) => {
 
         // PATCH al backend
         await axios.patch(
-            `${process.env.REACT_APP_BACKEND_URL}/student/${editingStudent}`,
+            `${process.env.REACT_APP_BACKEND_URL}/api/v1/student/${editingStudent}`,
             formData,
             {
                 headers: {
