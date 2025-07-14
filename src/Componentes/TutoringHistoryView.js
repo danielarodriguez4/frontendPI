@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Edit, MessageCircle, ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText } from 'lucide-react';
 import '../Estilos/TutoringHistoryView.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -10,76 +10,80 @@ const TutoringHistoryView = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [editingSession, setEditingSession] = useState(null);
-  const [newComment, setNewComment] = useState('');
-  const [editNotes, setEditNotes] = useState('');
   const sessionsPerPage = 5;
 
-const fetchSessions = async (page = 1) => {
-  try {
-    setLoading(true);
-    const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/all?page=${page}&limit=${sessionsPerPage}`
-    );
+  const [sessionTypes, setSessionTypes] = useState([]);
 
-    // Mapear los datos del backend al formato esperado por el frontend
-    const mappedSessions = response.data.data.map(session => ({
-      ...session,
-      first_name: session.name,
-      last_name: session.surname,
-      first_name_companion: session.companion_name,
-      last_name_companion: session.companion_surname,
-      companion_specialty: session.companion_speciality,
-      notes: session.session_notes,
-      status: session.status || 'Completado' // valor por defecto si no viene
-    }));
-
-    setSessions(mappedSessions);
-    setTotalPages(Math.ceil((response.data.total || mappedSessions.length) / sessionsPerPage));
-  } catch (err) {
-    Swal.fire({
-      title: 'Error',
-      text: err.message,
-      icon: 'error',
-      confirmButtonText: 'Aceptar',
-      confirmButtonColor: '#d33'
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  // Función para actualizar una sesión
-  const updateSession = async (sessionId, updates) => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/${sessionId}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updates),
-        }
-      );
-      
-      if (!response.ok) {
-        throw new Error('Sesión actualizada');
+  // Cargar tipos de sesión
+  useEffect(() => {
+    const fetchSessionTypes = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setSessionTypes(response.data.data || []);
+      } catch (error) {
+        console.error('Error al cargar tipos de sesión:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar los tipos de sesión',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#d33'
+        });
       }
-      
-      // Recargar las sesiones después de actualizar
-      fetchSessions(currentPage);
+    };
+
+    fetchSessionTypes();
+  }, []);
+
+  // Cargar sesiones
+  const fetchSessions = async (page = 1) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/all?page=${page}&limit=${sessionsPerPage}`
+      );
+
+      const mappedSessions = response.data.data.map(session => ({
+        ...session,
+        first_name: session.name,
+        last_name: session.surname,
+        first_name_companion: session.companion_name,
+        last_name_companion: session.companion_surname,
+        companion_specialty: session.companion_speciality,
+        session_type_name: session.session_type_name || 
+          sessionTypes.find(type => type.id === session.id_session_type)?.name || 'No definido',
+        notes: session.session_notes,
+        status: session.status || 'Completado'
+      }));
+
+      setSessions(mappedSessions);
+      setTotalPages(Math.ceil((response.data.total || mappedSessions.length) / sessionsPerPage));
     } catch (err) {
-      setError(err.message);
+      Swal.fire({
+        title: 'Error',
+        text: err.message,
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchSessions(currentPage);
-  }, [currentPage]);
+  }, [currentPage, sessionTypes]);
 
-  // Función para formatear fechas
+  // Helpers
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -91,7 +95,6 @@ const fetchSessions = async (page = 1) => {
     });
   };
 
-  // Función para obtener el color de estado
   const getStatusClass = (status) => {
     switch (status?.toLowerCase()) {
       case 'completado':
@@ -107,71 +110,6 @@ const fetchSessions = async (page = 1) => {
         return 'status-default';
     }
   };
-
-  // Función para manejar la edición
-  const handleEdit = (session) => {
-    setEditingSession(session.id);
-    setEditNotes(session.notes || '');
-  };
-
-  // Función para guardar cambios
-  const handleSave = async (sessionId) => {
-    await updateSession(sessionId, { notes: editNotes });
-    setEditingSession(null);
-    setEditNotes('');
-  };
-
-  // Función para cancelar edición
-  const handleCancel = () => {
-    setEditingSession(null);
-    setEditNotes('');
-  };
-
-  // Función para añadir comentario
-  const handleAddComment = async (sessionId) => {
-    if (!newComment.trim()) return;
-    
-    const currentSession = sessions.find(s => s.id === sessionId);
-    const updatedNotes = currentSession.notes 
-      ? `${currentSession.notes}\n\n--- Comentario ${formatDate(new Date())} ---\n${newComment}`
-      : `--- Comentario ${formatDate(new Date())} ---\n${newComment}`;
-    
-    await updateSession(sessionId, { notes: updatedNotes });
-    setNewComment('');
-  };
-
-  // Cargar tipos de sesión
-  const [sessionTypes, setSessionTypes] = useState([]);
-
-useEffect(() => {
-  const fetchSessionTypes = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log('Tipos de sesión obtenidos:', response.data.data);
-      setSessionTypes(response.data.data || []);
-    } catch (error) {
-      console.error('Error al cargar tipos de sesión:', error);
-      Swal.fire({
-        title: 'Error',
-        text: 'No se pudieron cargar los tipos de sesión',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d33'
-      });
-    }
-  };
-
-  fetchSessionTypes();
-}, []);
-
 
   if (loading) {
     return (
@@ -239,10 +177,8 @@ useEffect(() => {
                     Acompañante
                   </div>
                 </th>
+                <th className="table-header-cell">Tipo de Acompañamiento</th>
                 <th className="table-header-cell">
-                  Especialidad
-                </th>
-                <th className="table-header">
                   <div className="header-content">
                     <FileText className="header-icon" />
                     Notas
@@ -254,12 +190,7 @@ useEffect(() => {
                     Fecha
                   </div>
                 </th>
-                <th className="table-header-cell">
-                  Estado
-                </th>
-                <th className="table-header-cell">
-                  Acciones
-                </th>
+                <th className="table-header-cell">Estado</th>
               </tr>
             </thead>
             <tbody className="table-body">
@@ -281,45 +212,15 @@ useEffect(() => {
                     </div>
                   </td>
                   <td className="table-cell">
-                    <div className="companion-name">
-                      {session.first_name_companion} {session.last_name_companion}
-                    </div>
+                    {session.first_name_companion} {session.last_name_companion}
                   </td>
                   <td className="table-cell">
                     <span className="specialty-badge">
-                      {session.companion_specialty}
+                      {session.session_type_name}
                     </span>
                   </td>
                   <td className="table-cell">
-                    {editingSession === session.id ? (
-                      <div className="edit-notes-container">
-                        <textarea
-                          value={editNotes}
-                          onChange={(e) => setEditNotes(e.target.value)}
-                          className="edit-textarea"
-                          rows="3"
-                          placeholder="Añadir notas..."
-                        />
-                        <div className="edit-buttons">
-                          <button
-                            onClick={() => handleSave(session.id)}
-                            className="save-button"
-                          >
-                            Guardar
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="cancel-button"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="notes-content">
-                        {session.notes || 'Sin notas'}
-                      </div>
-                    )}
+                    {session.notes || 'Sin notas'}
                   </td>
                   <td className="table-cell">
                     <div className="date-info">
@@ -336,40 +237,6 @@ useEffect(() => {
                     <span className={`status-badge ${getStatusClass(session.status)}`}>
                       {session.status || 'Completado'}
                     </span>
-                  </td>
-                  <td className="table-cell">
-                    <div className="actions">
-                      <button
-                        onClick={() => handleEdit(session)}
-                        className="action-button edit-button"
-                        title="Editar"
-                      >
-                        <Edit className="action-icon" />
-                      </button>
-                      <div className="comment-dropdown">
-                        <button
-                          className="action-button comment-button"
-                          title="Añadir comentario"
-                        >
-                          <MessageCircle className="action-icon" />
-                        </button>
-                        <div className="comment-menu">
-                          <textarea
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            className="comment-textarea"
-                            rows="3"
-                            placeholder="Añadir comentario..."
-                          />
-                          <button
-                            onClick={() => handleAddComment(session.id)}
-                            className="add-comment-button"
-                          >
-                            Añadir
-                          </button>
-                        </div>
-                      </div>
-                    </div>
                   </td>
                 </tr>
               ))}
@@ -393,7 +260,6 @@ useEffect(() => {
             >
               <ChevronLeft className="pagination-icon" />
             </button>
-            
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
@@ -403,7 +269,6 @@ useEffect(() => {
                 {page}
               </button>
             ))}
-            
             <button
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}

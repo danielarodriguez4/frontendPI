@@ -52,21 +52,48 @@ const StudentTable = ({ onNavigateToProfile }) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSave = () => {
+ const handleSave = async () => {
+    try {
+        const token = localStorage.getItem('token');
+
+        // PATCH al backend
+        await axios.patch(
+            `${process.env.REACT_APP_BACKEND_URL}/student/${editingStudent}`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        // Actualiza la lista local después del éxito
         const updatedStudents = students.map((student) =>
             student.id === editingStudent ? { ...student, ...formData } : student
         );
+
         setStudents(updatedStudents);
-        alert('Estudiante actualizado correctamente');
-        Swal.fire({
-        title: '¡Éxito!',
-        text: 'Estudiante actualizado correctamente',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#28a745'
-        });
         setEditingStudent(null);
-    };
+        Swal.fire({
+            title: '¡Éxito!',
+            text: 'Estudiante actualizado correctamente',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#28a745'
+        });
+    } catch (error) {
+        console.error('Error al actualizar estudiante:', error);
+        Swal.fire({
+            title: 'Error',
+            text: error.response?.data?.message || 'No se pudo actualizar el estudiante',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#d33'
+        });
+    }
+};
+
 
     // Nueva función para navegar al perfil del estudiante
     const handleStudentNameClick = (studentId) => {
