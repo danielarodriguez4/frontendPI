@@ -149,7 +149,7 @@ const AgregarAcompanamiento = () => {
 
   return (
     <div className="form-container">
-      <h2>Añadir Acompañamiento</h2>
+      <h2>Añadir acompañamiento</h2>
       <form onSubmit={handleSubmit}>
         <label>Estudiante:</label>
         <select

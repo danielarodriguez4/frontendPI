@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Edit, MessageCircle, ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText } from 'lucide-react';
 import '../Estilos/TutoringHistoryView.css';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const TutoringHistoryView = () => {
   const [sessions, setSessions] = useState([]);
@@ -17,17 +18,24 @@ const TutoringHistoryView = () => {
 const fetchSessions = async (page = 1) => {
   try {
     setLoading(true);
-    const response = await fetch(
-      `${process.env.REACT_APP_BACKEND_URL}api/v1/session/all?page=${page}&limit=${sessionsPerPage}`
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/all?page=${page}&limit=${sessionsPerPage}`
     );
 
-    if (!response.ok) {
-      throw new Error('Error al cargar las sesiones');
-    }
+    // Mapear los datos del backend al formato esperado por el frontend
+    const mappedSessions = response.data.data.map(session => ({
+      ...session,
+      first_name: session.name,
+      last_name: session.surname,
+      first_name_companion: session.companion_name,
+      last_name_companion: session.companion_surname,
+      companion_specialty: session.companion_speciality,
+      notes: session.session_notes,
+      status: session.status || 'Completado' // valor por defecto si no viene
+    }));
 
-    const data = await response.json();
-    setSessions(data.sessions || data);
-    setTotalPages(Math.ceil((data.total || data.length) / sessionsPerPage));
+    setSessions(mappedSessions);
+    setTotalPages(Math.ceil((response.data.total || mappedSessions.length) / sessionsPerPage));
   } catch (err) {
     Swal.fire({
       title: 'Error',
@@ -46,7 +54,7 @@ const fetchSessions = async (page = 1) => {
   const updateSession = async (sessionId, updates) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}api/v1/session/${sessionId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session${sessionId}`,
         {
           method: 'PUT',
           headers: {
@@ -153,7 +161,7 @@ const fetchSessions = async (page = 1) => {
       <div className="tutoring-history-card">
         {/* Header */}
         <div className="header">
-          <h1 className="header-title">Historial de Tutorías</h1>
+          <h1 className="header-title">Historial de acompañamientos</h1>
           <p className="header-subtitle">Gestiona y revisa las sesiones de tutoría</p>
         </div>
 
@@ -199,7 +207,7 @@ const fetchSessions = async (page = 1) => {
                 <th className="table-header-cell">
                   Especialidad
                 </th>
-                <th className="table-header-cell">
+                <th className="table-header">
                   <div className="header-content">
                     <FileText className="header-icon" />
                     Notas
