@@ -6,10 +6,11 @@ import './index.css';
 import Botones from './Componentes/Botones';
 import StudentTable from './Componentes/StudentTable';
 import UserInfoBar from './Componentes/UserInfoBar';
-import DashboardMetrica from './Componentes/DashboardMetrica';
 import AgregarAcompañamiento from './Componentes/AgregarAcompanamiento';
 import StudentProfile from './Componentes/StudentProfile';
 import Swal from 'sweetalert2';
+import TutoringHistoryView from './Componentes/TutoringHistoryView';
+import './Estilos/TutoringHistoryView.css';
 
 /*El back debe regresar en esta sección el nombre y rol de la persona que ingresó. De momento, se hace de forma local */
 const ContactForm = () => {
@@ -306,7 +307,7 @@ const ContactForm = () => {
                     setSelectedStudentId(studentId);
                     setCurrentView('perfil');
                     }}/> )}
-                {currentView === 'metricas' && <DashboardMetrica />} {/* Vista de métricas */}
+                {currentView === 'acompanamientos' && <TutoringHistoryView />} {/* Vista de acompañamientos */}
                 {currentView === 'acompañar' && <AgregarAcompañamiento />} {/* Vista de acompañamiento */}
                 {currentView === 'perfil' && selectedStudentId && (<StudentProfile studentId={selectedStudentId} />)}
             </div>

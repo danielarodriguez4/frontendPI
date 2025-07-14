@@ -8,7 +8,7 @@ function Botones({ onNavigate }) {
     text1: 'Registrar datos', 
     text2: 'Editar datos',
     text3: 'Añadir acompañamiento',
-    text4: 'Ver métricas',
+    text4: 'Acompañamientos',
   };
 
   return (
@@ -41,11 +41,11 @@ function Botones({ onNavigate }) {
           {buttonData.text3}
         </Button>
 
-        <img src="metricas.png" className="images" alt="metricas" />
+        <img src="metricas.png" className="images" alt="acompanamientos" />
         <Button
           className="button" 
           variant="contained"
-          onClick={() => onNavigate('metricas')}
+          onClick={() => onNavigate('acompanamientos')}
         >
           {buttonData.text4}
         </Button>
