@@ -33,7 +33,7 @@ const ContactForm = () => {
         apartment: '',
         municipality: '',
         semester: '',
-        university_id: ''
+        id_university: ''
     });
 
     const [loading, setLoading] = useState(false);
@@ -52,11 +52,11 @@ const ContactForm = () => {
         setLoading(true);
         const token = localStorage.getItem('jwt');
 
-        let universityId = formData.university_id;
-        if (universityId === 'Universidad de Antioquia') {
-            universityId = '685c180f0d2362de34ec5721';
-        } else if (universityId === 'Universidad Nacional') {
-            universityId = '685d566340a71701efb087a8';
+        let id_university = formData.id_university;
+        if (id_university === 'Universidad de Antioquia') {
+            id_university = '685c180f0d2362de34ec5721';
+        } else if (id_university === 'Universidad Nacional') {
+            id_university = '685d566340a71701efb087a8';
         }
 
         const fullAddress = `${formData.streetType} ${formData.streetNumber} #${formData.buildingNumber}` +
@@ -72,7 +72,7 @@ const ContactForm = () => {
             institution_email: formData.institution_email,
             residence_address: fullAddress,
             semester: parseInt(formData.semester, 10),
-            university_id: universityId
+            id_university: id_university
         };
 
         try {
@@ -116,7 +116,7 @@ const ContactForm = () => {
             apartment: '',
             municipality: '',
             semester: '',
-            university_id: ''
+           id_university: ''
         });
     } catch (error) {
         console.error('Error al enviar los datos:', error);
@@ -296,7 +296,7 @@ const ContactForm = () => {
 
                             <div>
                                 <label>Universidad <span className="required-asterisk">*</span></label>
-                                <select name="university_id" value={formData.university_id} onChange={handleChange} required>
+                                <select name="id_university" value={formData.id_university} onChange={handleChange} required>
                                     <option value="">Seleccione</option>
                                     <option value="Universidad de Antioquia">Universidad de Antioquia</option>
                                     <option value="Universidad Nacional">Universidad Nacional</option>
