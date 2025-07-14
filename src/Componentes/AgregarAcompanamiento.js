@@ -145,7 +145,7 @@ const AgregarAcompanamiento = () => {
       console.log('Datos enviados al backend:', backendData);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session`, 
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/`, 
         backendData, 
         {
           headers: {
