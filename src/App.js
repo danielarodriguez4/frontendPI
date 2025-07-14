@@ -49,10 +49,16 @@ const ContactForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const token = localStorage.getItem('jwt');
 
-        /*Envía todos los detalles de la dirección del estudiante como un solo string al back. Se hace con la finalidad de
-        mantener un solo formato de direcciones */
+        let universityId = formData.university_id;
+        if (universityId === 'Universidad de Antioquia') {
+            universityId = '685c180f0d2362de34ec5721';
+        } else if (universityId === 'Universidad Nacional') {
+            universityId = '685d566340a71701efb087a8';
+        }
+
         const fullAddress = `${formData.streetType} ${formData.streetNumber} #${formData.buildingNumber}` +
             (formData.apartment ? ` Apt ${formData.apartment}` : '') +
             `, ${formData.municipality}`;
@@ -66,84 +72,89 @@ const ContactForm = () => {
             institution_email: formData.institution_email,
             residence_address: fullAddress,
             semester: parseInt(formData.semester, 10),
-            university_id: formData.university_id
+            university_id: universityId
         };
 
-        /*Endpoint al que se envía la información registrada */
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student/`, 
-                dataToSend, 
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
+            // tu axios.post() ...
+        } catch (error) {
+            // tu manejo de error ...
+        }
 
-            console.log('Token JWT:', token);
-            console.log('Usuario creado exitosamente:', response.data);
-            Swal.fire({
+    try {
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student/`, 
+            dataToSend, 
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        console.log('Token JWT:', token);
+        console.log('Usuario creado exitosamente:', response.data);
+        Swal.fire({
             title: '¡Éxito!',
-            text: 'Datos creados exitosamente',
+            text: 'Datos guardados exitosamente',
             icon: 'success',
             confirmButtonText: 'Aceptar',
             confirmButtonColor: '#28a745'
         });
 
-            // Limpiar el formulario después del envío exitoso
-            setFormData({
-                id_number: '',
-                first_name: '',
-                last_name: '',
-                phone_number: '',
-                email: '',
-                institution_email: '',
-                streetType: '',
-                streetNumber: '',
-                buildingNumber: '',
-                apartment: '',
-                municipality: '',
-                semester: '',
-                university_id: ''
-            });
-        } catch (error) {
-            console.error('Error al enviar los datos:', error);
-            Swal.fire({
+        // Limpiar el formulario después del envío exitoso
+        setFormData({
+            id_number: '',
+            first_name: '',
+            last_name: '',
+            phone_number: '',
+            email: '',
+            institution_email: '',
+            streetType: '',
+            streetNumber: '',
+            buildingNumber: '',
+            apartment: '',
+            municipality: '',
+            semester: '',
+            university_id: ''
+        });
+    } catch (error) {
+        console.error('Error al enviar los datos:', error);
+        Swal.fire({
             title: 'Error',
             text: 'Error al enviar los datos',
             icon: 'error',
             confirmButtonText: 'Aceptar',
             confirmButtonColor: '#d33'
         });
-            
-            // Manejo específico del error
-            if (error.response) {
-                console.error('Error del servidor:', error.response.data);
-                alert(`Error del servidor: ${error.response.status} - ${error.response.data.message || 'Error desconocido'}`);
-            } else if (error.request) {
-                console.error('No se recibió respuesta del servidor');
-                Swal.fire({
+        
+        // Manejo específico del error
+        if (error.response) {
+            console.error('Error del servidor:', error.response.data);
+            alert(`Error del servidor: ${error.response.status} - ${error.response.data.message || 'Error desconocido'}`);
+        } else if (error.request) {
+            console.error('No se recibió respuesta del servidor');
+            Swal.fire({
                 title: 'Error',
                 text: 'No hay conexión',
                 icon: 'error',
                 confirmButtonText: 'Aceptar',
                 confirmButtonColor: '#d33'
-             });
-            } else {
-                console.error('Error al configurar la petición:', error.message);
-                Swal.fire({
+            });
+        } else {
+            console.error('Error al configurar la petición:', error.message);
+            Swal.fire({
                 title: 'Error',
                 text: 'No se pudo configurar',
                 icon: 'error',
                 confirmButtonText: 'Aceptar',
                 confirmButtonColor: '#d33'
             });
-            }
         }
+    }
 
-        setLoading(false);
-    };
+    setLoading(false);
+};
 
     const handleNavigate = (view) => {
         setCurrentView(view);
