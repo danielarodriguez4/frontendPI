@@ -16,7 +16,6 @@ Habilitar un módulo para documentar las intervenciones de la Fundación Antivir
 
 ## Técnicas y herramientas ## 
 - React.js
-- JWT 
 - JavaScript
 
 ## Estructura del proyecto
@@ -34,13 +33,14 @@ Habilitar un módulo para documentar las intervenciones de la Fundación Antivir
   ├── src
   │   ├── Componentes
   │       ├── Botones.js
-  │       ├── DashboardMetrica.js
+  │       ├── TutoringHistoryView.js
   │       ├── setupTest.js
   │       ├── StudentTable.js
   │       ├── UserInfoBar.js
   │   ├── Estilos
   │       ├── Botones.css
   │       ├── Datoscontacto.css
+  │       ├── TutoringHistoryView.css
   │       ├── StudentTable.css
   │       ├── UserInfoBar.css
   ├── Dockerfile
