@@ -53,8 +53,6 @@ const StudentTable = ({ onNavigateToProfile }) => {
     };
 
     const handleSave = () => {
-        // Lógica para guardar los cambios en el backend
-        // Después de guardar, actualiza el estado local y sale del modo edición
         const updatedStudents = students.map((student) =>
             student.id === editingStudent ? { ...student, ...formData } : student
         );

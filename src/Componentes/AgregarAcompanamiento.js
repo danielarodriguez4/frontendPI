@@ -93,7 +93,7 @@ const AgregarAcompanamiento = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-types/all`, // Ajusta esta URL según tu API
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`, 
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -111,7 +111,6 @@ const AgregarAcompanamiento = () => {
       setSessionTypes(filteredSessionTypes);
     } catch (error) {
       console.error('Error fetching session types:', error);
-      // Si no hay endpoint para tipos de sesión, usar datos del CSV como fallback
       const fallbackSessionTypes = [
         { id: '686090b367343360f5acecaa', name: 'Asesoría Sociopedagógica (ASP)' },
         { id: '686090d467343360f5acecab', name: 'Tutoría' },
@@ -135,13 +134,12 @@ const AgregarAcompanamiento = () => {
     try {
       const token = localStorage.getItem('token');
       
-      // Formatear los datos según lo que espera el backend
       const backendData = {
         id_student: formData.estudiante,
         id_companion: formData.profesional,
         id_session_type: formData.tipo,
         notes: formData.observaciones,
-        date: `${formData.fecha}T${formData.hora}:00.000Z` // Formato ISO con fecha y hora
+        date: `${formData.fecha}T${formData.hora}`
       };
 
       console.log('Datos enviados al backend:', backendData);

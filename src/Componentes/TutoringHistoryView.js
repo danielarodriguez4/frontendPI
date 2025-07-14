@@ -65,7 +65,7 @@ const fetchSessions = async (page = 1) => {
       );
       
       if (!response.ok) {
-        throw new Error('Error al actualizar la sesión');
+        throw new Error('Sesión actualizada');
       }
       
       // Recargar las sesiones después de actualizar
@@ -140,6 +140,39 @@ const fetchSessions = async (page = 1) => {
     setNewComment('');
   };
 
+  // Cargar tipos de sesión
+  const [sessionTypes, setSessionTypes] = useState([]);
+
+useEffect(() => {
+  const fetchSessionTypes = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Tipos de sesión obtenidos:', response.data.data);
+      setSessionTypes(response.data.data || []);
+    } catch (error) {
+      console.error('Error al cargar tipos de sesión:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudieron cargar los tipos de sesión',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+    }
+  };
+
+  fetchSessionTypes();
+}, []);
+
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -179,10 +212,12 @@ const fetchSessions = async (page = 1) => {
               <option>Cancelado</option>
             </select>
             <select className="filter-select">
-              <option>Todas las especialidades</option>
-              <option>Matemáticas</option>
-              <option>Física</option>
-              <option>Química</option>
+              <option value="">Todas las especialidades</option>
+              {sessionTypes.map((type) => (
+                <option key={type.id} value={type.name}>
+                  {type.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
