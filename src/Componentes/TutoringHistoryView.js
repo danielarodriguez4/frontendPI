@@ -54,7 +54,7 @@ const fetchSessions = async (page = 1) => {
   const updateSession = async (sessionId, updates) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session${sessionId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/${sessionId}`,
         {
           method: 'PUT',
           headers: {

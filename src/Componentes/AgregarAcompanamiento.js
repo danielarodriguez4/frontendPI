@@ -13,10 +13,10 @@ const AgregarAcompanamiento = () => {
     observaciones: '',
   });
 
-  // Estado para almacenar la lista de estudiantes
+  // Estado para almacenar la lista de estudiantes, profesionales y tipos de sesión
   const [students, setStudents] = useState([]);
   const [companions, setCompanions] = useState([]);
-
+  const [sessionTypes, setSessionTypes] = useState([]);
 
   // Función para obtener lista de estudiantes
   const fetchStudents = async () => {
@@ -34,14 +34,12 @@ const AgregarAcompanamiento = () => {
       console.log('Estudiantes obtenidos:', response.data);
       
       // Obtener solo nombre y apellido
-  const filteredStudents = (response.data.data || []).map(student => ({
-    id: student.id,
-    first_name: student.first_name,
-    last_name: student.last_name
-  }));
-  console.log('Respuesta del backend:', response.data);
-
-
+      const filteredStudents = (response.data.data || []).map(student => ({
+        id: student.id,
+        first_name: student.first_name,
+        last_name: student.last_name
+      }));
+      console.log('Respuesta del backend:', response.data);
       
       setStudents(filteredStudents);
     } catch (error) {
@@ -56,38 +54,76 @@ const AgregarAcompanamiento = () => {
     }
   };
 
+  // Función para obtener lista de profesionales
   const fetchCompanions = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/v1/companion/all`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/companion/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    console.log('Profesionales obtenidos:', response.data);
+      console.log('Profesionales obtenidos:', response.data);
 
-    const filteredCompanions = (response.data.data || []).map(companion => ({
-    id: companion.id,
-    first_name: companion.first_name,
-    last_name: companion.last_name
-    }));
+      const filteredCompanions = (response.data.data || []).map(companion => ({
+        id: companion.id,
+        first_name: companion.first_name,
+        last_name: companion.last_name
+      }));
 
-    setCompanions(filteredCompanions);
-  } catch (error) {
-    console.error('Error fetching companions:', error);
-    Swal.fire({
-      title: 'Error',
-      text: 'Error al cargar la lista de profesionales',
-      icon: 'error',
-      confirmButtonText: 'Aceptar',
-      confirmButtonColor: '#d33',
-    });
-  }
-};
+      setCompanions(filteredCompanions);
+    } catch (error) {
+      console.error('Error fetching companions:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al cargar la lista de profesionales',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33',
+      });
+    }
+  };
+
+  // Función para obtener tipos de sesión
+  const fetchSessionTypes = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-types/all`, // Ajusta esta URL según tu API
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Tipos de sesión obtenidos:', response.data);
+
+      const filteredSessionTypes = (response.data.data || []).map(sessionType => ({
+        id: sessionType._id || sessionType.id,
+        name: sessionType.name
+      }));
+
+      setSessionTypes(filteredSessionTypes);
+    } catch (error) {
+      console.error('Error fetching session types:', error);
+      // Si no hay endpoint para tipos de sesión, usar datos del CSV como fallback
+      const fallbackSessionTypes = [
+        { id: '686090b367343360f5acecaa', name: 'Asesoría Sociopedagógica (ASP)' },
+        { id: '686090d467343360f5acecab', name: 'Tutoría' },
+        { id: '686090df67343360f5acecac', name: 'Grupo de estudio' },
+        { id: '686090f367343360f5acecad', name: 'Taller socioemocional' },
+        { id: '6860912167343360f5acecae', name: 'Psicorientación' },
+        { id: '6860912c67343360f5acecaf', name: 'Orientación sociofamiliar' },
+        { id: '6860913867343360f5acecb0', name: 'Orientación a Bienestar' }
+      ];
+      setSessionTypes(fallbackSessionTypes);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -98,9 +134,21 @@ const AgregarAcompanamiento = () => {
     
     try {
       const token = localStorage.getItem('token');
+      
+      // Formatear los datos según lo que espera el backend
+      const backendData = {
+        id_student: formData.estudiante,
+        id_companion: formData.profesional,
+        id_session_type: formData.tipo,
+        notes: formData.observaciones,
+        date: `${formData.fecha}T${formData.hora}:00.000Z` // Formato ISO con fecha y hora
+      };
+
+      console.log('Datos enviados al backend:', backendData);
+
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/session`, 
-        formData, 
+        backendData, 
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -109,7 +157,7 @@ const AgregarAcompanamiento = () => {
         }
       );
 
-      console.log('Creada:', response.data);
+      console.log('Sesión creada:', response.data);
       
       // Alerta de éxito
       Swal.fire({
@@ -131,9 +179,11 @@ const AgregarAcompanamiento = () => {
       });
     } catch (error) {
       console.error('Error:', error);
+      console.error('Error details:', error.response?.data);
+      
       Swal.fire({
         title: 'Error',
-        text: 'Error al registrar el acompañamiento',
+        text: error.response?.data?.message || 'Error al registrar el acompañamiento',
         icon: 'error',
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#d33'
@@ -141,10 +191,11 @@ const AgregarAcompanamiento = () => {
     }
   };
 
-  // Cargar estudiantes al montar el componente
+  // Cargar datos al montar el componente
   useEffect(() => {
     fetchStudents();
     fetchCompanions();
+    fetchSessionTypes();
   }, []);
 
   return (
@@ -174,9 +225,15 @@ const AgregarAcompanamiento = () => {
         <label>Tipo de Acompañamiento:</label>
         <select name="tipo" value={formData.tipo} onChange={handleChange} required>
           <option value="">Seleccione...</option>
-          <option value="Asesoría Sociopedagógica">Asesoría Sociopedagógica</option>
-          <option value="Orientación Sociofamiliar">Orientación Sociofamiliar</option>
-          <option value="Psicología">Psicología</option>
+          {sessionTypes.length > 0 ? (
+            sessionTypes.map((sessionType) => (
+              <option key={sessionType.id} value={sessionType.id}>
+                {sessionType.name}
+              </option>
+            ))
+          ) : (
+            <option value="" disabled>Cargando tipos de sesión...</option>
+          )}
         </select>
 
         <label>Profesional Responsable:</label>
@@ -198,7 +255,6 @@ const AgregarAcompanamiento = () => {
             <option value="" disabled>Cargando profesionales...</option>
           )}
         </select>
-
 
         <label>Fecha:</label>
         <input 
