@@ -71,7 +71,7 @@ const ContactForm = () => {
 
         /*Endpoint al que se envía la información registrada */
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student`, 
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student/`, 
                 dataToSend, 
                 {
                     headers: {
