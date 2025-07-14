@@ -59,11 +59,11 @@ const StudentTable = ({ onNavigateToProfile }) => {
         setStudents(updatedStudents);
         alert('Estudiante actualizado correctamente');
         Swal.fire({
-        title: 'Error',
+        title: '¡Éxito!',
         text: 'Estudiante actualizado correctamente',
-        icon: 'error',
+        icon: 'success',
         confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d33'
+        confirmButtonColor: '#28a745'
         });
         setEditingStudent(null);
     };

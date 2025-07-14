@@ -81,15 +81,14 @@ const ContactForm = () => {
                 }
             );
 
-            alert('Datos guardados con éxito');
             console.log('Token JWT:', token);
             console.log('Usuario creado exitosamente:', response.data);
             Swal.fire({
-            title: 'Error',
+            title: '¡Éxito!',
             text: 'Datos creados exitosamente',
-            icon: 'error',
+            icon: 'success',
             confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#d33'
+            confirmButtonColor: '#28a745'
         });
 
             // Limpiar el formulario después del envío exitoso
