@@ -96,7 +96,7 @@ const StudentTable = ({ onNavigateToProfile }) => {
         const value = e.target.value;
         setSearchIdNumber(value);
         const filtered = students.filter((student) =>
-            student.id_number?.toString().includes(value)
+            student.number_id?.toString().includes(value)
         );
         setFilteredStudents(filtered);
         setCurrentPage(1);
@@ -133,7 +133,6 @@ const StudentTable = ({ onNavigateToProfile }) => {
                     <table className="sessions-table">
                         <thead className="table-header">
                             <tr>
-                                <th className="table-header-cell">ID</th>
                                 <th className="table-header-cell">Cédula</th>
                                 <th className="table-header-cell">Nombre</th>
                                 <th className="table-header-cell">Apellido</th>
@@ -152,8 +151,7 @@ const StudentTable = ({ onNavigateToProfile }) => {
                             {currentStudents.map((student) =>
                                 editingStudent === student.id ? (
                                     <tr key={student.id} className="table-row">
-                                        <td className="table-cell"><input name="id" value={formData.id || ''} onChange={handleChange} disabled /></td>
-                                        <td className="table-cell"><input name="id_number" value={formData.id_number || ''} onChange={handleChange} /></td>
+                                        <td className="table-cell"><input name="number_id" value={formData.number_id || ''} onChange={handleChange} /></td>
                                         <td className="table-cell"><input name="first_name" value={formData.first_name || ''} onChange={handleChange} /></td>
                                         <td className="table-cell"><input name="last_name" value={formData.last_name || ''} onChange={handleChange} /></td>
                                         <td className="table-cell"><input name="institution_email" value={formData.institution_email || ''} onChange={handleChange} /></td>
@@ -183,8 +181,7 @@ const StudentTable = ({ onNavigateToProfile }) => {
                                     </tr>
                                 ) : (
                                     <tr key={student.id} className="table-row">
-                                        <td className="table-cell">{student.id}</td>
-                                        <td className="table-cell">{student.id_number}</td>
+                                        <td className="table-cell">{student.number_id}</td>
                                         <td className="table-cell">{student.first_name}</td>
                                         <td className="table-cell">{student.last_name}</td>
                                         <td className="table-cell">{student.institution_email}</td>
