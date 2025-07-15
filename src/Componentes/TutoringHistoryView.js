@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText, X, BarChart3 } from 'lucide-react';
 import '../Estilos/TutoringHistoryView.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -13,6 +13,12 @@ const TutoringHistoryView = () => {
   const sessionsPerPage = 5;
 
   const [sessionTypes, setSessionTypes] = useState([]);
+  
+  // Estados para el modal de estadísticas
+  const [showStudentModal, setShowStudentModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentStats, setStudentStats] = useState([]);
+  const [loadingStats, setLoadingStats] = useState(false);
 
   // Cargar tipos de sesión
   useEffect(() => {
@@ -47,29 +53,48 @@ const TutoringHistoryView = () => {
   const fetchSessions = async (page = 1) => {
     try {
       setLoading(true);
+      const token = localStorage.getItem('token');
+      
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/all?page=${page}&limit=${sessionsPerPage}`
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/all?page=${page}&limit=${sessionsPerPage}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
+      console.log('🔍 DEBUGGING - Respuesta completa:', response.data);
+      console.log('🔍 DEBUGGING - Datos de sesiones:', response.data.data);
+      console.log('🔍 DEBUGGING - Primera sesión completa:', response.data.data?.[0]);
+
+      // Mapear las sesiones usando los campos correctos del API
       const mappedSessions = response.data.data.map(session => ({
         ...session,
-        first_name: session.name,
-        last_name: session.surname,
-        first_name_companion: session.companion_name,
-        last_name_companion: session.companion_surname,
-        companion_specialty: session.companion_speciality,
+        // Usar los campos que funcionaron en el primer código
+        first_name: session.name || 'N/A',
+        last_name: session.surname || 'N/A',
+        first_name_companion: session.companion_name || 'N/A',
+        last_name_companion: session.companion_surname || 'N/A',
+        companion_specialty: session.companion_speciality || 'N/A',
         session_type_name: session.session_type_name || 
           sessionTypes.find(type => type.id === session.id_session_type)?.name || 'No definido',
-        notes: session.session_notes,
+        notes: session.session_notes || 'Sin notas',
         status: session.status || 'Completado'
       }));
 
+      console.log('🔍 DEBUGGING - Sesiones mapeadas:', mappedSessions);
+      console.log('🔍 DEBUGGING - Primera sesión mapeada:', mappedSessions[0]);
+
       setSessions(mappedSessions);
       setTotalPages(Math.ceil((response.data.total || mappedSessions.length) / sessionsPerPage));
+      
     } catch (err) {
+      console.error('❌ Error al cargar sesiones:', err);
+      setError(err.message);
       Swal.fire({
         title: 'Error',
-        text: err.message,
+        text: err.message || 'Error al cargar las sesiones',
         icon: 'error',
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#d33'
@@ -77,6 +102,103 @@ const TutoringHistoryView = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Función para obtener estadísticas del estudiante
+  const fetchStudentStats = async (studentId, studentName) => {
+    try {
+      setLoadingStats(true);
+      const token = localStorage.getItem('token');
+      
+      // Usar el endpoint existente para obtener sesiones del estudiante
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/student/${studentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const studentSessions = response.data.data || [];
+      
+      // Agrupar por tipo de sesión y contar
+      const statsMap = {};
+      studentSessions.forEach(session => {
+        // Usar id_session_type según tu estructura
+        const sessionTypeName = sessionTypes.find(type => type.id === session.id_session_type)?.name || 'No definido';
+        
+        if (statsMap[sessionTypeName]) {
+          statsMap[sessionTypeName]++;
+        } else {
+          statsMap[sessionTypeName] = 1;
+        }
+      });
+      
+      // Convertir a array para mostrar, ordenado por cantidad descendente
+      const statsArray = Object.entries(statsMap)
+        .map(([name, count]) => ({
+          session_type: name,
+          total_sessions: count
+        }))
+        .sort((a, b) => b.total_sessions - a.total_sessions);
+      
+      setStudentStats(statsArray);
+      
+    } catch (error) {
+      console.error('Error al cargar estadísticas:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudieron cargar las estadísticas del estudiante',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+      setStudentStats([]);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  // Manejar click en estudiante
+  const handleStudentClick = (session) => {
+    console.log('Sesión clickeada:', session);
+    
+    // Usar id_student según tu estructura de datos
+    const studentId = session.id_student;
+    const firstName = session.first_name || 'N/A';
+    const lastName = session.last_name || 'N/A';
+    
+    if (!studentId) {
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo identificar el ID del estudiante',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+    
+    const student = {
+      id: studentId,
+      name: `${firstName} ${lastName}`,
+      first_name: firstName,
+      last_name: lastName
+    };
+    
+    console.log('Estudiante seleccionado:', student);
+    
+    setSelectedStudent(student);
+    setShowStudentModal(true);
+    fetchStudentStats(student.id, student.name);
+  };
+
+  // Cerrar modal
+  const closeModal = () => {
+    setShowStudentModal(false);
+    setSelectedStudent(null);
+    setStudentStats([]);
   };
 
   useEffect(() => {
@@ -197,7 +319,11 @@ const TutoringHistoryView = () => {
               {sessions.map((session, index) => (
                 <tr key={session.id || index} className="table-row">
                   <td className="table-cell">
-                    <div className="student-info">
+                    <div 
+                      className="student-info clickable-student"
+                      onClick={() => handleStudentClick(session)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <div className="student-avatar">
                         <span className="avatar-text">
                           {(session.first_name || 'N')[0]}{(session.last_name || 'N')[0]}
@@ -279,6 +405,65 @@ const TutoringHistoryView = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de estadísticas del estudiante */}
+      {showStudentModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">
+                <BarChart3 className="modal-icon" />
+                Estadísticas de {selectedStudent?.name}
+              </h2>
+              <button className="modal-close" onClick={closeModal}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              {loadingStats ? (
+                <div className="loading-container">
+                  <div className="loading-spinner"></div>
+                  <p>Cargando estadísticas...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="stats-summary">
+                    <h3>Resumen de Asesorías</h3>
+                    <p>Total de sesiones: {studentStats.reduce((sum, stat) => sum + stat.total_sessions, 0)}</p>
+                  </div>
+                  
+                  <div className="stats-table">
+                    <h4>Discriminado por tipo de asesoría:</h4>
+                    <table className="stats-table-content">
+                      <thead>
+                        <tr>
+                          <th>Tipo de Asesoría</th>
+                          <th>Cantidad</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {studentStats.map((stat, index) => (
+                          <tr key={index}>
+                            <td>{stat.session_type}</td>
+                            <td className="stats-count">{stat.total_sessions}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {studentStats.length === 0 && (
+                    <div className="no-stats">
+                      <p>No se encontraron estadísticas para este estudiante.</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

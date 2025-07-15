@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import '../Estilos/Acompanamiento.css';
@@ -13,7 +13,14 @@ const AgregarAcompanamiento = () => {
     observaciones: '',
   });
 
-  // Estado para almacenar la lista de estudiantes, profesionales y tipos de sesión
+  // Estados para el autocompletado de estudiantes
+  const [studentQuery, setStudentQuery] = useState('');
+  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [showStudentDropdown, setShowStudentDropdown] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const studentInputRef = useRef(null);
+
+  // Estados para listas
   const [students, setStudents] = useState([]);
   const [companions, setCompanions] = useState([]);
   const [sessionTypes, setSessionTypes] = useState([]);
@@ -33,13 +40,12 @@ const AgregarAcompanamiento = () => {
       
       console.log('Estudiantes obtenidos:', response.data);
       
-      // Obtener solo nombre y apellido
       const filteredStudents = (response.data.data || []).map(student => ({
         id: student.id,
         first_name: student.first_name,
-        last_name: student.last_name
+        last_name: student.last_name,
+        fullName: `${student.first_name} ${student.last_name}`
       }));
-      console.log('Respuesta del backend:', response.data);
       
       setStudents(filteredStudents);
     } catch (error) {
@@ -124,12 +130,67 @@ const AgregarAcompanamiento = () => {
     }
   };
 
+  // Función para filtrar estudiantes basado en la búsqueda
+  const handleStudentInputChange = (e) => {
+    const query = e.target.value;
+    setStudentQuery(query);
+    
+    if (query.length > 0) {
+      const filtered = students.filter(student =>
+        student.fullName.toLowerCase().includes(query.toLowerCase()) ||
+        student.first_name.toLowerCase().includes(query.toLowerCase()) ||
+        student.last_name.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredStudents(filtered);
+      setShowStudentDropdown(true);
+    } else {
+      setFilteredStudents([]);
+      setShowStudentDropdown(false);
+      setSelectedStudent(null);
+      setFormData(prev => ({ ...prev, estudiante: '' }));
+    }
+  };
+
+  // Función para seleccionar un estudiante
+  const handleStudentSelect = (student) => {
+    setSelectedStudent(student);
+    setStudentQuery(student.fullName);
+    setShowStudentDropdown(false);
+    setFormData(prev => ({ ...prev, estudiante: student.id }));
+  };
+
+  // Función para manejar el clic fuera del dropdown
+  const handleClickOutside = (event) => {
+    if (studentInputRef.current && !studentInputRef.current.contains(event.target)) {
+      setShowStudentDropdown(false);
+    }
+  };
+
+  // Effect para manejar clics fuera del componente
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!selectedStudent) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor selecciona un estudiante válido',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
     
     try {
       const token = localStorage.getItem('token');
@@ -175,6 +236,9 @@ const AgregarAcompanamiento = () => {
         hora: '',
         observaciones: '',
       });
+      setStudentQuery('');
+      setSelectedStudent(null);
+      setShowStudentDropdown(false);
     } catch (error) {
       console.error('Error:', error);
       console.error('Error details:', error.response?.data);
@@ -201,24 +265,54 @@ const AgregarAcompanamiento = () => {
       <h2>Añadir acompañamiento</h2>
       <form onSubmit={handleSubmit}>
         <label>Estudiante:</label>
-        <select
-          name="estudiante"
-          value={formData.estudiante}
-          onChange={handleChange}
-          required
-          style={{ minHeight: '40px', padding: '8px' }}
-        >
-          <option value="">Seleccione un estudiante</option>
-          {students.length > 0 ? (
-            students.map((student) => (
-              <option key={student.id} value={student.id}>
-                {student.first_name} {student.last_name}
-              </option>
-            ))
-          ) : (
-            <option value="" disabled>Cargando estudiantes...</option>
+        <div className="autocomplete-container" ref={studentInputRef}>
+          <input
+            type="text"
+            value={studentQuery}
+            onChange={handleStudentInputChange}
+            placeholder="Buscar estudiante por nombre..."
+            required
+            style={{ 
+              minHeight: '40px', 
+              padding: '8px',
+              width: '100%',
+              border: selectedStudent ? '2px solid #28a745' : '1px solid #ccc',
+              borderRadius: '4px'
+            }}
+          />
+          {showStudentDropdown && filteredStudents.length > 0 && (
+            <div className="autocomplete-dropdown">
+              {filteredStudents.map((student) => (
+                <div
+                  key={student.id}
+                  className="autocomplete-item"
+                  onClick={() => handleStudentSelect(student)}
+                  style={{
+                    padding: '10px',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid #eee',
+                    backgroundColor: '#fff'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#f0f0f0';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#fff';
+                  }}
+                >
+                  {student.fullName}
+                </div>
+              ))}
+            </div>
           )}
-        </select>
+          {showStudentDropdown && filteredStudents.length === 0 && studentQuery.length > 0 && (
+            <div className="autocomplete-dropdown">
+              <div className="autocomplete-item" style={{ padding: '10px', color: '#666' }}>
+                No se encontraron estudiantes
+              </div>
+            </div>
+          )}
+        </div>
 
         <label>Tipo de Acompañamiento:</label>
         <select name="tipo" value={formData.tipo} onChange={handleChange} required>
