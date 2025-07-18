@@ -158,10 +158,10 @@ const StudentTable = ({ onNavigateToProfile }) => {
     const currentStudents = filteredStudents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     return (
-        <div className="tutoring-history-container">
-            <div className="tutoring-history-card">
+        <div className="tabla-estudiantes">
+            <div className="tabla-container">
                 <div className="header">
-                    <h2 className="header-title" style={{ color: 'white' }}>Estudiantes registrados</h2>
+                    <h2 className="titulo-tabla">Estudiantes registrados</h2>
                     <p className="header-subtitle">Listado de estudiantes con opción de edición y búsqueda por cédula</p>
                 </div>
 
@@ -181,39 +181,39 @@ const StudentTable = ({ onNavigateToProfile }) => {
                 </div>
 
                 <div className="table-container">
-                    <table className="sessions-table">
-                        <thead className="table-header">
+                    <table>
+                        <thead>
                             <tr>
-                                <th className="table-header-cell">Cédula</th>
-                                <th className="table-header-cell">Nombre</th>
-                                <th className="table-header-cell">Apellido</th>
-                                <th className="table-header-cell">Correo institucional</th>
-                                <th className="table-header-cell">Correo personal</th>
-                                <th className="table-header-cell">Semestre</th>
-                                <th className="table-header-cell">Universidad</th>
-                                <th className="table-header-cell">Teléfono</th>
-                                <th className="table-header-cell">Dirección</th>
-                                <th className="table-header-cell">Creación</th>
-                                <th className="table-header-cell">Actualización</th>
-                                <th className="table-header-cell">Acciones</th>
+                                <th>Cédula</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Correo institucional</th>
+                                <th>Correo personal</th>
+                                <th>Semestre</th>
+                                <th>Universidad</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>Creación</th>
+                                <th>Actualización</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="table-body">
+                        <tbody>
                             {currentStudents.map((student) =>
                                 editingStudent === student.id ? (
-                                    <tr key={student.id} className="table-row">
-                                        <td className="table-cell"><input name="number_id" value={formData.number_id || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell"><input name="first_name" value={formData.first_name || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell"><input name="last_name" value={formData.last_name || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell"><input name="institution_email" value={formData.institution_email || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell"><input name="email" value={formData.email || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell"><input name="semester" value={formData.semester || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell">{universityNames[student.id_university] || student.id_university}</td>
-                                        <td className="table-cell"><input name="phone_number" value={formData.phone_number || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell"><input name="residence_address" value={formData.residence_address || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell"><input name="created_at" value={formatDateTime(formData.created_at)} onChange={handleChange} disabled /></td>
-                                        <td className="table-cell"><input name="updated_at" value={formatDateTime(formData.updated_at)} onChange={handleChange} disabled /></td>
-                                        <td className="table-cell actions">
+                                    <tr key={student.id}>
+                                        <td><input name="number_id" value={formData.number_id || ''} onChange={handleChange} /></td>
+                                        <td><input name="first_name" value={formData.first_name || ''} onChange={handleChange} /></td>
+                                        <td><input name="last_name" value={formData.last_name || ''} onChange={handleChange} /></td>
+                                        <td><input name="institution_email" value={formData.institution_email || ''} onChange={handleChange} /></td>
+                                        <td><input name="email" value={formData.email || ''} onChange={handleChange} /></td>
+                                        <td><input name="semester" value={formData.semester || ''} onChange={handleChange} /></td>
+                                        <td>{universityNames[student.id_university] || student.id_university}</td>
+                                        <td><input name="phone_number" value={formData.phone_number || ''} onChange={handleChange} /></td>
+                                        <td><input name="residence_address" value={formData.residence_address || ''} onChange={handleChange} /></td>
+                                        <td><input name="created_at" value={formatDateTime(formData.created_at)} onChange={handleChange} disabled /></td>
+                                        <td><input name="updated_at" value={formatDateTime(formData.updated_at)} onChange={handleChange} disabled /></td>
+                                        <td className="acciones">
                                             <Button onClick={handleSave} color="success" variant="contained" size="small" style={{ marginRight: 5 }}>
                                                 <SaveIcon />
                                             </Button>
@@ -223,19 +223,19 @@ const StudentTable = ({ onNavigateToProfile }) => {
                                         </td>
                                     </tr>
                                 ) : (
-                                    <tr key={student.id} className="table-row">
-                                        <td className="table-cell">{student.number_id}</td>
-                                        <td className="table-cell">{student.first_name}</td>
-                                        <td className="table-cell">{student.last_name}</td>
-                                        <td className="table-cell">{student.institution_email}</td>
-                                        <td className="table-cell">{student.email}</td>
-                                        <td className="table-cell">{student.semester}</td>
-                                        <td className="table-cell">{universityNames[student.id_university] || student.id_university}</td>
-                                        <td className="table-cell">{student.phone_number}</td>
-                                        <td className="table-cell">{student.residence_address}</td>
-                                        <td className="table-cell">{formatDateTime(student.created_at)}</td>
-                                        <td className="table-cell">{formatDateTime(student.updated_at)}</td>
-                                        <td className="table-cell actions">
+                                    <tr key={student.id}>
+                                        <td>{student.number_id}</td>
+                                        <td>{student.first_name}</td>
+                                        <td>{student.last_name}</td>
+                                        <td>{student.institution_email}</td>
+                                        <td>{student.email}</td>
+                                        <td>{student.semester}</td>
+                                        <td>{universityNames[student.id_university] || student.id_university}</td>
+                                        <td>{student.phone_number}</td>
+                                        <td>{student.residence_address}</td>
+                                        <td>{formatDateTime(student.created_at)}</td>
+                                        <td>{formatDateTime(student.updated_at)}</td>
+                                        <td className="acciones">
                                             <Button onClick={() => handleEditClick(student)} variant="contained" size="small" color="primary">
                                                 <EditIcon />
                                             </Button>
@@ -260,7 +260,6 @@ const StudentTable = ({ onNavigateToProfile }) => {
                             disabled={currentPage === 1}
                         >
                             Anterior
-                            
                         </button>
                         <button
                             className="pagination-button pagination-next"

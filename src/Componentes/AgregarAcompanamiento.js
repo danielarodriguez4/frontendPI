@@ -371,7 +371,6 @@ const AgregarAcompanamiento = () => {
           name="observaciones"
           value={formData.observaciones}
           onChange={handleChange}
-          placeholder="Escriba aquí las observaciones sobre el acompañamiento (opcional)"
           rows="4"
           className="observaciones-textarea"
         />

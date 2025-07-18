@@ -5,7 +5,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import '../Estilos/HistorialAsesorias.css';
+import '../Estilos/HistorialAsesorias.css'; 
 import Swal from 'sweetalert2';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -14,6 +14,9 @@ const HistorialAsesorias = ({ estudianteId, onVolver }) => {
     const [historial, setHistorial] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(1);
+    const perPage = 10; // Número de asesorías por página
+
 
     useEffect(() => {
         const fetchHistorial = async () => {
@@ -21,14 +24,13 @@ const HistorialAsesorias = ({ estudianteId, onVolver }) => {
                 setLoading(true);
                 const token = localStorage.getItem('jwt');
                 
-                const response = await axios.get(
-                    `${API_URL}/asesorias/estudiante/${estudianteId}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        }
-                    }
-                );
+            const response = await axios.get(
+            `${API_URL}/asesorias/estudiante/${estudianteId}?page=${page}&limit=5`,
+            {
+                headers: { Authorization: `Bearer ${token}` }
+            }
+            );
+
 
                 if (response.data.success) {
                     setHistorial(response.data.data);
