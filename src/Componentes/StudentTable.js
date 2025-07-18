@@ -12,9 +12,38 @@ const ITEMS_PER_PAGE = 10;
 
 const StudentTable = ({ onNavigateToProfile }) => {
     const universityNames = {
-    '685c180f0d2362de34ec5721': 'Universidad de Antioquia',
-    '685d566340a71701efb087a8': 'Universidad Nacional'
+        '685c180f0d2362de34ec5721': 'Universidad de Antioquia',
+        '685d566340a71701efb087a8': 'Universidad Nacional'
     };
+    
+    // Función para formatear la fecha a solo hora, minutos y segundos
+    const formatDateTime = (dateTimeString) => {
+        if (!dateTimeString) return '';
+        
+        try {
+            const date = new Date(dateTimeString);
+            // Formatear solo la hora en formato HH:MM:SS
+            const timeString = date.toLocaleTimeString('es-CO', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false // Formato 24 horas
+            });
+            
+            // También incluir la fecha en formato legible
+            const dateString = date.toLocaleDateString('es-CO', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+            
+            return `${dateString} ${timeString}`;
+        } catch (error) {
+            console.error('Error al formatear fecha:', error);
+            return dateTimeString;
+        }
+    };
+
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
     const [editingStudent, setEditingStudent] = useState(null);
@@ -42,6 +71,24 @@ const StudentTable = ({ onNavigateToProfile }) => {
         };
         fetchStudents();
     }, []);
+
+    // Nuevo useEffect para manejar el filtrado
+    useEffect(() => {
+        if (searchIdNumber.trim() === '') {
+            setFilteredStudents(students);
+        } else {
+            const filtered = students.filter((student) => {
+                const studentId = student.number_id;
+                // Verificar que el number_id existe y no es null/undefined/empty
+                if (!studentId || studentId.trim() === '') {
+                    return false;
+                }
+                return studentId.toString().includes(searchIdNumber);
+            });
+            setFilteredStudents(filtered);
+        }
+        setCurrentPage(1); // Resetear a la primera página cuando cambie el filtro
+    }, [students, searchIdNumber]);
 
     const handleEditClick = (student) => {
         setEditingStudent(student.id);
@@ -71,7 +118,8 @@ const StudentTable = ({ onNavigateToProfile }) => {
             );
 
             setStudents(updatedStudents);
-            setFilteredStudents(updatedStudents);
+            // Removemos esta línea para que el useEffect se encargue del filtrado
+            // setFilteredStudents(updatedStudents);
             setEditingStudent(null);
             Swal.fire({
                 title: '¡Éxito!',
@@ -92,14 +140,17 @@ const StudentTable = ({ onNavigateToProfile }) => {
         }
     };
 
+    // Función simplificada para manejar el cambio de filtro
     const handleFilterChange = (e) => {
         const value = e.target.value;
         setSearchIdNumber(value);
-        const filtered = students.filter((student) =>
-            student.number_id?.toString().includes(value)
-        );
-        setFilteredStudents(filtered);
-        setCurrentPage(1);
+    };
+
+    // Función para manejar cambios de página
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+        }
     };
 
     const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE);
@@ -160,22 +211,14 @@ const StudentTable = ({ onNavigateToProfile }) => {
                                         <td className="table-cell">{universityNames[student.id_university] || student.id_university}</td>
                                         <td className="table-cell"><input name="phone_number" value={formData.phone_number || ''} onChange={handleChange} /></td>
                                         <td className="table-cell"><input name="residence_address" value={formData.residence_address || ''} onChange={handleChange} /></td>
-                                        <td className="table-cell"><input name="created_at" value={formData.created_at || ''} onChange={handleChange} disabled /></td>
-                                        <td className="table-cell"><input name="updated_at" value={formData.updated_at || ''} onChange={handleChange} disabled /></td>
+                                        <td className="table-cell"><input name="created_at" value={formatDateTime(formData.created_at)} onChange={handleChange} disabled /></td>
+                                        <td className="table-cell"><input name="updated_at" value={formatDateTime(formData.updated_at)} onChange={handleChange} disabled /></td>
                                         <td className="table-cell actions">
                                             <Button onClick={handleSave} color="success" variant="contained" size="small" style={{ marginRight: 5 }}>
                                                 <SaveIcon />
                                             </Button>
                                             <Button onClick={() => setEditingStudent(null)} color="error" variant="contained" size="small" style={{ marginRight: 5 }}>
                                                 <CloseIcon />
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                sx={{ backgroundColor: '#FFD700', color: 'white', minWidth: '40px', padding: '6px', '&:hover': { backgroundColor: '#FFC107' }, marginRight: '5px' }}
-                                                size="small"
-                                                onClick={() => window.location.href = `/student/${student.id}`}
-                                            >
-                                                <VisibilityIcon />
                                             </Button>
                                         </td>
                                     </tr>
@@ -190,8 +233,8 @@ const StudentTable = ({ onNavigateToProfile }) => {
                                         <td className="table-cell">{universityNames[student.id_university] || student.id_university}</td>
                                         <td className="table-cell">{student.phone_number}</td>
                                         <td className="table-cell">{student.residence_address}</td>
-                                        <td className="table-cell">{student.created_at}</td>
-                                        <td className="table-cell">{student.updated_at}</td>
+                                        <td className="table-cell">{formatDateTime(student.created_at)}</td>
+                                        <td className="table-cell">{formatDateTime(student.updated_at)}</td>
                                         <td className="table-cell actions">
                                             <Button onClick={() => handleEditClick(student)} variant="contained" size="small" color="primary">
                                                 <EditIcon />
@@ -213,14 +256,15 @@ const StudentTable = ({ onNavigateToProfile }) => {
                     <div className="pagination-controls">
                         <button
                             className="pagination-button pagination-prev"
-                            onClick={() => setCurrentPage(currentPage - 1)}
+                            onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
                         >
                             Anterior
+                            
                         </button>
                         <button
                             className="pagination-button pagination-next"
-                            onClick={() => setCurrentPage(currentPage + 1)}
+                            onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
                         >
                             Siguiente

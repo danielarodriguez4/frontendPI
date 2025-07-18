@@ -1,8 +1,9 @@
-/* Diseños generales de la página */
+/* index.css - Estilos generales */
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  background-color: white; /* Asegúrate de que el body sea blanco */
+  background-color: white;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -26,9 +27,8 @@ html {
   position: relative;
 }
 
-/* Sidebar */
 .sidebar {
-  width: 280px;
+  width: 500x;
   min-height: 100vh;
   background-color: #3b61d0;
   padding: 20px;
@@ -48,7 +48,6 @@ html {
   object-fit: contain;
 }
 
-/* Contenedor principal - form-grid (la parte blanca) */
 .form-grid {
   flex: 1; 
   margin-left: 0;
@@ -61,10 +60,9 @@ html {
   box-sizing: border-box; 
 }
 
-
 .form-grid h2 {
   text-align: center;
-  font-size: 32px;
+  font-size: 40px;
   margin-bottom: 15px;
   color: #33526d;
   font-weight: bold;
@@ -73,85 +71,10 @@ html {
   width: 100%;
 }
 
-
-.contact-form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 15px;
-  width: 100%;
-  padding: 0 10px;
-}
-
-select {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.required-asterisk {
-  color: red;
-  font-size: 16px;
-  margin-left: 4px;
-}
-
-/* Cada par label-input */
-.contact-form > div {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Cada label ocupa una celda completa */
-.contact-form label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 3px;
-  color: #333;
-  font-size: 16px;
-}
-
-/* Cada input ocupa una celda completa */
-.contact-form input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 16px;
-}
-
-/* El botón ocupa dos columnas */
-.contact-form .submit-button {
-  grid-column: 1 / -1;
-  width: 40%;
-  padding: 10px;
-  background-color: #1cc88a;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 18px;
-  margin: 10px auto 0;
-  display: block;
-}
-
-.contact-form .submit-button:hover {
-  background-color: #19a979;
-}
-
-.contact-form .submit-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-/* Ajustes responsivos */
 @media screen and (max-width: 1024px) {
   .sidebar {
     width: 220px;
   }
-  
   .logo {
     width: 140px;
     height: 140px;
@@ -162,52 +85,23 @@ select {
   .container {
     flex-direction: column;
   }
-  
   .sidebar {
     width: 100%;
     min-height: auto;
     flex-direction: row;
     justify-content: space-between;
     padding: 10px 20px;
-    position: sticky;
     top: 0;
     gap: 100px;
   }
-  
   .logo {
     width: 80px;
     height: 80px;
   }
-  
- .form-grid {
-    flex: 1;
+  .form-grid {
     padding: 20px;
-    margin-left: 0;
-    transition: all 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    max-width: none; 
-    width: 100%;
     margin: 0 auto;
-}
-  
-  .contact-form {
-    grid-template-columns: 1fr;
-    padding: 0 5px;
-  }
-  
-  /* Ajustes para dashboard en vista móvil */
-  .dashboard-container .chart-grid {
-    grid-template-columns: 1fr !important;
-  }
-  
-  .dashboard-container .chart-container {
-    grid-column: auto !important;
-  }
-  
-  .dashboard-container svg {
-    width: 100% !important;
-    height: auto !important;
+    max-width: none;
   }
 }
 
@@ -215,18 +109,12 @@ select {
   .sidebar {
     padding: 5px 10px;
   }
-  
   .logo {
     width: 60px;
     height: 60px;
   }
-  
   .form-grid h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
+    font-size: 40px;
   }
-  
-  .contact-form .submit-button {
-    width: 100%;
-  }
-}
+} 
+

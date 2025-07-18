@@ -7,7 +7,6 @@ import Botones from './Componentes/Botones';
 import StudentTable from './Componentes/StudentTable';
 import UserInfoBar from './Componentes/UserInfoBar';
 import AgregarAcompañamiento from './Componentes/AgregarAcompanamiento';
-import StudentProfile from './Componentes/StudentProfile';
 import Swal from 'sweetalert2';
 import TutoringHistoryView from './Componentes/TutoringHistoryView';
 import './Estilos/TutoringHistoryView.css';
@@ -19,9 +18,28 @@ const ContactForm = () => {
         role: 'Administrador'
     };
 
+    const handleReset = () => {
+  setFormData({
+    number_id: '',
+    first_name: '',
+    last_name: '',
+    phone_number: '',
+    email: '',
+    institution_email: '',
+    streetType: '',
+    streetNumber: '',
+    buildingNumber: '',
+    apartment: '',
+    municipality: '',
+    semester: '',
+    id_university: ''
+  });
+};
+
+
     /*Datos que se envían al backend luego de llenar el form*/
     const [formData, setFormData] = useState({
-        id_number: '',
+        number_id: '',
         first_name: '',
         last_name: '',
         phone_number: '',
@@ -64,7 +82,7 @@ const ContactForm = () => {
             `, ${formData.municipality}`;
 
         const dataToSend = {
-            id_number: formData.id_number,
+            number_id: formData.number_id,
             first_name: formData.first_name,
             last_name: formData.last_name,
             phone_number: formData.phone_number,
@@ -104,7 +122,7 @@ const ContactForm = () => {
 
         // Limpiar el formulario después del envío exitoso
         setFormData({
-            id_number: '',
+            number_id: '',
             first_name: '',
             last_name: '',
             phone_number: '',
@@ -198,8 +216,8 @@ const ContactForm = () => {
                                 <label>Número de identificación <span className="required-asterisk">*</span></label>
                                 <input 
                                     type="text" 
-                                    name="id_number" 
-                                    value={formData.id_number} 
+                                    name="number_id" 
+                                    value={formData.number_id} 
                                     onChange={handleChange} 
                                     required 
                                 />
@@ -304,9 +322,11 @@ const ContactForm = () => {
                                 </select>
                             </div>
 
-                            <button type="submit" className="submit-button" disabled={loading}>
-                                {loading ? "Guardando..." : "Guardar"}
-                            </button>
+                            <div className="button-group">
+                            <button className="btn limpiar" type="button" onClick={handleReset}>Limpiar</button>
+                            <button className="btn guardar" type="submit">Guardar</button>
+                            </div>
+
                         </form>
                     </div>
                 )}
@@ -319,7 +339,6 @@ const ContactForm = () => {
                     }}/> )}
                 {currentView === 'acompanamientos' && <TutoringHistoryView />} {/* Vista de acompañamientos */}
                 {currentView === 'acompañar' && <AgregarAcompañamiento />} {/* Vista de acompañamiento */}
-                {currentView === 'perfil' && selectedStudentId && (<StudentProfile studentId={selectedStudentId} />)}
             </div>
         </div>
     );

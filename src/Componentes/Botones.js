@@ -19,6 +19,17 @@ function Botones({ onNavigate }) {
           className="button"
           variant="contained"
           onClick={() => onNavigate('registrar')}
+           sx={{
+              backgroundColor: '#1cc88a',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#17a55f',
+              },
+              textTransform: 'none',
+              fontSize: '20px',
+              padding: '8px 16px',
+              borderRadius: '6px',
+            }}
         >
           {buttonData.text1}
         </Button>
@@ -28,6 +39,17 @@ function Botones({ onNavigate }) {
           className="button" 
           variant="contained"
           onClick={() => onNavigate('editar')}
+                     sx={{
+              backgroundColor: '#1cc88a',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#17a55f',
+              },
+              textTransform: 'none',
+              fontSize: '20px',
+              padding: '8px 16px',
+              borderRadius: '6px',
+            }}
         >
           {buttonData.text2}
         </Button>
@@ -37,6 +59,17 @@ function Botones({ onNavigate }) {
           className="button" 
           variant="contained"
           onClick={() => onNavigate('acompañar')}
+                     sx={{
+              backgroundColor: '#1cc88a',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#17a55f',
+              },
+              textTransform: 'none',
+              fontSize: '20px',
+              padding: '8px 16px',
+              borderRadius: '6px',
+            }}
         >
           {buttonData.text3}
         </Button>
@@ -46,6 +79,17 @@ function Botones({ onNavigate }) {
           className="button" 
           variant="contained"
           onClick={() => onNavigate('acompanamientos')}
+                     sx={{
+              backgroundColor: '#1cc88a',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#17a55f',
+              },
+              textTransform: 'none',
+              fontSize: '20px',
+              padding: '8px 16px',
+              borderRadius: '6px',
+            }}
         >
           {buttonData.text4}
         </Button>

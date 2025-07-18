@@ -6,14 +6,14 @@
   align-items: center;
   gap: 40px;
   font-family: Arial;
-  font-size: 40px;
+  font-size: 80px;
   color: white;
   margin-right: 2px;
 }
 
 .button {
   padding: 0px 20px;
-  background-color: #1cc88a !important;
+  background-color: #1cc88a ;
   color:white;
   cursor: pointer;
   border-radius: 2px;
@@ -21,7 +21,7 @@
 }
 
 .button:hover {
-  background-color: #17a55f !important; 
+  background-color: #17a55f ; 
   color: white;
 }
 
