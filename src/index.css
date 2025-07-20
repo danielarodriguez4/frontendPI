@@ -1,5 +1,9 @@
 /* index.css - Estilos generales */
 
+.main-container {
+  font-size: 25px !important;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
@@ -25,6 +29,8 @@ html {
 .container-form {
   display: flex;
   position: relative;
+  margin: 0 auto;
+  justify-content: center;
 }
 
 .sidebar {
@@ -58,6 +64,8 @@ html {
   width: 100%; 
   margin: 12px; 
   box-sizing: border-box; 
+  align-items: center;
+  
 }
 
 .form-grid h2 {

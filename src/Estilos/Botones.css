@@ -6,35 +6,75 @@
   align-items: center;
   gap: 40px;
   font-family: Arial;
-  font-size: 80px;
   color: white;
-  margin-right: 2px;
+  padding: 30px;
+}
+
+.button-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 30px;
+  width: 280px;
 }
 
 .button {
-  padding: 0px 20px;
-  background-color: #1cc88a ;
-  color:white;
+  padding: 12px 30px;
+  background-color: #1cc88a;
+  color: white;
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: 5px;
   transition: background-color 0.2s ease-in-out;
 }
 
 .button:hover {
-  background-color: #17a55f ; 
+  background-color: #17a55f;
   color: white;
 }
 
 .images {
-  width: 70px;
-  height: auto;
-  max-width: 100%;
-  display: block;
-  margin-bottom: 0px;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+.button-title {
+  color: white;
+  font-family: Arial;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 15px 0 12px 0;
+  text-align: center;
+}
+
+.button-description {
+  color: white;
+  font-family: Arial;
+  font-size: 18px;
+  margin: 0 0 20px 0;
+  text-align: center;
+  line-height: 1.4;
 }
 
 @media (max-width: 600px) {
   .images {
     width: 40px;
+    height: 40px;
+  }
+  
+  .button-item {
+    width: 180px;
+    padding: 15px;
+  }
+  
+  .button-title {
+    font-size: 14px;
+  }
+  
+  .button-description {
+    font-size: 11px;
   }
 }
