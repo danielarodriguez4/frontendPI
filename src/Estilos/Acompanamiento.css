@@ -3,8 +3,8 @@
 .form-container {
     margin: 40px auto;
     padding: 40px;
-    width: 70%; /* Aumenté el ancho para más espacio */
-    max-width: 800px; /* Límite máximo más amplio */
+    width: 70%; 
+    max-width: 800px; 
     max-height: 100%;
     background-color: #e2dbdb;
     border-radius: 12px;
@@ -13,7 +13,7 @@
 }
 .form-container h2 {
     text-align: center;
-    font-size: 36px; /* Tamaño de letra más grande */
+    font-size: 36px; 
     font-weight: bold;
     margin-bottom: 20px;
     color: #2a4bb5;
@@ -65,7 +65,7 @@ input, select {
     flex: 1;
     min-width: 100px;
     padding: 15px;
-    font-size: 20px; /* Tamaño de letra más grande */
+    font-size: 24px; 
     border: 1px solid #d8d3d3;
     border-radius: 8px;
     box-sizing: border-box;
@@ -114,7 +114,7 @@ input, select {
     padding: 20px;
     border-radius: 8px;
     border: 1px solid #d8d3d3;
-    font-size: 18px;
+    font-size: 24px;
     box-sizing: border-box;
     width: 100%;
     min-height: 120px;

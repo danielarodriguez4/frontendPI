@@ -2,22 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText, Edit3} from 'lucide-react';
 
 import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel'; // Mantengo el import por si lo usas en otro lado del componente, aunque no en el modal de stats
+import CancelIcon from '@mui/icons-material/Cancel';
 
 import '../Estilos/TutoringHistoryView.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
+const ITEMS_PER_PAGE = 10; // Constante igual que en StudentTable
 
 const TutoringHistoryView = () => {
   const [sessions, setSessions] = useState([]);
+  const [filteredSessions, setFilteredSessions] = useState([]); // Nuevo estado para sesiones filtradas
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const sessionsPerPage = 5; // Aquí se define que sean 5 estudiantes por página
 
   const [sessionTypes, setSessionTypes] = useState([]);
+
+  // Estados para filtros
+  const [statusFilter, setStatusFilter] = useState('');
+  const [specialtyFilter, setSpecialtyFilter] = useState('');
 
   // Estados para el modal de estadísticas
   const [showStudentModal, setShowStudentModal] = useState(false);
@@ -29,7 +33,7 @@ const TutoringHistoryView = () => {
   const [editingStatus, setEditingStatus] = useState(null);
   const [tempStatus, setTempStatus] = useState('');
 
-  // Opciones de estado disponibles (corregí un pequeño detalle aquí: el `label` para Pendiente y Cancelado)
+  // Opciones de estado disponibles
   const statusOptions = [
     { value: 'Completado', label: 'Completado', color: '#28a745' },
     { value: 'Pendiente', label: 'Pendiente', color: '#ffc107' },
@@ -65,14 +69,15 @@ const TutoringHistoryView = () => {
     fetchSessionTypes();
   }, []);
 
-  // Cargar sesiones
-  const fetchSessions = async (page = 1) => {
+  // Cargar TODAS las sesiones de una vez (como en StudentTable)
+  const fetchSessions = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
 
+      // Cargar todas las sesiones sin paginación
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/all?page=${page}&limit=${sessionsPerPage}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,7 +85,9 @@ const TutoringHistoryView = () => {
         }
       );
 
-      const mappedSessions = (response.data.data || []).map(session => ({
+      const sessionsData = Array.isArray(response.data) ? response.data : response.data.data || [];
+      
+      const mappedSessions = sessionsData.map(session => ({
         ...session,
         first_name: session.name || 'N/A',
         last_name: session.surname || 'N/A',
@@ -94,9 +101,10 @@ const TutoringHistoryView = () => {
       }));
 
       setSessions(mappedSessions);
-      setTotalPages(Math.ceil((response.data.total || mappedSessions.length) / sessionsPerPage));
+      setFilteredSessions(mappedSessions); // Inicialmente mostrar todas
 
     } catch (err) {
+      console.error('Error al cargar sesiones:', err);
       setError(err.message);
       Swal.fire({
         title: 'Error',
@@ -110,6 +118,28 @@ const TutoringHistoryView = () => {
     }
   };
 
+  // Nuevo useEffect para manejar el filtrado (como en StudentTable)
+  useEffect(() => {
+    let filtered = [...sessions];
+
+    // Filtro por estado
+    if (statusFilter && statusFilter !== '') {
+      filtered = filtered.filter(session => 
+        session.status?.toLowerCase() === statusFilter.toLowerCase()
+      );
+    }
+
+    // Filtro por especialidad
+    if (specialtyFilter && specialtyFilter !== '') {
+      filtered = filtered.filter(session => 
+        session.session_type_name === specialtyFilter
+      );
+    }
+
+    setFilteredSessions(filtered);
+    setCurrentPage(1); // Resetear a la primera página cuando cambie el filtro
+  }, [sessions, statusFilter, specialtyFilter]);
+
   // Función para actualizar el estado de la sesión
   const updateSessionStatus = async (sessionId, newStatus) => {
     try {
@@ -117,9 +147,18 @@ const TutoringHistoryView = () => {
       const response = await axios.patch(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/${sessionId}`,
         { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      await fetchSessions(currentPage); 
+      // Actualizar el estado local
+      const updatedSessions = sessions.map((session) =>
+        session.id === sessionId ? { ...session, status: newStatus } : session
+      );
+      setSessions(updatedSessions);
 
       Swal.fire({
         title: 'Éxito',
@@ -166,7 +205,6 @@ const TutoringHistoryView = () => {
       setLoadingStats(true);
       const token = localStorage.getItem('token');
 
-      // Usar el endpoint existente para obtener sesiones del estudiante
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/student/${studentId}`,
         {
@@ -180,7 +218,6 @@ const TutoringHistoryView = () => {
 
       const statsMap = {};
       studentSessions.forEach(session => {
-        // Asegúrate de que sessionTypes esté cargado cuando se llama a esta función
         const sessionTypeName = sessionTypes.find(type => type.id === session.id_session_type)?.name || 'No definido';
 
         if (statsMap[sessionTypeName]) {
@@ -190,7 +227,6 @@ const TutoringHistoryView = () => {
         }
       });
 
-      // Convertir a array para mostrar, ordenado por cantidad descendente
       const statsArray = Object.entries(statsMap)
         .map(([name, count]) => ({
           session_type: name,
@@ -219,7 +255,6 @@ const TutoringHistoryView = () => {
   const handleStudentClick = (session) => {
     console.log('Sesión clickeada:', session);
 
-    // Usar id_student según tu estructura de datos
     const studentId = session.id_student;
     const firstName = session.first_name || 'N/A';
     const lastName = session.last_name || 'N/A';
@@ -256,6 +291,13 @@ const TutoringHistoryView = () => {
     setStudentStats([]);
   };
 
+  // Función para cambiar página (como en StudentTable)
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   // Componente para el selector de estado
   const StatusSelector = ({ session }) => {
     const isEditing = editingStatus === session.id;
@@ -276,21 +318,19 @@ const TutoringHistoryView = () => {
             ))}
           </select>
           <div className="status-actions">
-            {/* Botón de Guardar con ícono de Material-UI */}
             <button
               onClick={() => handleStatusSave(session.id)}
               className="status-save-btn"
               title="Guardar cambios"
             >
-              <SaveIcon style={{ fontSize: 16 }} /> {/* Tamaño del ícono */}
+              <SaveIcon style={{ fontSize: 16 }} />
             </button>
-            {/* Botón de Cancelar con ícono de Material-UI */}
             <button
               onClick={handleStatusCancel}
               className="status-cancel-btn"
               title="Cancelar edición"
             >
-              <CancelIcon style={{ fontSize: 16 }} /> {/* Tamaño del ícono */}
+              <CancelIcon style={{ fontSize: 16 }} />
             </button>
           </div>
         </div>
@@ -310,13 +350,10 @@ const TutoringHistoryView = () => {
     );
   };
 
+  // Cargar sesiones cuando se monta el componente
   useEffect(() => {
-    // Cuando currentPage o sessionTypes cambian, volvemos a cargar las sesiones
-    // Asegurarse de que sessionTypes se haya cargado antes de intentar cargar las sesiones
-    if (sessionTypes.length > 0 || currentPage === 1) { // Añade esta condición para esperar sessionTypes
-      fetchSessions(currentPage);
-    }
-  }, [currentPage, sessionTypes]); // Añadir sessionTypes como dependencia
+    fetchSessions();
+  }, []);
 
   // Helpers
   const formatDate = (dateString) => {
@@ -346,11 +383,16 @@ const TutoringHistoryView = () => {
     }
   };
 
+  // Cálculos de paginación (como en StudentTable)
+  const totalPages = Math.ceil(filteredSessions.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentSessions = filteredSessions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
   if (loading) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
-        <p>Cargando sesiones...</p> {/* Añadí un mensaje de carga aquí */}
+        <p>Cargando sesiones...</p>
       </div>
     );
   }
@@ -379,13 +421,21 @@ const TutoringHistoryView = () => {
               <User className="filter-icon" />
               <span className="filter-label">Filtros:</span>
             </div>
-            <select className="filter-select">
-              <option>Todos</option>
-              <option>Completado</option>
-              <option>Pendiente</option>
-              <option>Cancelado</option>
+            <select 
+              className="filter-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Todos los estados</option>
+              <option value="Completado">Completado</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Cancelado">Cancelado</option>
             </select>
-            <select className="filter-select">
+            <select 
+              className="filter-select"
+              value={specialtyFilter}
+              onChange={(e) => setSpecialtyFilter(e.target.value)}
+            >
               <option value="">Todas las especialidades</option>
               {sessionTypes.map((type) => (
                 <option key={type.id} value={type.name}>
@@ -430,7 +480,7 @@ const TutoringHistoryView = () => {
               </tr>
             </thead>
             <tbody className="table-body">
-              {sessions.map((session, index) => (
+              {currentSessions.map((session, index) => (
                 <tr key={session.id || index} className="table-row">
                   <td className="table-cell">
                     <div
@@ -482,40 +532,33 @@ const TutoringHistoryView = () => {
           </table>
         </div>
 
-        {/* Paginación */}
+        {/* Paginación simplificada como StudentTable */}
         <div className="pagination-container">
           <div className="pagination-info">
             <p className="pagination-text">
-              Mostrando página <span className="pagination-current">{currentPage}</span> de{' '}
-              <span className="pagination-total">{totalPages}</span>
+              Página <span className="pagination-current">{currentPage}</span> de <span className="pagination-total">{totalPages}</span>
             </p>
           </div>
           <div className="pagination-controls">
             <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
               className="pagination-button pagination-prev"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
             >
-              <ChevronLeft className="pagination-icon" />
+              Anterior
             </button>
-            {/* Generar botones de paginación solo para las páginas disponibles */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`pagination-button ${page === currentPage ? 'pagination-active' : ''}`}
-              >
-                {page}
-              </button>
-            ))}
             <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
               className="pagination-button pagination-next"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
             >
-              <ChevronRight className="pagination-icon" />
+              Siguiente
             </button>
           </div>
+        </div>
+
+        <div style={{ padding: '16px 24px', textAlign: 'right', fontSize: '18px', color: '#374151' }}>
+          Total sesiones: {filteredSessions.length}
         </div>
       </div>
 

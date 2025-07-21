@@ -111,25 +111,25 @@ const AgregarAcompanamiento = () => {
 
 
   // Función para filtrar estudiantes basado en la búsqueda
-  const handleStudentInputChange = (e) => {
-    const query = e.target.value;
-    setStudentQuery(query);
+const handleStudentInputChange = (e) => {
+  const query = e.target.value;
+  setStudentQuery(query);
 
-    if (query.length > 0) {
-      const filtered = students.filter(student =>
-        student.fullName.toLowerCase().includes(query.toLowerCase()) ||
-        student.first_name.toLowerCase().includes(query.toLowerCase()) ||
-        student.last_name.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredStudents(filtered);
-      setShowStudentDropdown(true);
-    } else {
-      setFilteredStudents([]);
-      setShowStudentDropdown(false);
-      setSelectedStudent(null);
-      // setFormData(prev => ({ ...prev, estudiante: '' })); // No resetear aquí, se hace en el submit
-    }
-  };
+  if (query.length > 0) {
+    const filtered = students.filter(student =>
+      student.fullName.toLowerCase().includes(query.toLowerCase()) ||
+      student.first_name.toLowerCase().includes(query.toLowerCase()) ||
+      student.last_name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredStudents(filtered);
+    setShowStudentDropdown(true);
+  } else {
+    setFilteredStudents([]);
+    setShowStudentDropdown(false);
+    setSelectedStudent(null);
+    setFormData(prev => ({ ...prev, estudiante: '' }));
+  }
+};
 
   // Función para seleccionar un estudiante
   const handleStudentSelect = (student) => {
@@ -145,6 +145,10 @@ const AgregarAcompanamiento = () => {
       setShowStudentDropdown(false);
     }
   };
+
+  const handleObservacionesChange = (e) => {
+  setFormData(prev => ({ ...prev, observaciones: e.target.value }));
+};
 
   // Effect para manejar clics fuera del componente
   useEffect(() => {
@@ -207,21 +211,25 @@ const AgregarAcompanamiento = () => {
   const handleYearChange = (e) => setSelectedYear(e.target.value);
   const handleHourChange = (e) => setSelectedHour(e.target.value);
   const handleMinuteChange = (e) => setSelectedMinute(e.target.value);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  // Prevenir múltiples envíos
+  if (isSubmitting) {
+    return;
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!selectedStudent) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Por favor selecciona un estudiante válido',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d33'
-      });
-      return;
-    }
+  if (!selectedStudent) {
+    Swal.fire({
+      title: 'Error',
+      text: 'Por favor selecciona un estudiante válido',
+      icon: 'error',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#d33'
+    });
+    return;
+  }
 
     // Validación de fecha y hora completa
     if (!selectedDay || !selectedMonth || !selectedYear || !selectedHour || !selectedMinute) {
@@ -251,6 +259,8 @@ const AgregarAcompanamiento = () => {
         return;
     }
 
+    setIsSubmitting(true); //Se deshabilita el botón para evitar múltiples envíos
+
     try {
       const token = localStorage.getItem('token');
 
@@ -259,7 +269,7 @@ const AgregarAcompanamiento = () => {
         id_companion: formData.profesional,
         id_session_type: formData.tipo,
         notes: formData.observaciones,
-        date: `${fullDate}T${fullTime}:00`, // Formato ISO 8601
+        date: `${fullDate}T${fullTime}:00`, 
       };
 
       console.log('Datos enviados al backend:', backendData);
@@ -464,9 +474,10 @@ const AgregarAcompanamiento = () => {
         <textarea
           name="observaciones"
           value={formData.observaciones}
-          onChange={handleChange}
-          rows="2"
+          onChange={handleObservacionesChange} 
+          rows="4"
           className="observaciones-textarea"
+          placeholder="Ingresa las observaciones del acompañamiento..."
         />
 
         <button type="submit">Guardar</button>
