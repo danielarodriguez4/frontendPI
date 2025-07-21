@@ -402,7 +402,7 @@ const AgregarAcompanamiento = () => {
           )}
         </select>
 
-        <label>Profesional Responsable:</label>
+        <label>Profesional responsable:</label>
         <select
           name="profesional"
           value={formData.profesional}
