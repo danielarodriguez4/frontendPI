@@ -2,7 +2,6 @@
 
 .contact-form-container {
   max-width: 100%;
-  
 }
 
 .contact-form {
@@ -12,7 +11,7 @@
   width: 80%;
   margin: 0 auto;
   padding: 40px;
-  background-color: #faf5f5;
+  background-color: #e2dbdb;
   border-radius: 8px;
   align-items: center;
   justify-items: center; 

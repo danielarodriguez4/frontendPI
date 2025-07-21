@@ -29,7 +29,7 @@ function Botones({ onNavigate }) {
     },
     {
       id: 'acompanamientos',
-      title: 'Consulta de acompañamientos',
+      title: 'Visualiza acompañamientos',
       buttonText: 'Acompañamientos',
       image: 'metricas.png',
       alt: 'acompanamientos'
