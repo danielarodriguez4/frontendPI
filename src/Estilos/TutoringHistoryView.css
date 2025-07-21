@@ -306,7 +306,12 @@
 
 .status-cancelled {
   background-color: #fee2e2;
-  color: #991b1b;
+  color: #991b1b; 
+}
+
+.status-noshow {
+  background-color: rgb(181, 225, 238);
+  color: rgb(17, 89, 110);
 }
 
 .status-default {
@@ -745,12 +750,15 @@
   padding: 25px;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
-  max-width: 30%;
-  max-height: 30%;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh; 
   display: flex;
   flex-direction: column;
   gap: 20px; 
-  position: relative; 
+  position: relative;
+  margin: auto; 
+  overflow-y: auto; 
 }
 
 /* Estilos para el encabezado del modal */
@@ -772,6 +780,7 @@
 .modal-body {
   flex-grow: 1; 
 }
+
 
 /* Estilos para el resumen de estadísticas */
 .stats-summary {

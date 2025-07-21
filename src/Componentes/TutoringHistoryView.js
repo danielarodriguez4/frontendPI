@@ -37,40 +37,43 @@ const TutoringHistoryView = () => {
   const statusOptions = [
     { value: 'Completado', label: 'Completado', color: '#28a745' },
     { value: 'Pendiente', label: 'Pendiente', color: '#ffc107' },
-    { value: 'Cancelado', label: 'Cancelado', color: '#dc3545' }
+    { value: 'Cancelado', label: 'Cancelado', color: '#dc3545' },
+    { value: 'No asistió', label: 'No asistió', color: '#2cb4ddff' }
   ];
 
   // Cargar tipos de sesión
-  useEffect(() => {
-    const fetchSessionTypes = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setSessionTypes(response.data.data || []);
-      } catch (error) {
-        console.error('Error al cargar tipos de sesión:', error);
-        Swal.fire({
-          title: 'Error',
-          text: 'No se pudieron cargar los tipos de sesión',
-          icon: 'error',
-          confirmButtonText: 'Aceptar',
-          confirmButtonColor: '#d33'
-        });
-      }
-    };
-
-    fetchSessionTypes();
-  }, []);
+  const fetchSessionTypes = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const sessionTypesData = response.data.data || [];
+      setSessionTypes(sessionTypesData);
+      return sessionTypesData; // Retornamos los datos para uso inmediato
+    } catch (error) {
+      console.error('Error al cargar tipos de sesión:', error);
+      const fallbackSessionTypes = [
+        { id: '686090b367343360f5acecaa', name: 'Asesoría Sociopedagógica (ASP)' },
+        { id: '686090d467343360f5acecab', name: 'Tutoría' },
+        { id: '686090df67343360f5acecac', name: 'Grupo de estudio' },
+        { id: '686090f367343360f5acecad', name: 'Taller socioemocional' },
+        { id: '6860912167343360f5acecae', name: 'Psicorientación' },
+        { id: '6860912c67343360f5acecaf', name: 'Orientación sociofamiliar' },
+        { id: '6860913867343360f5acecb0', name: 'Orientación a Bienestar' }
+      ];
+      setSessionTypes(fallbackSessionTypes);
+      return fallbackSessionTypes;
+    }
+  };
 
   // Cargar TODAS las sesiones de una vez (como en StudentTable)
-  const fetchSessions = async () => {
+  const fetchSessions = async (sessionTypesArray = []) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -95,9 +98,9 @@ const TutoringHistoryView = () => {
         last_name_companion: session.companion_surname || 'N/A',
         companion_specialty: session.companion_speciality || 'N/A',
         session_type_name: session.session_type_name ||
-          sessionTypes.find(type => type.id === session.id_session_type)?.name || 'No definido',
+          sessionTypesArray.find(type => type.id === session.id_session_type)?.name || 'No definido',
         notes: session.session_notes || 'Sin notas',
-        status: session.status || 'Completado'
+        status: session.status || 'Pendiente'
       }));
 
       setSessions(mappedSessions);
@@ -350,9 +353,21 @@ const TutoringHistoryView = () => {
     );
   };
 
-  // Cargar sesiones cuando se monta el componente
+  // ESTE ES EL CAMBIO CLAVE: Cargar sessionTypes primero, luego las sesiones
   useEffect(() => {
-    fetchSessions();
+    const loadData = async () => {
+      try {
+        // Primero cargar los tipos de sesión
+        const sessionTypesData = await fetchSessionTypes();
+        // Luego cargar las sesiones con los tipos ya disponibles
+        await fetchSessions(sessionTypesData);
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   // Helpers
@@ -378,6 +393,9 @@ const TutoringHistoryView = () => {
       case 'cancelado':
       case 'cancelled':
         return 'status-cancelled';
+      case 'no asistió':
+      case 'no show':
+        return 'status-noshow';
       default:
         return 'status-default';
     }
@@ -427,6 +445,7 @@ const TutoringHistoryView = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="">Todos los estados</option>
+              <option value="No asistió">No asistió</option>
               <option value="Completado">Completado</option>
               <option value="Pendiente">Pendiente</option>
               <option value="Cancelado">Cancelado</option>
@@ -586,7 +605,7 @@ const TutoringHistoryView = () => {
                   </div>
 
                   <div className="stats-table">
-                    <h4>Discriminado por tipo de asesoría:</h4>
+                    <h4>Tipo de asesoría:</h4>
                     <table className="stats-table-content">
                       <thead>
                         <tr>
