@@ -173,14 +173,15 @@ const ContactForm = () => {
     };
 
     return (
-        <div className="main-container">
-            <UserInfoBar name={user.name} role={user.role} />
-            <div className="container-form">
-                <div className="sidebar">
-                    <img src="/logo1.png" className="logo" alt="logo" />
-                    <Botones onNavigate={handleNavigate} />
-                </div>
+        <div className="container-form">
+            <div className="sidebar">
+                <img src="/logo1.png" className="logo" alt="logo" />
+                <Botones onNavigate={handleNavigate} />
+            </div>
                 <div className="form-grid"> 
+                    <div className="main-container">
+                        <UserInfoBar name={user.name} role={user.role} />       
+                    </div>
                     {currentView === 'registrar' && (
                         <div> 
                             <h2>Registrar estudiante</h2>
@@ -335,7 +336,6 @@ const ContactForm = () => {
                     {currentView === 'acompanamientos' && <TutoringHistoryView />} {/* Vista de acompañamientos */}
                     {currentView === 'acompañar' && <AgregarAcompañamiento />} {/* Vista de acompañamiento */}
                 </div>
-        </div>
         </div>
     );
 };

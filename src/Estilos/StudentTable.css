@@ -159,9 +159,6 @@
     padding: 8px 12px;
 }
 
-/* MEDIA QUERIES PARA RESPONSIVE */
-
-/* Tablets */
 @media (max-width: 768px) {
     .titulo-tabla {
         font-size: 28px;

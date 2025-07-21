@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: flex-end;
     padding: 10px 20px;
-    background-color: #fff;
+    background-color: #efeff1;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
@@ -16,10 +16,11 @@
 .user-name {
     font-weight: bold;
     color: #2a4ca4;
+    font-size: 22px;
 }
 
 .user-role {
-    font-size: 14px;
+    font-size: 22px;
     background-color: #d8f5e4;
     padding: 2px 8px;
     border-radius: 12px;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText, X, BarChart3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText, X, BarChart3, Check, Edit3 } from 'lucide-react';
 import '../Estilos/TutoringHistoryView.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -19,6 +19,17 @@ const TutoringHistoryView = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentStats, setStudentStats] = useState([]);
   const [loadingStats, setLoadingStats] = useState(false);
+
+  // Estados para edición de estado
+  const [editingStatus, setEditingStatus] = useState(null);
+  const [tempStatus, setTempStatus] = useState('');
+
+  // Opciones de estado disponibles
+  const statusOptions = [
+    { value: 'Completado', label: 'Completado', color: '#28a745' },
+    { value: 'Pendiente', label: 'Pendiente', color: '#ffc107' },
+    { value: 'Cancelado', label: 'Cancelado', color: '#dc3545' }
+  ];
 
   // Cargar tipos de sesión
   useEffect(() => {
@@ -102,6 +113,71 @@ const TutoringHistoryView = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Función para actualizar el estado de la sesión
+  const updateSessionStatus = async (sessionId, newStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Ajusta esta URL según tu endpoint del backend
+      const response = await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/${sessionId}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        }
+      );
+
+      // Actualizar el estado local
+      setSessions(prevSessions => 
+        prevSessions.map(session => 
+          session.id === sessionId 
+            ? { ...session, status: newStatus }
+            : session
+        )
+      );
+      
+      Swal.fire({
+        title: 'Éxito',
+        text: 'Estado actualizado correctamente',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      
+    } catch (error) {
+      console.error('Error al actualizar estado:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo actualizar el estado',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+    }
+  };
+
+  // Funciones para manejar la edición de estado
+  const handleStatusEdit = (sessionId, currentStatus) => {
+    setEditingStatus(sessionId);
+    setTempStatus(currentStatus || 'Completado');
+  };
+
+  const handleStatusSave = async (sessionId) => {
+    if (tempStatus !== sessions.find(s => s.id === sessionId)?.status) {
+      await updateSessionStatus(sessionId, tempStatus);
+    }
+    setEditingStatus(null);
+    setTempStatus('');
+  };
+
+  const handleStatusCancel = () => {
+    setEditingStatus(null);
+    setTempStatus('');
   };
 
   // Función para obtener estadísticas del estudiante
@@ -199,6 +275,59 @@ const TutoringHistoryView = () => {
     setShowStudentModal(false);
     setSelectedStudent(null);
     setStudentStats([]);
+  };
+
+  // Componente para el selector de estado
+  const StatusSelector = ({ session }) => {
+    const isEditing = editingStatus === session.id;
+    
+    if (isEditing) {
+      return (
+        <div className="status-editor">
+          <select
+            value={tempStatus}
+            onChange={(e) => setTempStatus(e.target.value)}
+            className="status-select"
+            autoFocus
+          >
+            {statusOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <div className="status-actions">
+            <button
+              onClick={() => handleStatusSave(session.id)}
+              className="status-save-btn"
+              title="Guardar cambios"
+            >
+              <Check size={12} />
+            </button>
+            <button
+              onClick={handleStatusCancel}
+              className="status-cancel-btn"
+              title="Cancelar edición"
+            >
+              <X size={12} />
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="status-display">
+        <span 
+          className={`status-badge ${getStatusClass(session.status)} editable-status`}
+          onClick={() => handleStatusEdit(session.id, session.status)}
+          title="Click para editar estado"
+        >
+          {session.status || 'Completado'}
+          <Edit3 size={12} className="edit-icon" />
+        </span>
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -360,9 +489,7 @@ const TutoringHistoryView = () => {
                     </div>
                   </td>
                   <td className="table-cell">
-                    <span className={`status-badge ${getStatusClass(session.status)}`}>
-                      {session.status || 'Completado'}
-                    </span>
+                    <StatusSelector session={session} />
                   </td>
                 </tr>
               ))}
@@ -412,7 +539,6 @@ const TutoringHistoryView = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">
-                <BarChart3 className="modal-icon" />
                 Estadísticas de {selectedStudent?.name}
               </h2>
               <button className="modal-close" onClick={closeModal}>
@@ -429,7 +555,7 @@ const TutoringHistoryView = () => {
               ) : (
                 <>
                   <div className="stats-summary">
-                    <h3>Resumen de Asesorías</h3>
+                    <h3>Resumen de asesorías</h3>
                     <p>Total de sesiones: {studentStats.reduce((sum, stat) => sum + stat.total_sessions, 0)}</p>
                   </div>
                   
@@ -438,7 +564,7 @@ const TutoringHistoryView = () => {
                     <table className="stats-table-content">
                       <thead>
                         <tr>
-                          <th>Tipo de Asesoría</th>
+                          <th>Tipo de asesoría</th>
                           <th>Cantidad</th>
                         </tr>
                       </thead>

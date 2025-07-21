@@ -8,10 +8,15 @@ const AgregarAcompanamiento = () => {
     estudiante: '',
     tipo: '',
     profesional: '',
-    fecha: '',
-    hora: '',
     observaciones: '',
   });
+
+  // NUEVOS ESTADOS PARA FECHA Y HORA EN DROPDOWNS
+  const [selectedDay, setSelectedDay] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedHour, setSelectedHour] = useState('');
+  const [selectedMinute, setSelectedMinute] = useState('');
 
   // Estados para el autocompletado de estudiantes
   const [studentQuery, setStudentQuery] = useState('');
@@ -25,7 +30,7 @@ const AgregarAcompanamiento = () => {
   const [companions, setCompanions] = useState([]);
   const [sessionTypes, setSessionTypes] = useState([]);
 
-  // Función para obtener lista de estudiantes
+  // ... (Tus funciones fetchStudents, fetchCompanions, fetchSessionTypes - sin cambios) ...
   const fetchStudents = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -37,30 +42,19 @@ const AgregarAcompanamiento = () => {
           }
         }
       );
-      
-      console.log('Estudiantes obtenidos:', response.data);
-      
       const filteredStudents = (response.data.data || []).map(student => ({
         id: student.id,
         first_name: student.first_name,
         last_name: student.last_name,
         fullName: `${student.first_name} ${student.last_name}`
       }));
-      
       setStudents(filteredStudents);
     } catch (error) {
       console.error('Error fetching students:', error);
-      Swal.fire({
-        title: 'Error',
-        text: 'Error al cargar la lista de estudiantes',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d33'
-      });
+      Swal.fire({ title: 'Error', text: 'Error al cargar la lista de estudiantes', icon: 'error', confirmButtonText: 'Aceptar', confirmButtonColor: '#d33' });
     }
   };
 
-  // Función para obtener lista de profesionales
   const fetchCompanions = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -72,48 +66,33 @@ const AgregarAcompanamiento = () => {
           },
         }
       );
-
-      console.log('Profesionales obtenidos:', response.data);
-
       const filteredCompanions = (response.data.data || []).map(companion => ({
         id: companion.id,
         first_name: companion.first_name,
         last_name: companion.last_name
       }));
-
       setCompanions(filteredCompanions);
     } catch (error) {
       console.error('Error fetching companions:', error);
-      Swal.fire({
-        title: 'Error',
-        text: 'Error al cargar la lista de profesionales',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d33',
-      });
+      Swal.fire({ title: 'Error', text: 'Error al cargar la lista de profesionales', icon: 'error', confirmButtonText: 'Aceptar', confirmButtonColor: '#d33' });
     }
   };
 
-  // Función para obtener tipos de sesión
   const fetchSessionTypes = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`, 
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      console.log('Tipos de sesión obtenidos:', response.data);
-
       const filteredSessionTypes = (response.data.data || []).map(sessionType => ({
         id: sessionType._id || sessionType.id,
         name: sessionType.name
       }));
-
       setSessionTypes(filteredSessionTypes);
     } catch (error) {
       console.error('Error fetching session types:', error);
@@ -130,11 +109,12 @@ const AgregarAcompanamiento = () => {
     }
   };
 
+
   // Función para filtrar estudiantes basado en la búsqueda
   const handleStudentInputChange = (e) => {
     const query = e.target.value;
     setStudentQuery(query);
-    
+
     if (query.length > 0) {
       const filtered = students.filter(student =>
         student.fullName.toLowerCase().includes(query.toLowerCase()) ||
@@ -147,7 +127,7 @@ const AgregarAcompanamiento = () => {
       setFilteredStudents([]);
       setShowStudentDropdown(false);
       setSelectedStudent(null);
-      setFormData(prev => ({ ...prev, estudiante: '' }));
+      // setFormData(prev => ({ ...prev, estudiante: '' })); // No resetear aquí, se hace en el submit
     }
   };
 
@@ -178,9 +158,60 @@ const AgregarAcompanamiento = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // --- Funciones para generar opciones de fecha y hora ---
+  const generateDays = () => {
+    const days = [];
+    for (let i = 1; i <= 31; i++) {
+      days.push(String(i).padStart(2, '0'));
+    }
+    return days;
+  };
+
+  const generateMonths = () => {
+    const monthNames = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    return monthNames.map((name, index) => ({ value: String(index + 1).padStart(2, '0'), label: name }));
+  };
+
+  const generateYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    // Generar años desde (ej. 10 años atrás) hasta (ej. 5 años adelante)
+    for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+      years.push(String(i));
+    }
+    return years;
+  };
+
+  const generateHours = () => {
+    const hours = [];
+    for (let i = 0; i < 24; i++) { // Formato 24 horas
+      hours.push(String(i).padStart(2, '0'));
+    }
+    return hours;
+  };
+
+  const generateMinutes = () => {
+    const minutes = [];
+    for (let i = 0; i < 60; i += 5) { // Intervalos de 5 minutos
+      minutes.push(String(i).padStart(2, '0'));
+    }
+    return minutes;
+  };
+
+  // --- Manejadores de cambio para los nuevos dropdowns ---
+  const handleDayChange = (e) => setSelectedDay(e.target.value);
+  const handleMonthChange = (e) => setSelectedMonth(e.target.value);
+  const handleYearChange = (e) => setSelectedYear(e.target.value);
+  const handleHourChange = (e) => setSelectedHour(e.target.value);
+  const handleMinuteChange = (e) => setSelectedMinute(e.target.value);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedStudent) {
       Swal.fire({
         title: 'Error',
@@ -191,23 +222,51 @@ const AgregarAcompanamiento = () => {
       });
       return;
     }
-    
+
+    // Validación de fecha y hora completa
+    if (!selectedDay || !selectedMonth || !selectedYear || !selectedHour || !selectedMinute) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor, completa la fecha y la hora.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    const fullDate = `${selectedYear}-${selectedMonth}-${selectedDay}`;
+    const fullTime = `${selectedHour}:${selectedMinute}`;
+
+    // Validar si la fecha es una fecha válida
+    const checkDate = new Date(`${fullDate}T${fullTime}:00`);
+    if (isNaN(checkDate.getTime())) {
+        Swal.fire({
+            title: 'Error',
+            text: 'La fecha y/o hora seleccionada no es válida. Por favor, verifica el día para el mes y año seleccionados.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#d33'
+        });
+        return;
+    }
+
     try {
       const token = localStorage.getItem('token');
-      
+
       const backendData = {
         id_student: formData.estudiante,
         id_companion: formData.profesional,
         id_session_type: formData.tipo,
         notes: formData.observaciones,
-        date: `${formData.fecha}T${formData.hora}`
+        date: `${fullDate}T${fullTime}:00`, // Formato ISO 8601
       };
 
       console.log('Datos enviados al backend:', backendData);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/`, 
-        backendData, 
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/`,
+        backendData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -217,7 +276,7 @@ const AgregarAcompanamiento = () => {
       );
 
       console.log('Sesión creada:', response.data);
-      
+
       // Alerta de éxito
       Swal.fire({
         title: '¡Éxito!',
@@ -226,23 +285,28 @@ const AgregarAcompanamiento = () => {
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#28a745'
       });
-      
+
       // Limpiar el formulario después de enviar exitosamente
       setFormData({
         estudiante: '',
         tipo: '',
         profesional: '',
-        fecha: '',
-        hora: '',
         observaciones: '',
       });
       setStudentQuery('');
       setSelectedStudent(null);
       setShowStudentDropdown(false);
+      // Resetear los dropdowns de fecha y hora
+      setSelectedDay('');
+      setSelectedMonth('');
+      setSelectedYear('');
+      setSelectedHour('');
+      setSelectedMinute('');
+
     } catch (error) {
       console.error('Error:', error);
       console.error('Error details:', error.response?.data);
-      
+
       Swal.fire({
         title: 'Error',
         text: error.response?.data?.message || 'Error al registrar el acompañamiento',
@@ -258,6 +322,14 @@ const AgregarAcompanamiento = () => {
     fetchStudents();
     fetchCompanions();
     fetchSessionTypes();
+    // Establecer la fecha actual como valores predeterminados
+    const today = new Date();
+    setSelectedDay(String(today.getDate()).padStart(2, '0'));
+    setSelectedMonth(String(today.getMonth() + 1).padStart(2, '0'));
+    setSelectedYear(String(today.getFullYear()));
+    setSelectedHour(String(today.getHours()).padStart(2, '0'));
+    setSelectedMinute(String(Math.floor(today.getMinutes() / 5) * 5).padStart(2, '0')); // Minuto más cercano al intervalo de 5
+
   }, []);
 
   return (
@@ -272,8 +344,8 @@ const AgregarAcompanamiento = () => {
             onChange={handleStudentInputChange}
             placeholder="Buscar estudiante por nombre..."
             required
-            style={{ 
-              minHeight: '40px', 
+            style={{
+              minHeight: '40px',
               padding: '8px',
               width: '100%',
               border: selectedStudent ? '2px solid #28a745' : '1px solid #ccc',
@@ -314,7 +386,7 @@ const AgregarAcompanamiento = () => {
           )}
         </div>
 
-        <label>Tipo de Acompañamiento:</label>
+        <label>Tipo de acompañamiento:</label>
         <select name="tipo" value={formData.tipo} onChange={handleChange} required>
           <option value="">Seleccione...</option>
           {sessionTypes.length > 0 ? (
@@ -348,23 +420,45 @@ const AgregarAcompanamiento = () => {
           )}
         </select>
 
+        {/* --- DROPDOWNS PARA LA FECHA --- */}
         <label>Fecha:</label>
-        <input 
-          type="date" 
-          name="fecha" 
-          value={formData.fecha} 
-          onChange={handleChange} 
-          required 
-        />
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+          <select value={selectedDay} onChange={handleDayChange} required>
+            <option value="">Día</option>
+            {generateDays().map(day => (
+              <option key={day} value={day}>{day}</option>
+            ))}
+          </select>
+          <select value={selectedMonth} onChange={handleMonthChange} required>
+            <option value="">Mes</option>
+            {generateMonths().map(month => (
+              <option key={month.value} value={month.value}>{month.label}</option>
+            ))}
+          </select>
+          <select value={selectedYear} onChange={handleYearChange} required>
+            <option value="">Año</option>
+            {generateYears().map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
 
+        {/* --- DROPDOWNS PARA LA HORA --- */}
         <label>Hora:</label>
-        <input 
-          type="time" 
-          name="hora" 
-          value={formData.hora} 
-          onChange={handleChange} 
-          required 
-        />
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+          <select value={selectedHour} onChange={handleHourChange} required>
+            <option value="">Hora</option>
+            {generateHours().map(hour => (
+              <option key={hour} value={hour}>{hour}</option>
+            ))}
+          </select>
+          <select value={selectedMinute} onChange={handleMinuteChange} required>
+            <option value="">Minuto</option>
+            {generateMinutes().map(minute => (
+              <option key={minute} value={minute}>{minute}</option>
+            ))}
+          </select>
+        </div>
 
         <label>Observaciones:</label>
         <textarea
