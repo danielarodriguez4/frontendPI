@@ -37,11 +37,11 @@
     background-color: #2563eb;
     color: white;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 25px;
 }
 
 .tabla-estudiantes td {
-    font-size: 16px;
+    font-size: 25px;
 }
 
 .tabla-estudiantes tbody tr:hover {
@@ -51,7 +51,7 @@
 .tabla-estudiantes input {
     width: 100%;
     padding: 6px;
-    font-size: 15px; 
+    font-size: 25px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
@@ -75,7 +75,7 @@
 
 .pagination-info {
     color: #6c757d;
-    font-size: 14px;
+    font-size: 20px;
 }
 
 .pagination-controls {
@@ -88,7 +88,7 @@
     padding: 12px 24px;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -100,9 +100,10 @@
     cursor: not-allowed;
 }
 
-/* Botón Anterior - Morado sólido */
 .pagination-prev {
-    background: #8B5CF6;
+font-size: 20px;
+background: #8B5CF6 !important;
+color: white !important;
 }
 
 .pagination-prev:hover:not(:disabled) {
@@ -111,10 +112,13 @@
     box-shadow: 0 6px 12px rgba(139, 92, 246, 0.4);
 }
 
-/* Botón Siguiente - Azul sólido */
+
 .pagination-next {
-    background: #06B6D4;
-}
+    background: #06B6D4 !important;
+    font-size: 20px;
+    color: white !important;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
 .pagination-next:hover:not(:disabled) {
     background: #0891B2;
@@ -124,7 +128,7 @@
 
 /* Estilos adicionales para mejor legibilidad */
 .table-header-cell {
-    font-size: 18px; 
+    font-size: 20px;
     font-weight: 600;
     letter-spacing: 0.5px;
 }
@@ -135,9 +139,8 @@
     font-weight: 500;
 }
 
-/* Estilos para el texto de información de paginación */
 .pagination-text {
-    font-size: 16px;
+    font-size: 20px;
     color: #4B5563;
     font-weight: 500;
 }
@@ -149,7 +152,7 @@
 
 /* Estilos para los filtros */
 .filter-label {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: #374151;
 }

@@ -173,12 +173,14 @@ const ContactForm = () => {
     };
 
     return (
+        <div className="contact-form-container">
         <div className="container-form">
             <div className="sidebar">
                 <img src="/logo1.png" className="logo" alt="logo" />
                 <Botones onNavigate={handleNavigate} />
             </div>
                 <div className="form-grid"> 
+                    <>
                     <div className="main-container">
                         <UserInfoBar name={user.name} role={user.role} />       
                     </div>
@@ -322,9 +324,9 @@ const ContactForm = () => {
                                 <button className="btn limpiar" type="button" onClick={handleReset}>Limpiar</button>
                                 <button className="btn guardar" type="submit">Guardar</button>
                                 </div>
-
                             </form>
-                        </div>
+                             </div>
+
                     )}
                     {/*Manejo del cambio de vistas */}
                     {currentView === 'editar' && (
@@ -335,7 +337,9 @@ const ContactForm = () => {
                         }}/> )}
                     {currentView === 'acompanamientos' && <TutoringHistoryView />} {/* Vista de acompañamientos */}
                     {currentView === 'acompañar' && <AgregarAcompañamiento />} {/* Vista de acompañamiento */}
+                    </>
                 </div>
+            </div>
         </div>
     );
 };

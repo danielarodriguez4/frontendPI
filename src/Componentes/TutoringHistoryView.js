@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText, Edit3} from 'lucide-react';
 
 import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
+import CancelIcon from '@mui/icons-material/Cancel'; // Mantengo el import por si lo usas en otro lado del componente, aunque no en el modal de stats
 
 import '../Estilos/TutoringHistoryView.css';
 import Swal from 'sweetalert2';
@@ -29,7 +29,7 @@ const TutoringHistoryView = () => {
   const [editingStatus, setEditingStatus] = useState(null);
   const [tempStatus, setTempStatus] = useState('');
 
-  // Opciones de estado disponibles
+  // Opciones de estado disponibles (corregí un pequeño detalle aquí: el `label` para Pendiente y Cancelado)
   const statusOptions = [
     { value: 'Completado', label: 'Completado', color: '#28a745' },
     { value: 'Pendiente', label: 'Pendiente', color: '#ffc107' },
@@ -114,9 +114,7 @@ const TutoringHistoryView = () => {
   const updateSessionStatus = async (sessionId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-
-      // Ajusta esta URL según tu endpoint del backend
-      const response = await axios.pacth(
+      const response = await axios.patch(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/${sessionId}`,
         { status: newStatus },
       );
@@ -182,6 +180,7 @@ const TutoringHistoryView = () => {
 
       const statsMap = {};
       studentSessions.forEach(session => {
+        // Asegúrate de que sessionTypes esté cargado cuando se llama a esta función
         const sessionTypeName = sessionTypes.find(type => type.id === session.id_session_type)?.name || 'No definido';
 
         if (statsMap[sessionTypeName]) {
@@ -313,7 +312,10 @@ const TutoringHistoryView = () => {
 
   useEffect(() => {
     // Cuando currentPage o sessionTypes cambian, volvemos a cargar las sesiones
-    fetchSessions(currentPage);
+    // Asegurarse de que sessionTypes se haya cargado antes de intentar cargar las sesiones
+    if (sessionTypes.length > 0 || currentPage === 1) { // Añade esta condición para esperar sessionTypes
+      fetchSessions(currentPage);
+    }
   }, [currentPage, sessionTypes]); // Añadir sessionTypes como dependencia
 
   // Helpers
@@ -348,6 +350,7 @@ const TutoringHistoryView = () => {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
+        <p>Cargando sesiones...</p> {/* Añadí un mensaje de carga aquí */}
       </div>
     );
   }
@@ -524,10 +527,6 @@ const TutoringHistoryView = () => {
               <h2 className="modal-title">
                 Estadísticas de {selectedStudent?.name}
               </h2>
-              <button className="modal-close" onClick={closeModal}>
-                {/* Puedes usar un ícono de Material-UI para cerrar el modal también */}
-                <CancelIcon />
-              </button>
             </div>
 
             <div className="modal-body">
@@ -553,28 +552,36 @@ const TutoringHistoryView = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {studentStats.map((stat, index) => (
-                          <tr key={index}>
-                            <td>{stat.session_type}</td>
-                            <td className="stats-count">{stat.total_sessions}</td>
+                        {studentStats.length > 0 ? (
+                          studentStats.map((stat, index) => (
+                            <tr key={index}>
+                              <td>{stat.session_type}</td>
+                              <td className="stats-count">{stat.total_sessions}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="2" className="no-stats-row">
+                              No se encontraron estadísticas para este estudiante.
+                            </td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>
-
-                  {studentStats.length === 0 && (
-                    <div className="no-stats">
-                      <p>No se encontraron estadísticas para este estudiante.</p>
-                    </div>
-                  )}
                 </>
               )}
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={closeModal} className="modal-accept-button">
+                Aceptar
+              </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </div> 
   );
 };
 

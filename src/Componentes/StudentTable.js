@@ -271,7 +271,7 @@ const StudentTable = ({ onNavigateToProfile }) => {
                     </div>
                 </div>
 
-                <div style={{ padding: '16px 24px', textAlign: 'right', fontSize: '14px', color: '#374151' }}>
+                <div style={{ padding: '16px 24px', textAlign: 'right', fontSize: '18px', color: '#374151' }}>
                     Total estudiantes registrados: {filteredStudents.length}
                 </div>
             </div>
