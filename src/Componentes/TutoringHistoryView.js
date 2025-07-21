@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText, X, BarChart3, Check, Edit3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText, Edit3} from 'lucide-react';
+
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+
 import '../Estilos/TutoringHistoryView.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+
 
 const TutoringHistoryView = () => {
   const [sessions, setSessions] = useState([]);
@@ -10,10 +15,10 @@ const TutoringHistoryView = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const sessionsPerPage = 5;
+  const sessionsPerPage = 5; // Aquí se define que sean 5 estudiantes por página
 
   const [sessionTypes, setSessionTypes] = useState([]);
-  
+
   // Estados para el modal de estadísticas
   const [showStudentModal, setShowStudentModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -65,7 +70,7 @@ const TutoringHistoryView = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/all?page=${page}&limit=${sessionsPerPage}`,
         {
@@ -75,33 +80,23 @@ const TutoringHistoryView = () => {
         }
       );
 
-      console.log('🔍 DEBUGGING - Respuesta completa:', response.data);
-      console.log('🔍 DEBUGGING - Datos de sesiones:', response.data.data);
-      console.log('🔍 DEBUGGING - Primera sesión completa:', response.data.data?.[0]);
-
-      // Mapear las sesiones usando los campos correctos del API
-      const mappedSessions = response.data.data.map(session => ({
+      const mappedSessions = (response.data.data || []).map(session => ({
         ...session,
-        // Usar los campos que funcionaron en el primer código
         first_name: session.name || 'N/A',
         last_name: session.surname || 'N/A',
         first_name_companion: session.companion_name || 'N/A',
         last_name_companion: session.companion_surname || 'N/A',
         companion_specialty: session.companion_speciality || 'N/A',
-        session_type_name: session.session_type_name || 
+        session_type_name: session.session_type_name ||
           sessionTypes.find(type => type.id === session.id_session_type)?.name || 'No definido',
         notes: session.session_notes || 'Sin notas',
         status: session.status || 'Completado'
       }));
 
-      console.log('🔍 DEBUGGING - Sesiones mapeadas:', mappedSessions);
-      console.log('🔍 DEBUGGING - Primera sesión mapeada:', mappedSessions[0]);
-
       setSessions(mappedSessions);
       setTotalPages(Math.ceil((response.data.total || mappedSessions.length) / sessionsPerPage));
-      
+
     } catch (err) {
-      console.error('❌ Error al cargar sesiones:', err);
       setError(err.message);
       Swal.fire({
         title: 'Error',
@@ -119,28 +114,15 @@ const TutoringHistoryView = () => {
   const updateSessionStatus = async (sessionId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       // Ajusta esta URL según tu endpoint del backend
-      const response = await axios.put(
+      const response = await axios.pacth(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/${sessionId}`,
         { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-        }
       );
 
-      // Actualizar el estado local
-      setSessions(prevSessions => 
-        prevSessions.map(session => 
-          session.id === sessionId 
-            ? { ...session, status: newStatus }
-            : session
-        )
-      );
-      
+      await fetchSessions(currentPage); 
+
       Swal.fire({
         title: 'Éxito',
         text: 'Estado actualizado correctamente',
@@ -148,12 +130,12 @@ const TutoringHistoryView = () => {
         timer: 2000,
         showConfirmButton: false
       });
-      
+
     } catch (error) {
       console.error('Error al actualizar estado:', error);
       Swal.fire({
         title: 'Error',
-        text: 'No se pudo actualizar el estado',
+        text: error.response?.data?.message || 'No se pudo actualizar el estado',
         icon: 'error',
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#d33'
@@ -185,7 +167,7 @@ const TutoringHistoryView = () => {
     try {
       setLoadingStats(true);
       const token = localStorage.getItem('token');
-      
+
       // Usar el endpoint existente para obtener sesiones del estudiante
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/student/${studentId}`,
@@ -195,22 +177,20 @@ const TutoringHistoryView = () => {
           },
         }
       );
-      
+
       const studentSessions = response.data.data || [];
-      
-      // Agrupar por tipo de sesión y contar
+
       const statsMap = {};
       studentSessions.forEach(session => {
-        // Usar id_session_type según tu estructura
         const sessionTypeName = sessionTypes.find(type => type.id === session.id_session_type)?.name || 'No definido';
-        
+
         if (statsMap[sessionTypeName]) {
           statsMap[sessionTypeName]++;
         } else {
           statsMap[sessionTypeName] = 1;
         }
       });
-      
+
       // Convertir a array para mostrar, ordenado por cantidad descendente
       const statsArray = Object.entries(statsMap)
         .map(([name, count]) => ({
@@ -218,9 +198,9 @@ const TutoringHistoryView = () => {
           total_sessions: count
         }))
         .sort((a, b) => b.total_sessions - a.total_sessions);
-      
+
       setStudentStats(statsArray);
-      
+
     } catch (error) {
       console.error('Error al cargar estadísticas:', error);
       Swal.fire({
@@ -239,12 +219,12 @@ const TutoringHistoryView = () => {
   // Manejar click en estudiante
   const handleStudentClick = (session) => {
     console.log('Sesión clickeada:', session);
-    
+
     // Usar id_student según tu estructura de datos
     const studentId = session.id_student;
     const firstName = session.first_name || 'N/A';
     const lastName = session.last_name || 'N/A';
-    
+
     if (!studentId) {
       Swal.fire({
         title: 'Error',
@@ -255,16 +235,16 @@ const TutoringHistoryView = () => {
       });
       return;
     }
-    
+
     const student = {
       id: studentId,
       name: `${firstName} ${lastName}`,
       first_name: firstName,
       last_name: lastName
     };
-    
+
     console.log('Estudiante seleccionado:', student);
-    
+
     setSelectedStudent(student);
     setShowStudentModal(true);
     fetchStudentStats(student.id, student.name);
@@ -280,7 +260,7 @@ const TutoringHistoryView = () => {
   // Componente para el selector de estado
   const StatusSelector = ({ session }) => {
     const isEditing = editingStatus === session.id;
-    
+
     if (isEditing) {
       return (
         <div className="status-editor">
@@ -297,42 +277,44 @@ const TutoringHistoryView = () => {
             ))}
           </select>
           <div className="status-actions">
+            {/* Botón de Guardar con ícono de Material-UI */}
             <button
               onClick={() => handleStatusSave(session.id)}
               className="status-save-btn"
               title="Guardar cambios"
             >
-              <Check size={12} />
+              <SaveIcon style={{ fontSize: 16 }} /> {/* Tamaño del ícono */}
             </button>
+            {/* Botón de Cancelar con ícono de Material-UI */}
             <button
               onClick={handleStatusCancel}
               className="status-cancel-btn"
               title="Cancelar edición"
             >
-              <X size={12} />
+              <CancelIcon style={{ fontSize: 16 }} /> {/* Tamaño del ícono */}
             </button>
           </div>
         </div>
       );
     }
-    
+
     return (
       <div className="status-display">
-        <span 
+        <span
           className={`status-badge ${getStatusClass(session.status)} editable-status`}
           onClick={() => handleStatusEdit(session.id, session.status)}
           title="Click para editar estado"
         >
           {session.status || 'Completado'}
-          <Edit3 size={12} className="edit-icon" />
         </span>
       </div>
     );
   };
 
   useEffect(() => {
+    // Cuando currentPage o sessionTypes cambian, volvemos a cargar las sesiones
     fetchSessions(currentPage);
-  }, [currentPage, sessionTypes]);
+  }, [currentPage, sessionTypes]); // Añadir sessionTypes como dependencia
 
   // Helpers
   const formatDate = (dateString) => {
@@ -448,7 +430,7 @@ const TutoringHistoryView = () => {
               {sessions.map((session, index) => (
                 <tr key={session.id || index} className="table-row">
                   <td className="table-cell">
-                    <div 
+                    <div
                       className="student-info clickable-student"
                       onClick={() => handleStudentClick(session)}
                       style={{ cursor: 'pointer' }}
@@ -513,6 +495,7 @@ const TutoringHistoryView = () => {
             >
               <ChevronLeft className="pagination-icon" />
             </button>
+            {/* Generar botones de paginación solo para las páginas disponibles */}
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
@@ -542,10 +525,11 @@ const TutoringHistoryView = () => {
                 Estadísticas de {selectedStudent?.name}
               </h2>
               <button className="modal-close" onClick={closeModal}>
-                <X size={24} />
+                {/* Puedes usar un ícono de Material-UI para cerrar el modal también */}
+                <CancelIcon />
               </button>
             </div>
-            
+
             <div className="modal-body">
               {loadingStats ? (
                 <div className="loading-container">
@@ -558,7 +542,7 @@ const TutoringHistoryView = () => {
                     <h3>Resumen de asesorías</h3>
                     <p>Total de sesiones: {studentStats.reduce((sum, stat) => sum + stat.total_sessions, 0)}</p>
                   </div>
-                  
+
                   <div className="stats-table">
                     <h4>Discriminado por tipo de asesoría:</h4>
                     <table className="stats-table-content">
@@ -578,7 +562,7 @@ const TutoringHistoryView = () => {
                       </tbody>
                     </table>
                   </div>
-                  
+
                   {studentStats.length === 0 && (
                     <div className="no-stats">
                       <p>No se encontraron estadísticas para este estudiante.</p>

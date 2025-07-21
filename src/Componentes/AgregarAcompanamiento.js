@@ -346,7 +346,8 @@ const AgregarAcompanamiento = () => {
             required
             style={{
               minHeight: '40px',
-              padding: '8px',
+              padding: '20px',
+              fontSize: '18px',
               width: '100%',
               border: selectedStudent ? '2px solid #28a745' : '1px solid #ccc',
               borderRadius: '4px'
@@ -359,8 +360,9 @@ const AgregarAcompanamiento = () => {
                   key={student.id}
                   className="autocomplete-item"
                   onClick={() => handleStudentSelect(student)}
-                  style={{
-                    padding: '10px',
+                  style={{           
+                    padding: '20px',
+                    fontSize: '18px',
                     cursor: 'pointer',
                     borderBottom: '1px solid #eee',
                     backgroundColor: '#fff'
@@ -379,7 +381,7 @@ const AgregarAcompanamiento = () => {
           )}
           {showStudentDropdown && filteredStudents.length === 0 && studentQuery.length > 0 && (
             <div className="autocomplete-dropdown">
-              <div className="autocomplete-item" style={{ padding: '10px', color: '#666' }}>
+              <div className="autocomplete-item" style={{ padding: '20px', color: '#666', fontSize: '18px' }}>
                 No se encontraron estudiantes
               </div>
             </div>
@@ -406,7 +408,7 @@ const AgregarAcompanamiento = () => {
           value={formData.profesional}
           onChange={handleChange}
           required
-          style={{ minHeight: '40px', padding: '8px' }}
+          style={{ minHeight: '40px', padding: '20px' }}
         >
           <option value="">Seleccione un profesional</option>
           {companions.length > 0 ? (
@@ -420,45 +422,43 @@ const AgregarAcompanamiento = () => {
           )}
         </select>
 
-        {/* --- DROPDOWNS PARA LA FECHA --- */}
-        <label>Fecha:</label>
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-          <select value={selectedDay} onChange={handleDayChange} required>
-            <option value="">Día</option>
-            {generateDays().map(day => (
-              <option key={day} value={day}>{day}</option>
-            ))}
-          </select>
-          <select value={selectedMonth} onChange={handleMonthChange} required>
-            <option value="">Mes</option>
-            {generateMonths().map(month => (
-              <option key={month.value} value={month.value}>{month.label}</option>
-            ))}
-          </select>
-          <select value={selectedYear} onChange={handleYearChange} required>
-            <option value="">Año</option>
-            {generateYears().map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-        </div>
+            <label>Fecha:</label>
+            <div className="date-time-select-group">
+                <select value={selectedDay} onChange={handleDayChange} required>
+                    <option value="">Día</option>
+                    {generateDays().map(day => (
+                        <option key={day} value={day}>{day}</option>
+                    ))}
+                </select>
+                <select value={selectedMonth} onChange={handleMonthChange} required>
+                    <option value="">Mes</option>
+                    {generateMonths().map(month => (
+                        <option key={month.value} value={month.value}>{month.label}</option>
+                    ))}
+                </select>
+                <select value={selectedYear} onChange={handleYearChange} required>
+                    <option value="">Año</option>
+                    {generateYears().map(year => (
+                        <option key={year} value={year}>{year}</option>
+                    ))}
+                </select>
+            </div>
 
-        {/* --- DROPDOWNS PARA LA HORA --- */}
-        <label>Hora:</label>
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-          <select value={selectedHour} onChange={handleHourChange} required>
-            <option value="">Hora</option>
-            {generateHours().map(hour => (
-              <option key={hour} value={hour}>{hour}</option>
-            ))}
-          </select>
-          <select value={selectedMinute} onChange={handleMinuteChange} required>
-            <option value="">Minuto</option>
-            {generateMinutes().map(minute => (
-              <option key={minute} value={minute}>{minute}</option>
-            ))}
-          </select>
-        </div>
+            <label>Hora:</label>
+            <div className="date-time-select-group">
+                <select value={selectedHour} onChange={handleHourChange} required>
+                    <option value="">Hora</option>
+                    {generateHours().map(hour => (
+                        <option key={hour} value={hour}>{hour}</option>
+                    ))}
+                </select>
+                <select value={selectedMinute} onChange={handleMinuteChange} required>
+                    <option value="">Minuto</option>
+                    {generateMinutes().map(minute => (
+                        <option key={minute} value={minute}>{minute}</option>
+                    ))}
+                </select>
+            </div>
 
         <label>Observaciones:</label>
         <textarea

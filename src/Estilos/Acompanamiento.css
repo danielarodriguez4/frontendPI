@@ -1,52 +1,84 @@
+/* form para agregar acompañamiento */
+
 .form-container {
-  margin: 40px auto;
-  padding: 20px;
-  width: 50%;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin: 40px auto;
+    padding: 20px;
+    width: 50%;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 form {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 label {
-  margin-top: 15px;
-  font-weight: bold;
-  font-size: 27px;
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 27px;
 }
 
 input, select {
-  padding: 15px;
-  font-size: 22px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-top: 5px;
-  font-size: 24px;
+    padding: 20px;
+    font-size: 24px;
+    border: 1px solid #d8d3d3;
+    border-radius:8px;
+    margin-top: 5px;
+    box-sizing: border-box;
 }
 
+.date-time-select-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
 
+.date-time-select-group select {
+    flex: 1;
+    min-width: 0;
+    padding: 20px; /* Aquí tenías 20px, tus selects de fecha/hora son grandes */
+    font-size: 20px;
+    padding: 10px;
+    font-size: 18px;
+}
+
+.date-time-select-group select:nth-child(1) {
+    max-width: 90px;
+}
+.date-time-select-group select:nth-child(2) {
+    max-width: 120px;
+}
+.date-time-select-group select:nth-child(3) {
+    max-width: 100px;
+}
+
+/* Estilos para el botón */
 button {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #1cc88a;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 25px;
-  font-weight: bold;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #1cc88a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 25px;
+    font-weight: bold;
+    max-width: 80%;
+    align-self: center; 
 }
 
 .observaciones-textarea {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-top: 5px;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #d8d3d3;
+    margin-top: 5px;
+    font-size: 18px;
+    box-sizing: border-box; 
+    width: 100%;
 }
-
 
 .autocomplete-container {
   position: relative;
