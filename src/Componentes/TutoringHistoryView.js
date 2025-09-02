@@ -90,21 +90,29 @@ const TutoringHistoryView = () => {
 
       const sessionsData = Array.isArray(response.data) ? response.data : response.data.data || [];
       
-      const mappedSessions = sessionsData.map(session => ({
-        ...session,
-        first_name: session.name || 'N/A',
-        last_name: session.surname || 'N/A',
-        first_name_companion: session.companion_name || 'N/A',
-        last_name_companion: session.companion_surname || 'N/A',
-        companion_specialty: session.companion_speciality || 'N/A',
-        session_type_name: session.session_type_name ||
-          sessionTypesArray.find(type => type.id === session.id_session_type)?.name || 'No definido',
-        notes: session.session_notes || 'Sin notas',
-        status: session.status || 'Pendiente'
-      }));
+      // Agregar debug para verificar la estructura de datos
+      console.log('Sesiones recibidas:', sessionsData.slice(0, 2)); // Solo las primeras 2 para debug
+      
+      const mappedSessions = sessionsData.map(session => {
+        // Debug individual de cada sesión
+        console.log('Session notes field:', session.session_notes);
+        
+        return {
+          ...session,
+          first_name: session.name || 'N/A',
+          last_name: session.surname || 'N/A',
+          first_name_companion: session.companion_name || 'N/A',
+          last_name_companion: session.companion_surname || 'N/A',
+          companion_specialty: session.companion_speciality || 'N/A',
+          session_type_name: session.session_type_name ||
+            sessionTypesArray.find(type => type.id === session.id_session_type)?.name || 'No definido',
+          notes: session.session_notes || 'Sin notas', // CORREGIDO: usar session_notes directamente
+          status: session.status || 'Pendiente'
+        };
+      });
 
       setSessions(mappedSessions);
-      setFilteredSessions(mappedSessions); // Inicialmente mostrar todas
+      setFilteredSessions(mappedSessions);
 
     } catch (err) {
       console.error('Error al cargar sesiones:', err);

@@ -30,7 +30,6 @@ const AgregarAcompanamiento = () => {
   const [companions, setCompanions] = useState([]);
   const [sessionTypes, setSessionTypes] = useState([]);
 
-  // ... (Tus funciones fetchStudents, fetchCompanions, fetchSessionTypes - sin cambios) ...
   const fetchStudents = async () => {
     try {
       const token = localStorage.getItem('token');
