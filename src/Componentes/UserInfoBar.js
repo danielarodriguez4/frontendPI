@@ -1,5 +1,6 @@
 /*Lógica para mostrar el nombre y rol de usuario en la parte superior derecha*/
 import React from 'react';
+import NotificationCenter from './NotificationCenter';
 import '../Estilos/UserInfoBar.css';
 
 const UserInfoBar = ({ name, role }) => {
@@ -14,6 +15,7 @@ const UserInfoBar = ({ name, role }) => {
                 alt="Avatar"
                 className="user-avatar"
             />
+            <NotificationCenter />
         </div>
     );
 };
