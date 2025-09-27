@@ -16,8 +16,8 @@ const NotificationCenter = () => {
       const fetchNotifications = async () => {
         try {
           const [res1, res2] = await Promise.all([
-            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/notifications`),
-            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/alerts`)
+            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/priorities`),
+            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/alerts`)
           ]);
           // Filtrar por notifications por fecha
           const all = [...res1.data, ...res2.data];
