@@ -15,17 +15,22 @@ const NotificationCenter = () => {
       setError(null);
       const fetchNotifications = async () => {
         try {
-          console.log('URL prioridades:', `${process.env.REACT_APP_BACKEND_URL}api/v2/priorities`);
-          console.log('URL alertas:', `${process.env.REACT_APP_BACKEND_URL}api/v2/alerts`);
+          console.log('URL priority:', `${process.env.REACT_APP_BACKEND_URL}/api/v2/priorities/all`);
+          console.log('URL alert:', `${process.env.REACT_APP_BACKEND_URL}/api/v2/alerts/all`);
           const [res1, res2] = await Promise.all([
-            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/priorities`),
-            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/alerts`)
+            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/priorities/all`),
+            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/alerts/all`)
           ]);
-          console.log('Respuesta prioridades:', res1.data);
-          console.log('Respuesta alertas:', res2.data);
-          // Filtrar por notifications por fecha
-          const all = [...res1.data, ...res2.data];
-          all.sort((a, b) => new Date(b.date) - new Date(a.date));
+          console.log('Respuesta priority:', res1.data);
+          console.log('Respuesta alerts:', res2.data);
+          // Usar array correcto según estructura de la respuesta
+          // Extraer correctamente el array de prioridades y alertas
+          const priorityArray = Array.isArray(res1.data.data) ? res1.data.data : [];
+          const alertsArray = Array.isArray(res2.data.data) ? res2.data.data : [];
+          console.log('priorityArray:', priorityArray);
+          console.log('alertsArray:', alertsArray);
+          // Combinar sin filtrar por fecha para depuración
+          const all = [...priorityArray, ...alertsArray];
           setNotifications(all);
         } catch (err) {
           console.error('Error al cargar notificaciones:', err);
@@ -71,8 +76,23 @@ const NotificationCenter = () => {
             <ul className="notification-list">
               {notifications.map((n, i) => (
                 <li key={i} className="notification-item">
-                  <div className="notification-title">{n.title || n.message || 'Notificación'}</div>
-                  {n.date && <div className="notification-date">{new Date(n.date).toLocaleString()}</div>}
+                  {/* Prioridad: mostrar aunque falte algún campo */}
+                  {n.name && (
+                    <>
+                      <div className="notification-title">Prioridad: {n.name}</div>
+                      {n.level !== undefined && <div className="notification-level">Nivel: {n.level}</div>}
+                      {n.sessions_per_month !== undefined && <div className="notification-sessions">Sesiones/mes: {n.sessions_per_month}</div>}
+                      {n.created_at && <div className="notification-date">Creado: {new Date(n.created_at).toLocaleString()}</div>}
+                    </>
+                  )}
+                  {/* Alerta */}
+                  {(n.title || n.message) && (
+                    <>
+                      <div className="notification-title">{n.title || 'Alerta'}</div>
+                      {n.message && <div className="notification-message">{n.message}</div>}
+                      {n.date && <div className="notification-date">{new Date(n.date).toLocaleString()}</div>}
+                    </>
+                  )}
                 </li>
               ))}
             </ul>
