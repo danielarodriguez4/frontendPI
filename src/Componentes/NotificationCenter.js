@@ -58,9 +58,9 @@ const NotificationCenter = () => {
     <div className="notification-center" ref={dropdownRef}>
       <button className="notification-icon" onClick={() => setOpen((v) => !v)}>
         <img
-          src="https://cdn-icons-png.flaticon.com/512/3557/3557778.png"
+          src="/campana.png"
           alt="Notificaciones"
-          style={{ width: 28, height: 28, display: 'block' }}
+          style={{ width: 40, height: 40, display: 'block' }}
         />
         {notifications.length > 0 && <span className="notification-badge">{notifications.length}</span>}
       </button>
