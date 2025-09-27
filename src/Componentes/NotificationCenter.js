@@ -15,15 +15,20 @@ const NotificationCenter = () => {
       setError(null);
       const fetchNotifications = async () => {
         try {
+          console.log('URL prioridades:', `${process.env.REACT_APP_BACKEND_URL}api/v2/priorities`);
+          console.log('URL alertas:', `${process.env.REACT_APP_BACKEND_URL}api/v2/alerts`);
           const [res1, res2] = await Promise.all([
             axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/priorities`),
             axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/alerts`)
           ]);
+          console.log('Respuesta prioridades:', res1.data);
+          console.log('Respuesta alertas:', res2.data);
           // Filtrar por notifications por fecha
           const all = [...res1.data, ...res2.data];
           all.sort((a, b) => new Date(b.date) - new Date(a.date));
           setNotifications(all);
         } catch (err) {
+          console.error('Error al cargar notificaciones:', err);
           setError('Error al cargar notificaciones');
         } finally {
           setLoading(false);
