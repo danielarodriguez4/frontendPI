@@ -16,6 +16,7 @@ const HistorialAsesorias = ({ estudianteId, onVolver }) => {
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
     const perPage = 10; // Número de asesorías por página
+    const [filterMonth, setFilterMonth] = useState(''); // formato YYYY-MM
 
 
     useEffect(() => {
@@ -156,13 +157,33 @@ const HistorialAsesorias = ({ estudianteId, onVolver }) => {
                     <h3>Resumen</h3>
                     <p><strong>Total de asesorías:</strong> {historial?.total || 0}</p>
                     <p><strong>Estudiante:</strong> {historial?.estudiante?.nombre} {historial?.estudiante?.apellido}</p>
+                    <div style={{ marginTop: '8px' }}>
+                        <label htmlFor="filter-month">Filtrar por mes: </label>
+                        <input
+                            id="filter-month"
+                            type="month"
+                            value={filterMonth}
+                            onChange={(e) => setFilterMonth(e.target.value)}
+                        />
+                        {filterMonth && (
+                            <button style={{ marginLeft: 8 }} onClick={() => setFilterMonth('')}>Limpiar</button>
+                        )}
+                    </div>
                 </div>
             </div>
 
             <div className="asesorias-container">
                 {historial?.asesorias?.length > 0 ? (
                     <div className="asesorias-grid">
-                        {historial.asesorias.map((asesoria) => (
+                        {historial.asesorias
+                            .filter((asesoria) => {
+                                if (!filterMonth) return true;
+                                // filterMonth tiene formato YYYY-MM
+                                const [year, month] = filterMonth.split('-');
+                                const fecha = new Date(asesoria.fecha);
+                                return fecha.getFullYear() === parseInt(year, 10) && (fecha.getMonth() + 1) === parseInt(month, 10);
+                            })
+                            .map((asesoria) => (
                             <div key={asesoria.id} className="asesoria-card">
                                 <div className="asesoria-header">
                                     <span className={`tipo-badge ${getTipoAcompañamientoClase(asesoria.tipo_acompanamiento)}`}>

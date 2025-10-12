@@ -22,6 +22,7 @@ const TutoringHistoryView = () => {
   // Estados para filtros
   const [statusFilter, setStatusFilter] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('');
+  const [filterMonth, setFilterMonth] = useState(''); // formato YYYY-MM
 
   // Estados para el modal de estadísticas
   const [showStudentModal, setShowStudentModal] = useState(false);
@@ -46,7 +47,7 @@ const TutoringHistoryView = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/session-type/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,7 +107,7 @@ const TutoringHistoryView = () => {
           companion_specialty: session.companion_speciality || 'N/A',
           session_type_name: session.session_type_name ||
             sessionTypesArray.find(type => type.id === session.id_session_type)?.name || 'No definido',
-          notes: session.session_notes || 'Sin notas', // CORREGIDO: usar session_notes directamente
+          notes: session.session_notes || 'Sin notas', 
           status: session.status || 'Pendiente'
         };
       });
@@ -145,6 +146,17 @@ const TutoringHistoryView = () => {
       filtered = filtered.filter(session => 
         session.session_type_name === specialtyFilter
       );
+    }
+
+    // Filtro por mes (filterMonth formato YYYY-MM)
+    if (filterMonth) {
+      const [yearStr, monthStr] = filterMonth.split('-');
+      const year = parseInt(yearStr, 10);
+      const month = parseInt(monthStr, 10);
+      filtered = filtered.filter(session => {
+        const fecha = new Date(session.created_at || session.date || session.start_time || session.fecha);
+        return fecha.getFullYear() === year && (fecha.getMonth() + 1) === month;
+      });
     }
 
     setFilteredSessions(filtered);
@@ -470,6 +482,19 @@ const TutoringHistoryView = () => {
                 </option>
               ))}
             </select>
+            <div style={{ marginLeft: 12 }}>
+              <label htmlFor="filter-month">Mes: </label>
+              <input
+                id="filter-month"
+                type="month"
+                value={filterMonth}
+                onChange={(e) => setFilterMonth(e.target.value)}
+                style={{ marginLeft: 6 }}
+              />
+              {filterMonth && (
+                <button style={{ marginLeft: 8 }} onClick={() => setFilterMonth('')}>Limpiar</button>
+              )}
+            </div>
           </div>
         </div>
 

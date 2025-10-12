@@ -30,9 +30,17 @@ function Botones({ onNavigate }) {
     {
       id: 'acompanamientos',
       title: 'Visualiza acompañamientos',
+      description: 'Consulta métricas y estadísticas de los acompañamientos realizados por mes',
       buttonText: 'Acompañamientos',
       image: 'metricas.png',
       alt: 'acompanamientos'
+    },    {
+      id: 'formulario',
+      title: 'Envíar caracterización',
+      description: 'Crea y envía formularios de caracterización a estudiantes en riesgo de deserción',
+      buttonText: 'Crear formulario',
+      image: 'formulario.png',
+      alt: 'formulario'
     }
   ];
 

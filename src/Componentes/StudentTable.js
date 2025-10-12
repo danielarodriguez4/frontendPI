@@ -54,7 +54,7 @@ const StudentTable = ({ onNavigateToProfile }) => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student/all`);
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v2/student/all`);
                 const studentsData = Array.isArray(response.data) ? response.data : response.data.data || [];
                 setStudents(studentsData);
                 setFilteredStudents(studentsData);
