@@ -34,7 +34,7 @@ const AgregarAcompanamiento = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/student/all`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/student/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,7 +58,7 @@ const AgregarAcompanamiento = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/companion/all`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/companion/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ const AgregarAcompanamiento = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session-type/all`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/session-type/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -274,7 +274,7 @@ const handleSubmit = async (e) => {
       console.log('Datos enviados al backend:', backendData);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/session/`,
         backendData,
         {
           headers: {
