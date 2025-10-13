@@ -7,7 +7,10 @@ const defaultQuestions = [
   { id: 'q2', text: '¿Has asistido a tus clases regularmente?' },
   { id: 'q3', text: '¿Necesitas apoyo académico adicional?' },
   { id: 'q4', text: '¿Tienes dificultades con el acceso a recursos (internet, materiales)?' },
-  { id: 'q5', text: '¿Te interesa recibir asesoría socioemocional?' }
+  { id: 'q5', text: '¿Te interesa recibir asesoría socioemocional?' },
+  { id: 'q6', text: '¿Te gustan las papas?' },
+  { id: 'q7', text: '¿Te gusta la pizza?' },
+  { id: 'q8', text: '¿Te gusta el helado?' }
 ];
 
 const FormCreator = ({ onBack }) => {
@@ -34,7 +37,6 @@ const FormCreator = ({ onBack }) => {
       </div>
       <div className="formcreator-container">
       <div className="formcreator-body">
-        {/* Título removido por petición del usuario */}
 
         <div className="formcreator-questions">
           <h3>Selecciona la pregunta a enviar</h3>

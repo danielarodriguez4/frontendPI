@@ -75,11 +75,68 @@
   cursor: pointer;
 }
 
+/* Make all filter selects share the same width/appearance so the month picker matches */
+.filter-select {
+  min-width: 360px; /* same visual width as other filters */
+  height: 44px;
+}
+
+/* Force same font/line-height/padding for inputs to exactly match selects */
+.filter-select,
+select.filter-select,
+input.filter-select {
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  font-size: 20px;
+  line-height: 1.2;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+/* Layout for calendar trigger next to the visible filter */
+.filter-with-calendar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  height: 44px;
+}
+
+.calendar-trigger svg {
+  width: 20px;
+  height: 20px;
+  color: #374151;
+}
+
+/* Keep the native month input hidden but present for the native picker to appear */
+.hidden-month-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Let input[type=month] inherit .filter-select styles so it matches selects across browsers */
+
 .filter-select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
+
+/* Wrapper to make inputs (like type=month) look like selects and show a placeholder */
+/* (removed wrapper/placeholder/clear-btn styles; month input uses plain .filter-select now) */
 
 /* Tabla */
 .table-container {
@@ -437,6 +494,18 @@
   .status-cancel-btn {
     min-width: 32px;
     height: 32px;
+  }
+}
+
+/* Responsive override for filter sizes on small screens */
+@media (max-width: 768px) {
+  .filter-select {
+    min-width: 100%;
+    font-size: 18px;
+    height: 44px;
+  }
+  .filter-input-wrapper {
+    width: 100%;
   }
 }
 

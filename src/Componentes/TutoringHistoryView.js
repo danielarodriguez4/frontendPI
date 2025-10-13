@@ -8,11 +8,11 @@ import '../Estilos/TutoringHistoryView.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
-const ITEMS_PER_PAGE = 10; // Constante igual que en StudentTable
+const ITEMS_PER_PAGE = 10; 
 
 const TutoringHistoryView = () => {
   const [sessions, setSessions] = useState([]);
-  const [filteredSessions, setFilteredSessions] = useState([]); // Nuevo estado para sesiones filtradas
+  const [filteredSessions, setFilteredSessions] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,7 +47,7 @@ const TutoringHistoryView = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v2/session-type/all`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/session-types/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,7 +73,7 @@ const TutoringHistoryView = () => {
     }
   };
 
-  // Cargar TODAS las sesiones de una vez (como en StudentTable)
+  // Cargar todas las sesiones
   const fetchSessions = async (sessionTypesArray = []) => {
     try {
       setLoading(true);
@@ -91,11 +91,10 @@ const TutoringHistoryView = () => {
 
       const sessionsData = Array.isArray(response.data) ? response.data : response.data.data || [];
       
-      // Agregar debug para verificar la estructura de datos
-      console.log('Sesiones recibidas:', sessionsData.slice(0, 2)); // Solo las primeras 2 para debug
+      console.log('Sesiones recibidas:', sessionsData.slice(0, 2)); 
       
       const mappedSessions = sessionsData.map(session => {
-        // Debug individual de cada sesión
+
         console.log('Session notes field:', session.session_notes);
         
         return {
@@ -130,7 +129,6 @@ const TutoringHistoryView = () => {
     }
   };
 
-  // Nuevo useEffect para manejar el filtrado (como en StudentTable)
   useEffect(() => {
     let filtered = [...sessions];
 
@@ -155,13 +153,15 @@ const TutoringHistoryView = () => {
       const month = parseInt(monthStr, 10);
       filtered = filtered.filter(session => {
         const fecha = new Date(session.created_at || session.date || session.start_time || session.fecha);
+        if (isNaN(fecha.getTime())) return false; 
         return fecha.getFullYear() === year && (fecha.getMonth() + 1) === month;
       });
     }
 
     setFilteredSessions(filtered);
-    setCurrentPage(1); // Resetear a la primera página cuando cambie el filtro
-  }, [sessions, statusFilter, specialtyFilter]);
+    setCurrentPage(1); 
+  }, [sessions, statusFilter, specialtyFilter, filterMonth]);
+  
 
   // Función para actualizar el estado de la sesión
   const updateSessionStatus = async (sessionId, newStatus) => {
@@ -274,7 +274,6 @@ const TutoringHistoryView = () => {
     }
   };
 
-  // Manejar click en estudiante
   const handleStudentClick = (session) => {
     console.log('Sesión clickeada:', session);
 
@@ -314,7 +313,7 @@ const TutoringHistoryView = () => {
     setStudentStats([]);
   };
 
-  // Función para cambiar página (como en StudentTable)
+  // Función para cambiar página
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -373,13 +372,10 @@ const TutoringHistoryView = () => {
     );
   };
 
-  // ESTE ES EL CAMBIO CLAVE: Cargar sessionTypes primero, luego las sesiones
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Primero cargar los tipos de sesión
         const sessionTypesData = await fetchSessionTypes();
-        // Luego cargar las sesiones con los tipos ya disponibles
         await fetchSessions(sessionTypesData);
       } catch (error) {
         console.error('Error al cargar datos:', error);
@@ -390,7 +386,6 @@ const TutoringHistoryView = () => {
     loadData();
   }, []);
 
-  // Helpers
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -421,7 +416,6 @@ const TutoringHistoryView = () => {
     }
   };
 
-  // Cálculos de paginación (como en StudentTable)
   const totalPages = Math.ceil(filteredSessions.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentSessions = filteredSessions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -446,13 +440,12 @@ const TutoringHistoryView = () => {
   return (
     <div className="tutoring-history-container">
       <div className="tutoring-history-card">
-        {/* Header */}
+
         <div className="header">
           <h1 className="header-title">Historial de acompañamientos</h1>
           <p className="header-subtitle">Gestiona y revisa las sesiones de tutoría</p>
         </div>
 
-        {/* Filtros */}
         <div className="filters-container">
           <div className="filters">
             <div className="filter-group">
@@ -482,19 +475,13 @@ const TutoringHistoryView = () => {
                 </option>
               ))}
             </select>
-            <div style={{ marginLeft: 12 }}>
-              <label htmlFor="filter-month">Mes: </label>
-              <input
-                id="filter-month"
-                type="month"
-                value={filterMonth}
-                onChange={(e) => setFilterMonth(e.target.value)}
-                style={{ marginLeft: 6 }}
-              />
-              {filterMonth && (
-                <button style={{ marginLeft: 8 }} onClick={() => setFilterMonth('')}>Limpiar</button>
-              )}
-            </div>
+            <input
+              id="filter-month"
+              type="month"
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+              className="filter-select"
+            />
           </div>
         </div>
 
@@ -584,7 +571,6 @@ const TutoringHistoryView = () => {
           </table>
         </div>
 
-        {/* Paginación simplificada como StudentTable */}
         <div className="pagination-container">
           <div className="pagination-info">
             <p className="pagination-text">
@@ -614,7 +600,6 @@ const TutoringHistoryView = () => {
         </div>
       </div>
 
-      {/* Modal de estadísticas del estudiante */}
       {showStudentModal && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

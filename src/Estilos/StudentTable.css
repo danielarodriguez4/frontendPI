@@ -1,6 +1,8 @@
 /* Diseños para la tabla de visualización y edición de datos de los estudiantes */
 .tabla-estudiantes {
-    padding: 20px;
+    padding: 24px;
+    display: flex;
+    justify-content: center; /* centrar la tarjeta en la página */
 }
 
 .titulo-tabla {
@@ -16,8 +18,23 @@
 .tabla-container {
     background: white;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 1900px;
+    overflow: hidden;
+}
+
+.tabla-container .header {
+    background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+    padding: 22px 20px;
+    border-radius: 10px 10px 0 0;
+    color: white;
+}
+
+.tabla-container .header-subtitle {
+    color: rgba(255,255,255,0.9);
+    margin-top: 8px;
+    font-size: 16px;
 }
 
 .tabla-estudiantes table {
@@ -28,7 +45,7 @@
 
 .tabla-estudiantes th, .tabla-estudiantes td {
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #eee;
     text-align: center;
     white-space: nowrap;
 }
@@ -37,23 +54,29 @@
     background-color: #2563eb;
     color: white;
     font-weight: bold;
-    font-size: 25px;
+    font-size: 18px;
 }
 
 .tabla-estudiantes td {
-    font-size: 25px;
+    font-size: 16px;
 }
 
 .tabla-estudiantes tbody tr:hover {
-    background-color: #f1f5ff;
+    background-color: #f8fbff;
 }
 
 .tabla-estudiantes input {
     width: 100%;
     padding: 6px;
-    font-size: 25px;
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+/* Contenedor interior que permite scroll horizontal si la tabla es más ancha */
+.table-scroll {
+    overflow-x: auto;
+    padding: 16px;
 }
 
 .acciones {

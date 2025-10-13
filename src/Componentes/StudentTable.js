@@ -118,8 +118,6 @@ const StudentTable = ({ onNavigateToProfile }) => {
             );
 
             setStudents(updatedStudents);
-            // Removemos esta línea para que el useEffect se encargue del filtrado
-            // setFilteredStudents(updatedStudents);
             setEditingStudent(null);
             Swal.fire({
                 title: '¡Éxito!',
@@ -180,8 +178,9 @@ const StudentTable = ({ onNavigateToProfile }) => {
                     </div>
                 </div>
 
-                <div className="table-container">
-                    <table>
+                                <div className="table-container">
+                                    <div className="table-scroll">
+                                        <table>
                         <thead>
                             <tr>
                                 <th>Cédula</th>
@@ -244,8 +243,9 @@ const StudentTable = ({ onNavigateToProfile }) => {
                                 )
                             )}
                         </tbody>
-                    </table>
-                </div>
+                                        </table>
+                                    </div>
+                                </div>
 
                 <div className="pagination-container">
                     <div className="pagination-info">
