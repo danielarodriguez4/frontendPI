@@ -1,0 +1,74 @@
+/* Estilos simples y coherentes con el resto del proyecto */
+.formcreator-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.formcreator-header-section {
+  background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+  text-align: center;
+  padding: 18px 12px;
+  border-radius: 8px;
+  margin-bottom: 28px;
+  margin-top: 30px;
+}
+.formcreator-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0;
+}
+.formcreator-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.formcreator-body {
+  padding: 12px 0;
+}
+.formcreator-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.formcreator-field input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+.formcreator-questions {
+  margin-top: 12px;
+}
+.question-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.questions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.question-row {
+  border-bottom: 1px solid #f1f5f9;
+}
+.q-checkbox {
+  width: 60px;
+  text-align: center;
+  vertical-align: middle;
+}
+.q-text {
+  padding: 14px 8px;
+  font-size: 16px;
+}
+.formcreator-footer {
+  margin-top: 16px;
+}
+
+.formcreator-questions h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}

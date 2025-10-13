@@ -7,6 +7,7 @@ import Botones from './Componentes/Botones';
 import StudentTable from './Componentes/StudentTable';
 import UserInfoBar from './Componentes/UserInfoBar';
 import AgregarAcompañamiento from './Componentes/AgregarAcompanamiento';
+import FormCreator from './Componentes/FormCreator';
 import Swal from 'sweetalert2';
 import TutoringHistoryView from './Componentes/TutoringHistoryView';
 import './Estilos/TutoringHistoryView.css';
@@ -337,6 +338,9 @@ const ContactForm = () => {
                         }}/> )}
                     {currentView === 'acompanamientos' && <TutoringHistoryView />} {/* Vista de acompañamientos */}
                     {currentView === 'acompañar' && <AgregarAcompañamiento />} {/* Vista de acompañamiento */}
+                    {currentView === 'formulario' && (
+                        <FormCreator onBack={() => setCurrentView('registrar')} />
+                    )}
                     </>
                 </div>
             </div>
