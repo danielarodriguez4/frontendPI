@@ -3,7 +3,7 @@
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  max-width: 1900px;
+  max-width: 3000px;
 }
 .formcreator-header-section {
   background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
@@ -62,13 +62,13 @@
 }
 .q-text {
   padding: 14px 8px;
-  font-size: 16px;
+  font-size: 20px;
 }
 .formcreator-footer {
   margin-top: 16px;
 }
 
 .formcreator-questions h3 {
-  font-size: 18px;
+  font-size: 25px;
   margin-bottom: 12px;
 }
