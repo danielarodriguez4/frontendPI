@@ -42,6 +42,62 @@
 .formcreator-questions {
   margin-top: 12px;
 }
+
+.student-select-box {
+  margin-bottom: 12px;
+}
+
+.student-search-row {
+  display: flex;
+  gap: px;
+  align-items: center;
+}
+
+.student-search-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 1000px;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.student-suggestions-wrapper {
+  position: relative;
+}
+
+.student-suggestions {
+  list-style: none;
+  margin: 8px 0 0 0;
+  padding: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  width: 360px;
+}
+
+.student-suggestions li {
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.student-suggestions li:hover { background: #f3f4f6; }
+
+.s-name { font-weight: 600; }
+.s-email { color: #6b7280; }
+
+.student-email-box { display:flex; gap:12px; align-items:center; }
+.student-name-display { font-weight:700; }
+.student-email { color:#374151; }
+.clear-student-btn { background: none; border: 1px solid #d1d5db; padding:6px 10px; border-radius:6px; cursor:pointer; }
+
+.no-students { margin-top: 8px; color: #6b7280; font-size: 16px; }
 .question-item {
   display: flex;
   align-items: center;

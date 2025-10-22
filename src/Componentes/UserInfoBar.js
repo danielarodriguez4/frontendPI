@@ -10,11 +10,7 @@ const UserInfoBar = ({ name, role }) => {
                 <div className="user-name">{name}</div>
                 <div className="user-role">{role}</div>
             </div>
-            <img
-                src="https://www.w3schools.com/howto/img_avatar.png"
-                alt="Avatar"
-                className="user-avatar"
-            />
+
             <NotificationCenter />
         </div>
     );

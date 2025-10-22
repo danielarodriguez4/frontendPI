@@ -229,7 +229,7 @@ const TutoringHistoryView = () => {
       const token = localStorage.getItem('token');
 
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/session/student/${studentId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/sessions/student/${studentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
