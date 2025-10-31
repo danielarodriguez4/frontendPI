@@ -32,7 +32,7 @@ html {
 .sidebar {
   width: 300px;
   min-height: 100vh;
-  background-color: #3b61d0;
+  background-color: #222D56 !important;
   padding: 20px;
   transition: all 0.3s ease-in-out;
   display: flex;
@@ -67,7 +67,7 @@ html {
   text-align: center;
   font-size: 40px;
   margin-bottom: 15px;
-  color: #33526d;
+  color: #222D56;
   font-weight: bold;
   padding-bottom: 8px;
   width: 100%;
@@ -120,4 +120,41 @@ html {
     font-size: 40px;
   }
 } 
+
+/* Global table header styling: make all table headers use the requested dark blue */
+table thead th,
+.table-header,
+.table-header-cell,
+.tabla-estudiantes th {
+  background-color: #222D56 !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Ensure thead rows also get the background when using custom header containers */
+table thead,
+table thead tr {
+  background-color: #222D56 !important;
+}
+
+
+/* Component-specific overrides to catch headers rendered by different modules */
+.tutoring-history-card .header,
+.tutoring-history-card .table-header,
+.tutoring-history-card .table-header-cell,
+.historial-header,
+.tabla-container .header,
+.tabla-estudiantes th {
+  background-color: #222D56 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure table thead in these containers also use the dark header */
+.tutoring-history-card table thead th,
+.historial-container table thead th,
+.tabla-estudiantes thead th {
+  background-color: #222D56 !important;
+  color: #ffffff !important;
+}
+
 

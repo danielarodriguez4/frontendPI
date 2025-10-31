@@ -16,7 +16,7 @@
     font-size: 36px; 
     font-weight: bold;
     margin-bottom: 20px;
-    color: #2a4bb5;
+    color: #222D56;
 }
 
 form {
@@ -125,7 +125,7 @@ input, select {
 button {
     margin-top: 20px;
     padding: 15px 30px;
-    background-color: #2a4bb5;
+    background-color: #222D56;
     color: white;
     border: none;
     border-radius: 8px;

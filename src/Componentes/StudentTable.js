@@ -235,7 +235,7 @@ const StudentTable = ({ onNavigateToProfile }) => {
                                         <td>{formatDateTime(student.created_at)}</td>
                                         <td>{formatDateTime(student.updated_at)}</td>
                                         <td className="acciones">
-                                            <Button onClick={() => handleEditClick(student)} variant="contained" size="small" color="primary">
+                                            <Button onClick={() => handleEditClick(student)} variant="contained" size="small" style={{ backgroundColor: "#222D56" }}>
                                                 <EditIcon />
                                             </Button>
                                         </td>

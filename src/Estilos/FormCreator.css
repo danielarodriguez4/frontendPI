@@ -6,7 +6,7 @@
   max-width: 3000px;
 }
 .formcreator-header-section {
-  background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+  background-color: #222D56 !important;
   color: white;
   text-align: center;
   padding: 18px 12px;

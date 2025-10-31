@@ -18,7 +18,7 @@
 }
 
 .btn-volver {
-    background-color: #2196f3;
+    background-color: #222D56;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -28,7 +28,7 @@
 }
 
 .btn-volver:hover {
-    background-color: #1976d2;
+    background-color: #222D56;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
 }
@@ -47,8 +47,32 @@
     font-weight: 600;
 }
 
+
+.estudiante-info {
+    background-color: #222D56 !important;
+    padding: 12px 16px;
+    border-radius: 8px;
+}
+
+.estudiante-info h2 {
+    color: #fff !important;
+}
+
+/* Stronger overrides for any table headers or header blocks inside the historial page.
+   This targets the container specifically so it has higher specificity than global rules
+   and will be applied when the Historial component's stylesheet is loaded. */
+.historial-container .header,
+.historial-container .tabla-container .header,
+.historial-container .tabla-estudiantes thead th,
+.historial-container table thead th,
+.historial-container .tabla-estudiantes th {
+    background-color: #222D56 !important;
+    color: #ffffff !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
 .estudiante-icon {
-    color: #2196f3;
+    color: #222D56;
     font-size: 20px;
 }
 
@@ -123,25 +147,25 @@
 .tipo-sociopedagogica {
     background-color: #e3f2fd;
     color: #1976d2;
-    border: 1px solid #1976d2;
+    border: 1px solid #222D56 !important;
 }
 
 .tipo-sociofamiliar {
     background-color: #f3e5f5;
     color: #7b1fa2;
-    border: 1px solid #7b1fa2;
+    border: 1px solid #7C76B5!important;
 }
 
 .tipo-psicologia {
     background-color: #e8f5e8;
     color: #388e3c;
-    border: 1px solid #388e3c;
+    border: 1px solid #FFBA08 !important;
 }
 
 .tipo-default {
     background-color: #f5f5f5;
     color: #666;
-    border: 1px solid #999;
+    border: 1px solid #708BC6 !important;
 }
 
 /* Estados */
@@ -165,7 +189,7 @@
 
 .estado-pendiente {
     background-color: #e3f2fd;
-    color: #1565c0;
+    color: #222D56;
     border: 1px solid #2196f3;
 }
 
@@ -340,7 +364,7 @@
 .pagination-button {
   font-size: 18px;
   padding: 8px 16px;
-  background-color: #3f51b5;
+  background-color: #222D56 !important;
   color: white;
   border: none;
   border-radius: 6px;
