@@ -15,7 +15,7 @@
 
 .user-name {
     font-weight: bold;
-    color: #2a4ca4;
+    color: #222D56;
     font-size: 22px;
 }
 
@@ -95,7 +95,7 @@
 }
 .notification-title {
     font-weight: 600;
-    color: #2a4ca4;
+    color: #222D56;
     font-size: 30px;
 }
 .notification-date {
@@ -109,4 +109,12 @@
     padding: 18px;
     text-align: center;
     color: #888;
+}
+
+/* Ensure bell image is visible and clickable */
+.notification-bell {
+    display: block;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
 }

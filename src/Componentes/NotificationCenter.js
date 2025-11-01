@@ -58,8 +58,9 @@ const NotificationCenter = () => {
     <div className="notification-center" ref={dropdownRef}>
       <button className="notification-icon" onClick={() => setOpen((v) => !v)}>
         <img
-          src="/campana.png"
+          src={`${process.env.PUBLIC_URL || ''}/campana.png`}
           alt="Notificaciones"
+          className="notification-bell"
           style={{ width: 40, height: 40, display: 'block' }}
         />
         {notifications.length > 0 && <span className="notification-badge">{notifications.length}</span>}

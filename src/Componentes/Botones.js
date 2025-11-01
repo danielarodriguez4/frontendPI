@@ -56,10 +56,10 @@ function Botones({ onNavigate }) {
               variant="contained"
               onClick={() => onNavigate(item.id)}
               sx={{
-                backgroundColor: '#1cc88a',
+                backgroundColor: '#7C76B5',
                 color: 'white',
                 '&:hover': {
-                  backgroundColor: '#17a55f',
+                  backgroundColor: '#DCEBF9',
                 },
                 textTransform: 'none',
                 fontSize: '20px',
