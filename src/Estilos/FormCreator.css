@@ -40,7 +40,6 @@
   font-weight: 600;
 }
 
-/* ========== STUDENT SELECTION ========== */
 .student-select-box {
   margin-bottom: 24px;
 }
@@ -48,7 +47,7 @@
 .student-select-box > label {
   display: block;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 24px;
   margin-bottom: 12px;
   color: #222D56;
 }
@@ -69,7 +68,7 @@
   padding: 14px 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 24px;
   height: 56px;
   box-sizing: border-box;
   transition: border-color 0.2s;
@@ -132,13 +131,13 @@
 
 .s-email {
   color: #6b7280;
-  font-size: 14px;
+  font-size: 24px;
 }
 
 .student-email-input {
   flex: 1;
   padding: 14px 16px;
-  font-size: 18px;
+  font-size: 24px;
   height: 56px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -165,7 +164,7 @@
   border-color: #9ca3af;
 }
 
-/* ========== MODE SWITCH ========== */
+
 .mode-switch {
   display: flex;
   gap: 12px;
@@ -193,7 +192,7 @@
   border-color: #222D56;
 }
 
-/* ========== QUESTIONS TABLE (SELECT MODE) ========== */
+
 .questions-table {
   width: 100%;
   border-collapse: collapse;
@@ -224,11 +223,10 @@
 
 .q-text {
   padding: 16px 12px;
-  font-size: 18px;
+  font-size: 24px;
   color: #111827;
 }
 
-/* ========== SELECTED CONFIG (SELECT MODE) ========== */
 .selected-config {
   margin-top: 24px;
   padding: 20px;
@@ -238,7 +236,7 @@
 }
 
 .selected-config h4 {
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 16px;
   font-weight: 600;
   color: #222D56;
@@ -257,7 +255,7 @@
 
 .config-question-text {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 24px;
   color: #222D56;
   margin-bottom: 8px;
 }
@@ -266,7 +264,7 @@
   padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  font-size: 16px;
+  font-size: 20px;
   height: 48px;
   min-width: 200px;
   cursor: pointer;
@@ -296,7 +294,7 @@
   padding: 12px 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 24px;
   height: 48px;
   box-sizing: border-box;
 }
@@ -306,7 +304,6 @@
   border-color: #222D56;
 }
 
-/* ========== MANUAL QUESTIONS MODE ========== */
 .manual-questions {
   display: flex;
   flex-direction: column;
@@ -328,7 +325,7 @@
   padding: 14px 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 20px;
   height: 56px;
   box-sizing: border-box;
 }
@@ -342,7 +339,7 @@
   padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  font-size: 16px;
+  font-size: 20px;
   height: 48px;
   min-width: 200px;
   cursor: pointer;
@@ -374,22 +371,21 @@
   flex-wrap: wrap;
 }
 
-/* ========== BUTTONS ========== */
 .add-option-btn {
-  background: #059669;
+  background: #7C76B5 ;
   color: white;
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 500;
   height: 48px;
   transition: background-color 0.2s;
 }
 
 .add-option-btn:hover {
-  background: #047857;
+  background: #708BC6 ;
 }
 
 .remove-option-btn {
@@ -399,7 +395,7 @@
   padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   height: 48px;
   white-space: nowrap;
@@ -417,7 +413,7 @@
   padding: 12px 20px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   height: 48px;
   transition: background-color 0.2s;
@@ -434,13 +430,13 @@
 }
 
 .add-question-btn {
-  background: #059669;
+  background: #7C76B5;
   color: white;
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   height: 48px;
   transition: background-color 0.2s;
@@ -448,10 +444,9 @@
 }
 
 .add-question-btn:hover {
-  background: #047857;
+  background: #708BC6 ;
 }
 
-/* ========== FOOTER ========== */
 .formcreator-footer {
   margin-top: 32px;
   padding-top: 24px;
@@ -491,6 +486,7 @@
   font-weight: 600 !important;
   height: 48px !important;
   min-width: 180px;
+  background-color: #708BC6 ;
 }
 
 .send-btn:disabled {
