@@ -72,7 +72,7 @@ const FormCreator = ({ onBack }) => {
     setSending(true);
     try {
       const token = localStorage.getItem('token');
-      const url = `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms`;
+      const url = `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/cualquier_pendejada/questions`;
       console.log('Enviando POST a:', url);
       console.log('Payload a enviar:', payload);
       const headers = {
@@ -132,7 +132,6 @@ const FormCreator = ({ onBack }) => {
     fetchStudents();
   }, []);
 
-  // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(e.target)) {

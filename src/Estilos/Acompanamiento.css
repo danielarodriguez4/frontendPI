@@ -5,29 +5,30 @@
     padding: 40px;
     width: auto; 
     max-width: 800px; 
-    max-height: 100%;
+    max-height: 80%;
     background-color: #ededf1;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     color: #555;
-    flex: 1; /* allow form to take remaining space next to image */
+    flex: 1; 
 }
 .acompanamiento-layout {
     display: flex;
     gap: 0; 
-    align-items: stretch; /* make children same height */
+    flex-direction: row-reverse; 
+    align-items: stretch; 
     justify-content: center;
     max-width: 100%;
 }
 .acompanamiento-image {
-    width: 35%; /* larger proportional width */
-    max-width: 480px; /* cap the width to avoid overflow */
-    min-width: 240px; /* ensure it's noticeably larger */
-    height: 100%;
+    width: 50%;
+    max-width: 30%; 
+    min-width: 40%; 
+    height: 80%;
     display: block;
     object-fit: contain;
-    margin: 0;
-    border-radius: 8px;
+    border-radius: 8px; 
+    margin-left: -10%;
 }
 
 @media screen and (max-width: 900px) {
@@ -165,7 +166,207 @@ button:hover {
     background-color: #222D56;
 }
 
-/* Autocomplete styles */
+
+.autocomplete-container {
+    position: relative;
+    width: 100%;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+    font-size: 22px;
+    transition: background-color 0.2s ease;
+}
+
+.autocomplete-item:hover {
+    background-color: #f0f0f0;
+}
+/* form para agregar acompañamiento */
+
+.form-container {
+    margin: 40px auto;
+    padding: 40px;
+    width: auto; 
+    max-width: 800px; 
+    max-height: 80%;
+    background-color: #ededf1;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    color: #555;
+    flex: 1; 
+}
+.acompanamiento-layout {
+    display: flex;
+    gap: 0; 
+    flex-direction: row-reverse; /* imagen a la derecha, formulario a la izquierda */
+    align-items: stretch; 
+    justify-content: center;
+    max-width: 100%;
+}
+.acompanamiento-image {
+    width: 50%;
+    max-width: 30%; 
+    min-width: 40%; 
+    height: 80%;
+    display: block;
+    object-fit: contain;
+    border-radius: 8px; 
+}
+
+@media screen and (max-width: 900px) {
+    .acompanamiento-image {
+        display: none; 
+    }
+    .acompanamiento-layout { flex-direction: column; }
+}
+.form-container h2 {
+    text-align: center;
+    font-size: 36px; 
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #222D56;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 35px; /* Más espacio entre grupos de campos */
+}
+
+label {
+    font-weight: bold;
+    font-size: 27px;
+    display: block;
+}
+
+input, select {
+    padding: 20px;
+    font-size: 24px;
+    border: 1px solid #d8d3d3;
+    border-radius: 8px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Grupo específico para campos de fecha */
+.date-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.date-group label {
+    margin-right: 15px;
+    font-size: 27px;
+    min-width: 80px;
+}
+
+.date-time-select-group {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    align-items: center;
+}
+
+.date-time-select-group select {
+    flex: 1;
+    min-width: 100px;
+    padding: 15px;
+    font-size: 24px; 
+    border: 1px solid #d8d3d3;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+/* Grupo específico para campos de hora */
+.time-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.time-group label {
+    margin-right: 15px;
+    font-size: 27px;
+    min-width: 80px;
+}
+
+.time-select-group {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    align-items: center;
+}
+
+.time-select-group select {
+    flex: 1;
+    min-width: 80px;
+    padding: 15px;
+    font-size: 20px; /* Tamaño de letra más grande */
+    border: 1px solid #d8d3d3;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+/* Campo de observaciones */
+.observaciones-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.observaciones-textarea {
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #d8d3d3;
+    font-size: 24px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Estilos para el botón */
+button {
+    margin-top: 20px;
+    padding: 15px 30px;
+    background-color: #222D56;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 25px;
+    font-weight: bold;
+    align-self: center;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #222D56;
+}
+
+
 .autocomplete-container {
     position: relative;
     width: 100%;
