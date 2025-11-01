@@ -342,7 +342,9 @@ const handleSubmit = async (e) => {
   }, []);
 
   return (
-    <div className="form-container">
+    <div className="acompanamiento-layout">
+      <img src={`${process.env.PUBLIC_URL || ''}/18.png`} alt="decorative" className="acompanamiento-image" />
+      <div className="form-container">
       <h2>Añadir acompañamiento</h2>
       <form onSubmit={handleSubmit}>
         <label>Estudiante:</label>
@@ -481,6 +483,7 @@ const handleSubmit = async (e) => {
 
         <button type="submit">Guardar</button>
       </form>
+      </div>
     </div>
   );
 };

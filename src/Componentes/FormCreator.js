@@ -63,7 +63,7 @@ const FormCreator = ({ onBack }) => {
     }
 
     const payload = {
-      student_id: selectedStudent.id,
+      first_name: selectedStudent.id,
       questions: questionsPayload
     };
 

@@ -3,13 +3,38 @@
 .form-container {
     margin: 40px auto;
     padding: 40px;
-    width: 70%; 
+    width: auto; 
     max-width: 800px; 
     max-height: 100%;
     background-color: #ededf1;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     color: #555;
+    flex: 1; /* allow form to take remaining space next to image */
+}
+.acompanamiento-layout {
+    display: flex;
+    gap: 0; 
+    align-items: stretch; /* make children same height */
+    justify-content: center;
+    max-width: 100%;
+}
+.acompanamiento-image {
+    width: 35%; /* larger proportional width */
+    max-width: 480px; /* cap the width to avoid overflow */
+    min-width: 240px; /* ensure it's noticeably larger */
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    margin: 0;
+    border-radius: 8px;
+}
+
+@media screen and (max-width: 900px) {
+    .acompanamiento-image {
+        display: none; 
+    }
+    .acompanamiento-layout { flex-direction: column; }
 }
 .form-container h2 {
     text-align: center;
@@ -137,7 +162,7 @@ button {
 }
 
 button:hover {
-    background-color: #1e3a8a;
+    background-color: #222D56;
 }
 
 /* Autocomplete styles */
