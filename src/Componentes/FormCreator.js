@@ -72,13 +72,30 @@ const FormCreator = ({ onBack }) => {
     setSending(true);
     try {
       const token = localStorage.getItem('token');
-      const resp = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v2/forms`, payload, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
+      const url = `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms`;
+      console.log('Enviando POST a:', url);
+      console.log('Payload a enviar:', payload);
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      };
+
+      const resp = await axios.post(url, payload, { headers });
       console.log('Respuesta del backend:', resp.data);
       setFormSuccess('Formulario enviado correctamente.');
     } catch (err) {
+      // Mejor logging para depurar por qué no llega la petición
       console.error('Error enviando formulario:', err);
+      try {
+        console.error('Error details - response status:', err.response?.status);
+        console.error('Error details - response data:', err.response?.data);
+        console.error('Error details - headers:', err.response?.headers);
+      } catch (e) {
+        console.error('No hay response en el error:', e);
+      }
+      // Axios puede serializar el error para ver más detalles
+      try { console.error('Axios error dump:', err.toJSON ? err.toJSON() : err); } catch(e) {}
+
       const msg = err?.response?.data?.message || err.message || 'Error al enviar formulario';
       setFormError(msg);
     } finally {
