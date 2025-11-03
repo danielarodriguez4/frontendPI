@@ -17,16 +17,16 @@ const defaultQuestions = [
 const FormCreator = ({ onBack }) => {
   const [questions] = useState(defaultQuestions);
   const [selected, setSelected] = useState(() => questions.map(q => q.id));
-  const [mode, setMode] = useState('select'); // 'select' or 'manual'
+  const [mode, setMode] = useState('select'); 
   const [manualQuestions, setManualQuestions] = useState([{ id: 'm1', text: '', type: 'text', options: [] }]);
   const [configuredQuestions, setConfiguredQuestions] = useState({});
-  const [sending, setSending] = useState(false);
   const [formError, setFormError] = useState(null);
   const [formSuccess, setFormSuccess] = useState(null);
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [generatedUrl, setGeneratedUrl] = useState(null);
   const suggestionsRef = useRef(null);
 
   const toggleQuestion = (id) => {
@@ -46,59 +46,69 @@ const FormCreator = ({ onBack }) => {
     });
   };
 
-  const handleSend = async () => {
+  const buildQuestionsPayload = () => {
+    return mode === 'select'
+      ? questions.filter(q => selected.includes(q.id)).map(q => ({ 
+          id: q.id, 
+          text: q.text, 
+          type: configuredQuestions[q.id]?.type || 'text', 
+          options: configuredQuestions[q.id]?.options || [] 
+        }))
+      : manualQuestions.filter(m => (m.text || '').trim()).map((m, idx) => ({ 
+          id: `manual_${idx + 1}`, 
+          text: m.text, 
+          type: m.type || 'text', 
+          options: m.options || [] 
+        }));
+  };
+
+  const handleGenerateUrl = () => {
     setFormError(null);
     setFormSuccess(null);
-    const questionsPayload = mode === 'select'
-      ? questions.filter(q => selected.includes(q.id)).map(q => ({ id: q.id, text: q.text, type: configuredQuestions[q.id]?.type || 'text', options: configuredQuestions[q.id]?.options || [] }))
-      : manualQuestions.filter(m => (m.text || '').trim()).map((m, idx) => ({ id: `manual_${idx + 1}`, text: m.text, type: m.type || 'text', options: m.options || [] }));
+    setGeneratedUrl(null);
+
+    const questionsPayload = buildQuestionsPayload();
 
     if (!selectedStudent) {
-      setFormError('Seleccione un estudiante antes de enviar.');
+      setFormError('Seleccione un estudiante antes de generar el URL.');
       return;
     }
     if (!questionsPayload || questionsPayload.length === 0) {
-      setFormError('Agregue al menos una pregunta con texto antes de enviar.');
+      setFormError('Agregue al menos una pregunta con texto antes de generar el URL.');
       return;
     }
 
-    const payload = {
-      first_name: selectedStudent.id,
-      questions: questionsPayload
+    // Crear el JSON del formulario con la información del estudiante
+    const formConfig = {
+      studentInfo: {
+        number_id: selectedStudent.id,
+        first_name: selectedStudent.first_name,
+        last_name: selectedStudent.last_name,
+        phone_number: selectedStudent.phone_number || '',
+        email: selectedStudent.email
+      },
+      questions: questionsPayload,
+      createdAt: new Date().toISOString()
     };
 
-    console.log('Payload a enviar:', payload);
+    console.log('Configuración del formulario:', formConfig);
+    
+    // Generar URL única para el formulario
+    const formId = btoa(JSON.stringify(formConfig)).replace(/[+/=]/g, (m) => ({'+':'-','/':'_','=':''}[m]));
+    const baseUrl = window.location.origin;
+    const studentFormUrl = `${baseUrl}/student-form/${formId}`;
+    
+    setGeneratedUrl(studentFormUrl);
+    setFormSuccess('URL generada correctamente. Comparte este enlace con el estudiante.');
+  };
 
-    setSending(true);
-    try {
-      const token = localStorage.getItem('token');
-      const url = `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/cualquier_pendejada/questions`;
-      console.log('Enviando POST a:', url);
-      console.log('Payload a enviar:', payload);
-      const headers = {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
-      };
-
-      const resp = await axios.post(url, payload, { headers });
-      console.log('Respuesta del backend:', resp.data);
-      setFormSuccess('Formulario enviado correctamente.');
-    } catch (err) {
-      console.error('Error enviando formulario:', err);
-      try {
-        console.error('Error details - response status:', err.response?.status);
-        console.error('Error details - response data:', err.response?.data);
-        console.error('Error details - headers:', err.response?.headers);
-      } catch (e) {
-        console.error('No hay response en el error:', e);
-      }
-      // Axios puede serializar el error para ver más detalles
-      try { console.error('Axios error dump:', err.toJSON ? err.toJSON() : err); } catch(e) {}
-
-      const msg = err?.response?.data?.message || err.message || 'Error al enviar formulario';
-      setFormError(msg);
-    } finally {
-      setSending(false);
+  const copyUrlToClipboard = () => {
+    if (generatedUrl) {
+      navigator.clipboard.writeText(generatedUrl).then(() => {
+        alert('URL copiada al portapapeles');
+      }).catch(err => {
+        console.error('Error al copiar:', err);
+      });
     }
   };
 
@@ -116,9 +126,11 @@ const FormCreator = ({ onBack }) => {
         );
         const raw = response.data?.data || [];
         const list = (raw || []).map(student => ({
-          id: student.id || student._id || student.email || Math.random().toString(36).slice(2,9),
+          id: student.id || student._id || student.number_id || Math.random().toString(36).slice(2,9),
+          number_id: student.number_id || student.id || student._id || '',
           first_name: student.first_name || '',
           last_name: student.last_name || '',
+          phone_number: student.phone_number || '',
           email: student.email || '',
           fullName: `${(student.first_name || '').trim()} ${(student.last_name || '').trim()}`.trim()
         }));
@@ -212,7 +224,6 @@ const FormCreator = ({ onBack }) => {
                     ))}
                   </tbody>
                 </table>
-                {/* Configuration area for selected questions */}
                 {selected.length > 0 && (
                   <div className="selected-config">
                     <h4>Configurar respuestas para preguntas seleccionadas</h4>
@@ -301,7 +312,16 @@ const FormCreator = ({ onBack }) => {
             <div className="form-footer-row">
               {formError && <div className="form-error">{formError}</div>}
               {formSuccess && <div className="form-success">{formSuccess}</div>}
-              <Button variant="contained" color="primary" onClick={handleSend} disabled={sending} className="send-btn">{sending ? 'Enviando...' : 'Enviar formulario'}</Button>
+              {generatedUrl && (
+                <div className="generated-url-box">
+                  <label>URL del formulario para el estudiante:</label>
+                  <div className="url-display">
+                    <input type="text" readOnly value={generatedUrl} className="url-input" />
+                    <Button variant="outlined" onClick={copyUrlToClipboard}>Copiar URL</Button>
+                  </div>
+                </div>
+              )}
+              <Button variant="contained" color="primary" onClick={handleGenerateUrl} className="send-btn">Generar URL del formulario</Button>
             </div>
           </div>
          </div>
