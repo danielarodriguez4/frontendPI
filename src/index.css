@@ -27,6 +27,7 @@ html {
   display: flex;
   position: relative;
   margin: 0 auto;
+  background-color: white !important;
 }
 
 .sidebar {

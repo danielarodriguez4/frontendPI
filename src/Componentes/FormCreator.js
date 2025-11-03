@@ -81,7 +81,7 @@ const FormCreator = ({ onBack }) => {
     // Crear el JSON del formulario con la información del estudiante
     const formConfig = {
       studentInfo: {
-        number_id: selectedStudent.id,
+        number_id: selectedStudent.number_id,
         first_name: selectedStudent.first_name,
         last_name: selectedStudent.last_name,
         phone_number: selectedStudent.phone_number || '',
@@ -93,8 +93,12 @@ const FormCreator = ({ onBack }) => {
 
     console.log('Configuración del formulario:', formConfig);
     
-    // Generar URL única para el formulario
-    const formId = btoa(JSON.stringify(formConfig)).replace(/[+/=]/g, (m) => ({'+':'-','/':'_','=':''}[m]));
+    // Generar URL con el JSON codificado (sin backend por ahora)
+    const formId = btoa(JSON.stringify(formConfig))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+    
     const baseUrl = window.location.origin;
     const studentFormUrl = `${baseUrl}/student-form/${formId}`;
     

@@ -1,5 +1,5 @@
 /* Componente para registrar estudiantes. Aquí se encuentra toda la lógica de la visualización del form */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Estilos/Datoscontacto.css';
 import './index.css';
@@ -8,35 +8,35 @@ import StudentTable from './Componentes/StudentTable';
 import UserInfoBar from './Componentes/UserInfoBar';
 import AgregarAcompañamiento from './Componentes/AgregarAcompanamiento';
 import FormCreator from './Componentes/FormCreator';
+import StudentForm from './Componentes/StudentForm';
 import Swal from 'sweetalert2';
 import TutoringHistoryView from './Componentes/TutoringHistoryView';
 import './Estilos/TutoringHistoryView.css';
 
 /*El back debe regresar en esta sección el nombre y rol de la persona que ingresó. De momento, se hace de forma local */
-const ContactForm = () => {
+const App = () => {
     const user = {
         name: 'Daniel León',
         role: 'Administrador'
     };
 
     const handleReset = () => {
-  setFormData({
-    number_id: '',
-    first_name: '',
-    last_name: '',
-    phone_number: '',
-    email: '',
-    institution_email: '',
-    streetType: '',
-    streetNumber: '',
-    buildingNumber: '',
-    apartment: '',
-    municipality: '',
-    semester: '',
-    id_university: ''
-  });
-};
-
+        setFormData({
+            number_id: '',
+            first_name: '',
+            last_name: '',
+            phone_number: '',
+            email: '',
+            institution_email: '',
+            streetType: '',
+            streetNumber: '',
+            buildingNumber: '',
+            apartment: '',
+            municipality: '',
+            semester: '',
+            id_university: ''
+        });
+    };
 
     /*Datos que se envían al backend luego de llenar el form*/
     const [formData, setFormData] = useState({
@@ -58,6 +58,21 @@ const ContactForm = () => {
     const [loading, setLoading] = useState(false);
     const [currentView, setCurrentView] = useState('registrar');
     const [selectedStudentId, setSelectedStudentId] = useState(null);
+    
+    // Estados para detectar si estamos en la vista del formulario del estudiante
+    const [isStudentFormView, setIsStudentFormView] = useState(false);
+    const [studentFormId, setStudentFormId] = useState(null);
+
+    // Detectar si la URL es /student-form/:formId
+    useEffect(() => {
+        const path = window.location.pathname;
+        const match = path.match(/^\/student-form\/([^/]+)$/);
+        
+        if (match) {
+            setStudentFormId(match[1]);
+            setIsStudentFormView(true);
+        }
+    }, []);
 
     const handleChange = (e) => {
         setFormData({
@@ -94,253 +109,258 @@ const ContactForm = () => {
             id_university: id_university
         };
 
-    try {
-        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student/`, 
-            dataToSend, 
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/student/`, 
+                dataToSend, 
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
                 }
+            );
+
+            console.log('Token JWT:', token);
+            console.log('Usuario creado exitosamente:', response.data);
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Datos guardados exitosamente',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#28a745'
+            });
+
+            setFormData({
+                number_id: '',
+                first_name: '',
+                last_name: '',
+                phone_number: '',
+                email: '',
+                institution_email: '',
+                streetType: '',
+                streetNumber: '',
+                buildingNumber: '',
+                apartment: '',
+                municipality: '',
+                semester: '',
+                id_university: ''
+            });
+        } catch (error) {
+            console.error('Error al enviar los datos:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Error al enviar los datos',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33'
+            });
+            
+            if (error.response) {
+                console.error('Error del servidor:', error.response.data);
+                alert(`Error del servidor: ${error.response.status} - ${error.response.data.message || 'Error desconocido'}`);
+            } else if (error.request) {
+                console.error('No se recibió respuesta del servidor');
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No hay conexión',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#d33'
+                });
+            } else {
+                console.error('Error al configurar la petición:', error.message);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo configurar',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#d33'
+                });
             }
-        );
-
-        console.log('Token JWT:', token);
-        console.log('Usuario creado exitosamente:', response.data);
-        Swal.fire({
-            title: '¡Éxito!',
-            text: 'Datos guardados exitosamente',
-            icon: 'success',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#28a745'
-        });
-
-        // Limpiar el formulario después del envío exitoso
-        setFormData({
-            number_id: '',
-            first_name: '',
-            last_name: '',
-            phone_number: '',
-            email: '',
-            institution_email: '',
-            streetType: '',
-            streetNumber: '',
-            buildingNumber: '',
-            apartment: '',
-            municipality: '',
-            semester: '',
-           id_university: ''
-        });
-    } catch (error) {
-        console.error('Error al enviar los datos:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'Error al enviar los datos',
-            icon: 'error',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#d33'
-        });
-        
-        // Manejo específico del error
-        if (error.response) {
-            console.error('Error del servidor:', error.response.data);
-            alert(`Error del servidor: ${error.response.status} - ${error.response.data.message || 'Error desconocido'}`);
-        } else if (error.request) {
-            console.error('No se recibió respuesta del servidor');
-            Swal.fire({
-                title: 'Error',
-                text: 'No hay conexión',
-                icon: 'error',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#d33'
-            });
-        } else {
-            console.error('Error al configurar la petición:', error.message);
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo configurar',
-                icon: 'error',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#d33'
-            });
         }
-    }
 
-    setLoading(false);
-};
+        setLoading(false);
+    };
 
     const handleNavigate = (view) => {
         setCurrentView(view);
     };
 
+    // SI LA URL ES /student-form/:formId, MOSTRAR SOLO EL FORMULARIO (sin sidebar, sin nada)
+    if (isStudentFormView && studentFormId) {
+        return <StudentForm formId={studentFormId} />;
+    }
+
+    // VISTA NORMAL CON SIDEBAR Y TODO
     return (
         <div className="contact-form-container">
-        <div className="container-form">
-            <div className="sidebar">
-                <img src="/logo1.png" className="logo" alt="logo" />
-                <Botones onNavigate={handleNavigate} />
-            </div>
+            <div className="container-form">
+                <div className="sidebar">
+                    <img src="/logo1.png" className="logo" alt="logo" />
+                    <Botones onNavigate={handleNavigate} />
+                </div>
                 <div className="form-grid"> 
                     <>
-                    <div className="main-container">
-                        <UserInfoBar name={user.name} role={user.role} />       
-                    </div>
-                    {currentView === 'registrar' && (
-                        <div> 
-                            <h2>Registrar estudiante</h2>
-                            <form onSubmit={handleSubmit} className="contact-form">
-                                <div>
-                                    <label>Nombre <span className="required-asterisk">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        name="first_name" 
-                                        value={formData.first_name} 
-                                        onChange={handleChange} 
-                                        required 
-                                    />
-                                </div>
-
-                                <div>
-                                    <label>Apellido <span className="required-asterisk">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        name="last_name" 
-                                        value={formData.last_name} 
-                                        onChange={handleChange} 
-                                        required 
-                                    />
-                                </div>
-
-                                <div>
-                                    <label>Número de identificación <span className="required-asterisk">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        name="number_id" 
-                                        value={formData.number_id} 
-                                        onChange={handleChange} 
-                                        required 
-                                    />
-                                </div>
-
-                                <div>
-                                    <label>Número de celular <span className="required-asterisk">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        name="phone_number" 
-                                        value={formData.phone_number} 
-                                        onChange={handleChange} 
-                                        required 
-                                    />
-                                </div>
-
-                                <div>
-                                    <label>Correo personal <span className="required-asterisk">*</span></label>
-                                    <input 
-                                        type="email" 
-                                        name="email" 
-                                        value={formData.email} 
-                                        onChange={handleChange} 
-                                        required 
-                                    />
-                                </div>
-
-                                <div>
-                                    <label>Correo institucional <span className="required-asterisk">*</span></label>
-                                    <input 
-                                        type="email" 
-                                        name="institution_email" 
-                                        value={formData.institution_email} 
-                                        onChange={handleChange} 
-                                        required 
-                                    />
-                                </div>
-
-                                <fieldset className="direccion-group">
-                                    <legend>Dirección de residencia</legend>
-
-                                    <div className="direccion-row">
-                                        <div className="direccion-col">
-                                            <label>Tipo de vía <span className="required-asterisk">*</span></label>
-                                            <select name="streetType" value={formData.streetType} onChange={handleChange} required>
-                                                <option value="">Seleccione</option>
-                                                <option value="Avenida">Avenida</option>
-                                                <option value="Calle">Calle</option>
-                                                <option value="Carrera">Carrera</option>
-                                                <option value="Transversal">Transversal</option>
-                                            </select>
-                                        </div>
-
-                                        <div className="direccion-col">
-                                            <label>Número de vía <span className="required-asterisk">*</span></label>
-                                            <input type="text" name="streetNumber" value={formData.streetNumber} onChange={handleChange} required />
-                                        </div>
-
-                                        <div className="direccion-col">
-                                            <label># de casa o edificio <span className="required-asterisk">*</span></label>
-                                            <input type="text" name="buildingNumber" value={formData.buildingNumber} onChange={handleChange} required />
-                                        </div>
+                        <div className="main-container">
+                            <UserInfoBar name={user.name} role={user.role} />       
+                        </div>
+                        {currentView === 'registrar' && (
+                            <div> 
+                                <h2>Registrar estudiante</h2>
+                                <form onSubmit={handleSubmit} className="contact-form">
+                                    <div>
+                                        <label>Nombre <span className="required-asterisk">*</span></label>
+                                        <input 
+                                            type="text" 
+                                            name="first_name" 
+                                            value={formData.first_name} 
+                                            onChange={handleChange} 
+                                            required 
+                                        />
                                     </div>
 
-                                    <div className="direccion-row">
-                                        <div className="direccion-col">
-                                            <label>Apartamento (si aplica)</label>
-                                            <input type="text" name="apartment" value={formData.apartment} onChange={handleChange} />
-                                        </div>
-
-                                        <div className="direccion-col">
-                                            <label>Municipio <span className="required-asterisk">*</span></label>
-                                            <select name="municipality" value={formData.municipality} onChange={handleChange} required>
-                                                <option value="">Seleccione</option>
-                                                <option value="Bello">Bello</option>
-                                                <option value="Medellín">Medellín</option>
-                                                <option value="Itagüí">Itagüí</option>
-                                                <option value="Sabaneta">Sabaneta</option>
-                                                <option value="La Estrella">La Estrella</option>
-                                            </select>
-                                        </div>
+                                    <div>
+                                        <label>Apellido <span className="required-asterisk">*</span></label>
+                                        <input 
+                                            type="text" 
+                                            name="last_name" 
+                                            value={formData.last_name} 
+                                            onChange={handleChange} 
+                                            required 
+                                        />
                                     </div>
-                                </fieldset>
 
-                                <div>
-                                    <label>Semestre <span className="required-asterisk">*</span></label>
-                                    <select name="semester" value={formData.semester} onChange={handleChange} required>
-                                        <option value="">Seleccione</option>
-                                        {[...Array(9)].map((_, i) => (
-                                            <option key={i + 1} value={i + 1}>{i + 1}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                                    <div>
+                                        <label>Número de identificación <span className="required-asterisk">*</span></label>
+                                        <input 
+                                            type="text" 
+                                            name="number_id" 
+                                            value={formData.number_id} 
+                                            onChange={handleChange} 
+                                            required 
+                                        />
+                                    </div>
 
-                                <div>
-                                    <label>Universidad <span className="required-asterisk">*</span></label>
-                                    <select name="id_university" value={formData.id_university} onChange={handleChange} required>
-                                        <option value="">Seleccione</option>
-                                        <option value="Universidad de Antioquia">Universidad de Antioquia</option>
-                                        <option value="Universidad Nacional">Universidad Nacional</option>
-                                        <option value="Universidad EAFIT">Universidad EAFIT</option>
-                                    </select>
-                                </div>
+                                    <div>
+                                        <label>Número de celular <span className="required-asterisk">*</span></label>
+                                        <input 
+                                            type="text" 
+                                            name="phone_number" 
+                                            value={formData.phone_number} 
+                                            onChange={handleChange} 
+                                            required 
+                                        />
+                                    </div>
 
-                                <div className="button-group">
-                                <button className="btn limpiar" type="button" onClick={handleReset}>Limpiar</button>
-                                <button className="btn guardar" type="submit">Guardar</button>
-                                </div>
-                            </form>
-                             </div>
+                                    <div>
+                                        <label>Correo personal <span className="required-asterisk">*</span></label>
+                                        <input 
+                                            type="email" 
+                                            name="email" 
+                                            value={formData.email} 
+                                            onChange={handleChange} 
+                                            required 
+                                        />
+                                    </div>
 
-                    )}
-                    {/*Manejo del cambio de vistas */}
-                    {currentView === 'editar' && (
-                    <StudentTable
-                        onNavigateToProfile={(studentId) => {
-                        setSelectedStudentId(studentId);
-                        setCurrentView('perfil');
-                        }}/> )}
-                    {currentView === 'acompanamientos' && <TutoringHistoryView />} {/* Vista de acompañamientos */}
-                    {currentView === 'acompañar' && <AgregarAcompañamiento />} {/* Vista de acompañamiento */}
-                    {currentView === 'formulario' && (
-                        <FormCreator onBack={() => setCurrentView('registrar')} />
-                    )}
+                                    <div>
+                                        <label>Correo institucional <span className="required-asterisk">*</span></label>
+                                        <input 
+                                            type="email" 
+                                            name="institution_email" 
+                                            value={formData.institution_email} 
+                                            onChange={handleChange} 
+                                            required 
+                                        />
+                                    </div>
+
+                                    <fieldset className="direccion-group">
+                                        <legend>Dirección de residencia</legend>
+
+                                        <div className="direccion-row">
+                                            <div className="direccion-col">
+                                                <label>Tipo de vía <span className="required-asterisk">*</span></label>
+                                                <select name="streetType" value={formData.streetType} onChange={handleChange} required>
+                                                    <option value="">Seleccione</option>
+                                                    <option value="Avenida">Avenida</option>
+                                                    <option value="Calle">Calle</option>
+                                                    <option value="Carrera">Carrera</option>
+                                                    <option value="Transversal">Transversal</option>
+                                                </select>
+                                            </div>
+
+                                            <div className="direccion-col">
+                                                <label>Número de vía <span className="required-asterisk">*</span></label>
+                                                <input type="text" name="streetNumber" value={formData.streetNumber} onChange={handleChange} required />
+                                            </div>
+
+                                            <div className="direccion-col">
+                                                <label># de casa o edificio <span className="required-asterisk">*</span></label>
+                                                <input type="text" name="buildingNumber" value={formData.buildingNumber} onChange={handleChange} required />
+                                            </div>
+                                        </div>
+
+                                        <div className="direccion-row">
+                                            <div className="direccion-col">
+                                                <label>Apartamento (si aplica)</label>
+                                                <input type="text" name="apartment" value={formData.apartment} onChange={handleChange} />
+                                            </div>
+
+                                            <div className="direccion-col">
+                                                <label>Municipio <span className="required-asterisk">*</span></label>
+                                                <select name="municipality" value={formData.municipality} onChange={handleChange} required>
+                                                    <option value="">Seleccione</option>
+                                                    <option value="Bello">Bello</option>
+                                                    <option value="Medellín">Medellín</option>
+                                                    <option value="Itagüí">Itagüí</option>
+                                                    <option value="Sabaneta">Sabaneta</option>
+                                                    <option value="La Estrella">La Estrella</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <div>
+                                        <label>Semestre <span className="required-asterisk">*</span></label>
+                                        <select name="semester" value={formData.semester} onChange={handleChange} required>
+                                            <option value="">Seleccione</option>
+                                            {[...Array(9)].map((_, i) => (
+                                                <option key={i + 1} value={i + 1}>{i + 1}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label>Universidad <span className="required-asterisk">*</span></label>
+                                        <select name="id_university" value={formData.id_university} onChange={handleChange} required>
+                                            <option value="">Seleccione</option>
+                                            <option value="Universidad de Antioquia">Universidad de Antioquia</option>
+                                            <option value="Universidad Nacional">Universidad Nacional</option>
+                                            <option value="Universidad EAFIT">Universidad EAFIT</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="button-group">
+                                        <button className="btn limpiar" type="button" onClick={handleReset}>Limpiar</button>
+                                        <button className="btn guardar" type="submit">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+                        {/*Manejo del cambio de vistas */}
+                        {currentView === 'editar' && (
+                            <StudentTable
+                                onNavigateToProfile={(studentId) => {
+                                    setSelectedStudentId(studentId);
+                                    setCurrentView('perfil');
+                                }}
+                            />
+                        )}
+                        {currentView === 'acompanamientos' && <TutoringHistoryView />}
+                        {currentView === 'acompañar' && <AgregarAcompañamiento />}
+                        {currentView === 'formulario' && (
+                            <FormCreator onBack={() => setCurrentView('registrar')} />
+                        )}
                     </>
                 </div>
             </div>
@@ -348,4 +368,4 @@ const ContactForm = () => {
     );
 };
 
-export default ContactForm;
+export default App;

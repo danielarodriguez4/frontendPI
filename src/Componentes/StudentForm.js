@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import '../Estilos/StudentForm.css';
 
-const StudentForm = () => {
-  const { formId } = useParams();
+const StudentForm = ({ formId }) => {
   const [formConfig, setFormConfig] = useState(null);
   const [studentInfo, setStudentInfo] = useState({
     number_id: '',
@@ -20,9 +18,41 @@ const StudentForm = () => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    const fetchFormConfig = async () => {
+    const loadFormConfig = async () => {
       try {
-        // Intentar obtener la configuración del formulario desde el backend
+        // Primero intentar decodificar directamente el formId (método sin backend)
+        try {
+          const decoded = atob(formId.replace(/-/g, '+').replace(/_/g, '/'));
+          const config = JSON.parse(decoded);
+          
+          setFormConfig(config);
+          
+          if (config.studentInfo) {
+            setStudentInfo({
+              number_id: config.studentInfo.number_id || '',
+              first_name: config.studentInfo.first_name || '',
+              last_name: config.studentInfo.last_name || '',
+              phone_number: config.studentInfo.phone_number || '',
+              email: config.studentInfo.email || ''
+            });
+          }
+          
+          const initialAnswers = {};
+          config.questions.forEach(q => {
+            if (q.type === 'multiple_choice') {
+              initialAnswers[q.id] = [];
+            } else {
+              initialAnswers[q.id] = '';
+            }
+          });
+          setAnswers(initialAnswers);
+          setLoading(false);
+          return;
+        } catch (decodeError) {
+          console.log('No se pudo decodificar directamente, intentando con backend...');
+        }
+
+        // Si no se puede decodificar, intentar obtener del backend
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/${formId}`
         );
@@ -30,7 +60,6 @@ const StudentForm = () => {
         const config = response.data?.data || response.data;
         setFormConfig(config);
         
-        // Pre-cargar la información del estudiante desde la configuración
         if (config.studentInfo) {
           setStudentInfo({
             number_id: config.studentInfo.number_id || '',
@@ -41,7 +70,6 @@ const StudentForm = () => {
           });
         }
         
-        // Inicializar respuestas vacías
         const initialAnswers = {};
         config.questions.forEach(q => {
           if (q.type === 'multiple_choice') {
@@ -59,7 +87,7 @@ const StudentForm = () => {
       }
     };
 
-    fetchFormConfig();
+    loadFormConfig();
   }, [formId]);
 
   const handleStudentInfoChange = (field, value) => {
@@ -265,7 +293,7 @@ const StudentForm = () => {
     <div className="gform-container">
       <div className="gform-header">
         <div className="gform-header-bar"></div>
-        <h1 className="gform-title">Formulario de seguimiento</h1>
+        <h1 className="gform-title">Formulario de caracterización</h1>
         <p className="gform-description">Por favor completa la siguiente información</p>
       </div>
 
