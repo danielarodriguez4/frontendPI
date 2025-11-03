@@ -18,9 +18,10 @@ const StudentForm = ({ formId }) => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    document.title = 'Caracterización FATV';
+    
     const loadFormConfig = async () => {
       try {
-        // Primero intentar decodificar directamente el formId (método sin backend)
         try {
           const decoded = atob(formId.replace(/-/g, '+').replace(/_/g, '/'));
           const config = JSON.parse(decoded);
@@ -52,7 +53,6 @@ const StudentForm = ({ formId }) => {
           console.log('No se pudo decodificar directamente, intentando con backend...');
         }
 
-        // Si no se puede decodificar, intentar obtener del backend
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/${formId}`
         );
@@ -88,6 +88,10 @@ const StudentForm = ({ formId }) => {
     };
 
     loadFormConfig();
+
+    return () => {
+      document.title = 'Administrador FATV';
+    };
   }, [formId]);
 
   const handleStudentInfoChange = (field, value) => {
@@ -293,7 +297,7 @@ const StudentForm = ({ formId }) => {
     <div className="gform-container">
       <div className="gform-header">
         <div className="gform-header-bar"></div>
-        <h1 className="gform-title">Formulario de caracterización</h1>
+        <h1 className="gform-title">Formulario de seguimiento</h1>
         <p className="gform-description">Por favor completa la siguiente información</p>
       </div>
 
@@ -386,9 +390,6 @@ const StudentForm = ({ formId }) => {
         >
           {submitting ? 'Enviando...' : 'Enviar'}
         </button>
-        <p className="gform-footer-text">
-          Nunca envíes contraseñas a través de Formularios de Google.
-        </p>
       </div>
     </div>
   );

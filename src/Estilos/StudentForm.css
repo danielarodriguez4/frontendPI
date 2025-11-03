@@ -1,4 +1,3 @@
-/* Google Forms Style - Student Form */
 
 * {
   box-sizing: border-box;
@@ -366,7 +365,6 @@ body {
   margin-top: 16px !important;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .gform-container {
     padding: 8px;

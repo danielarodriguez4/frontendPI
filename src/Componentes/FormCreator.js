@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../Estilos/FormCreator.css';
 import { Button } from '@mui/material';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const defaultQuestions = [
   { id: 'q1', text: '¿Cómo te sientes emocionalmente esta semana?' },
@@ -106,15 +107,29 @@ const FormCreator = ({ onBack }) => {
     setFormSuccess('URL generada correctamente. Comparte este enlace con el estudiante.');
   };
 
-  const copyUrlToClipboard = () => {
-    if (generatedUrl) {
-      navigator.clipboard.writeText(generatedUrl).then(() => {
-        alert('URL copiada al portapapeles');
-      }).catch(err => {
-        console.error('Error al copiar:', err);
-      });
-    }
-  };
+    const copyUrlToClipboard = () => {
+        if (generatedUrl) {
+          navigator.clipboard.writeText(generatedUrl).then(() => {
+            Swal.fire({
+              title: '¡Copiado!',
+              text: 'El URL ha sido copiado al portapapeles',
+              icon: 'success',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#673ab7',
+              timer: 2000
+            });
+          }).catch(err => {
+            console.error('Error al copiar:', err);
+            Swal.fire({
+              title: 'Error',
+              text: 'No se pudo copiar el URL',
+              icon: 'error',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#d33'
+            });
+          });
+        }
+      };
 
   useEffect(() => {
     const fetchStudents = async () => {

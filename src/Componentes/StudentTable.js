@@ -27,10 +27,9 @@ const StudentTable = ({ onNavigateToProfile }) => {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
-                hour12: false // Formato 24 horas
+                hour12: false
             });
             
-            // También incluir la fecha en formato legible
             const dateString = date.toLocaleDateString('es-CO', {
                 year: 'numeric',
                 month: '2-digit',
@@ -178,9 +177,9 @@ const StudentTable = ({ onNavigateToProfile }) => {
                     </div>
                 </div>
 
-                                <div className="table-container">
-                                    <div className="table-scroll">
-                                        <table>
+                <div className="table-container">
+                    <div className="table-scroll">
+                        <table>
                         <thead>
                             <tr>
                                 <th>Cédula</th>
