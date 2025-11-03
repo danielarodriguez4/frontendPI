@@ -75,13 +75,11 @@
   cursor: pointer;
 }
 
-/* Make all filter selects share the same width/appearance so the month picker matches */
 .filter-select {
-  min-width: 360px; /* same visual width as other filters */
+  min-width: 360px; 
   height: 44px;
 }
 
-/* Force same font/line-height/padding for inputs to exactly match selects */
 .filter-select,
 select.filter-select,
 input.filter-select {
@@ -118,7 +116,6 @@ input.filter-select {
   color: #374151;
 }
 
-/* Keep the native month input hidden but present for the native picker to appear */
 .hidden-month-input {
   position: absolute;
   width: 1px;
@@ -127,18 +124,11 @@ input.filter-select {
   pointer-events: none;
 }
 
-/* Let input[type=month] inherit .filter-select styles so it matches selects across browsers */
-
 .filter-select:focus {
   outline: none;
   border-color: #222D56;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
-
-/* Wrapper to make inputs (like type=month) look like selects and show a placeholder */
-/* (removed wrapper/placeholder/clear-btn styles; month input uses plain .filter-select now) */
-
-/* Tabla */
 .table-container {
   overflow-x: auto;
 }
@@ -528,17 +518,17 @@ input.filter-select {
 }
 
 .edit-button {
-  color: #2563eb;
+  color: #32526E ;
   background-color: transparent;
 }
 
 .edit-button:hover {
-  color: #1d4ed8;
+  color: #32526E;
   background-color: #dbeafe;
 }
 
 .comment-button {
-  color: #059669;
+  color: #7C76B5;
   background-color: transparent;
 }
 
@@ -592,7 +582,7 @@ input.filter-select {
 
 .add-comment-button {
   padding: 6px 12px;
-  background-color: #059669;
+  background-color: #32526E;
   color: white;
   border: none;
   border-radius: 6px;
@@ -855,7 +845,7 @@ input.filter-select {
 .stats-summary {
   background-color: #f8f9fa; 
   border: 1px solid #e2e6ea;
-  border-left: 5px solid #007bff; 
+  border-left: 5px solid #32526E ; 
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 20px;
@@ -933,7 +923,7 @@ input.filter-select {
 }
 
 .modal-accept-button {
-  background-color: #28a745; 
+  background-color: #7C76B5; 
   color: white;
   padding: 10px 20px;
   border: none;

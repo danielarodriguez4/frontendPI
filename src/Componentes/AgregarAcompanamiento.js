@@ -358,7 +358,7 @@ const handleSubmit = async (e) => {
             style={{
               minHeight: '40px',
               padding: '20px',
-              fontSize: '18px',
+              fontSize: '24px',
               width: '100%',
               border: selectedStudent ? '2px solid #28a745' : '1px solid #ccc',
               borderRadius: '4px'

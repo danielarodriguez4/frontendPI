@@ -84,7 +84,6 @@ const FormCreator = ({ onBack }) => {
       console.log('Respuesta del backend:', resp.data);
       setFormSuccess('Formulario enviado correctamente.');
     } catch (err) {
-      // Mejor logging para depurar por qué no llega la petición
       console.error('Error enviando formulario:', err);
       try {
         console.error('Error details - response status:', err.response?.status);
