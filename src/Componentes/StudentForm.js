@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+// Eliminamos la importación de useParams, ya que no estamos usando React Router aquí.
 import '../Estilos/StudentForm.css';
 
-const StudentForm = ({ formId }) => {
+// ACEPTAMOS 'formId' COMO UN PROP, tal como lo envía App.js
+const StudentForm = ({ formId }) => { 
+  // Ahora usamos 'formId' directamente en lugar de 'encodedId'
+  
   const [formConfig, setFormConfig] = useState(null);
   const [studentInfo, setStudentInfo] = useState({
     number_id: '',
@@ -20,46 +24,39 @@ const StudentForm = ({ formId }) => {
   useEffect(() => {
     document.title = 'Caracterización FATV';
     
+    // VALIDACIÓN: Usamos el prop 'formId'
+    if (!formId) {
+        setError('Enlace de formulario inválido.');
+        setLoading(false);
+        return;
+    }
+    
     const loadFormConfig = async () => {
+      let currentFormId = formId; // Usamos el ID codificado que viene del prop
+      
       try {
-        try {
-          const decoded = atob(formId.replace(/-/g, '+').replace(/_/g, '/'));
-          const config = JSON.parse(decoded);
-          
-          setFormConfig(config);
-          
-          if (config.studentInfo) {
-            setStudentInfo({
-              number_id: config.studentInfo.number_id || '',
-              first_name: config.studentInfo.first_name || '',
-              last_name: config.studentInfo.last_name || '',
-              phone_number: config.studentInfo.phone_number || '',
-              email: config.studentInfo.email || ''
-            });
-          }
-          
-          const initialAnswers = {};
-          config.questions.forEach(q => {
-            if (q.type === 'multiple_choice') {
-              initialAnswers[q.id] = [];
-            } else {
-              initialAnswers[q.id] = '';
-            }
-          });
-          setAnswers(initialAnswers);
-          setLoading(false);
-          return;
-        } catch (decodeError) {
-          console.log('No se pudo decodificar directamente, intentando con backend...');
-        }
 
+        try {
+          // Intentar decodificar: usa el prop 'formId'
+          currentFormId = atob(formId.replace(/-/g, '+').replace(/_/g, '/')); 
+          console.log("ID decodificado para llamar al backend:", currentFormId);
+        } catch (decodeError) {
+          console.log('El ID en la URL no es un objeto JSON codificado. Usando como ID directo para backend.');
+        }
+        
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/${formId}`
+          `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/${currentFormId}`
         );
         
         const config = response.data?.data || response.data;
+        
+        if (!config || !config.questions) {
+             throw new Error("El formato de respuesta del formulario es incorrecto.");
+        }
+        
         setFormConfig(config);
         
+        // ... (resto de la lógica de inicialización)
         if (config.studentInfo) {
           setStudentInfo({
             number_id: config.studentInfo.number_id || '',
@@ -80,6 +77,7 @@ const StudentForm = ({ formId }) => {
         });
         setAnswers(initialAnswers);
         setLoading(false);
+        
       } catch (err) {
         console.error('Error cargando formulario:', err);
         setError('No se pudo cargar el formulario. Verifica que el enlace sea correcto.');
@@ -92,7 +90,8 @@ const StudentForm = ({ formId }) => {
     return () => {
       document.title = 'Administrador FATV';
     };
-  }, [formId]);
+  }, [formId]); // Dependencia actualizada a formId
+
 
   const handleStudentInfoChange = (field, value) => {
     setStudentInfo(prev => ({ ...prev, [field]: value }));
@@ -125,7 +124,8 @@ const StudentForm = ({ formId }) => {
       return false;
     }
 
-    const unanswered = formConfig.questions.filter(q => {
+    // Usar el operador de encadenamiento opcional (?.) para seguridad
+    const unanswered = formConfig?.questions.filter(q => {
       const answer = answers[q.id];
       if (q.type === 'multiple_choice') {
         return !answer || answer.length === 0;
@@ -133,7 +133,7 @@ const StudentForm = ({ formId }) => {
       return !answer || answer.trim() === '';
     });
     
-    if (unanswered.length > 0) {
+    if (unanswered && unanswered.length > 0) { 
       setError('Por favor responde todas las preguntas antes de enviar');
       return false;
     }
@@ -151,7 +151,8 @@ const StudentForm = ({ formId }) => {
     setSubmitting(true);
     
     try {
-      const answersPayload = formConfig.questions.map(q => ({
+
+      const answersPayload = (formConfig?.questions || []).map(q => ({
         question_id: q.id,
         question_text: q.text,
         answer: answers[q.id]
@@ -189,8 +190,9 @@ const StudentForm = ({ formId }) => {
       setSubmitting(false);
     }
   };
-
+  
   const renderQuestion = (question, index) => {
+    // ... (la función renderQuestion se mantiene igual) ...
     const answer = answers[question.id];
 
     return (
@@ -263,6 +265,7 @@ const StudentForm = ({ formId }) => {
     );
   };
 
+
   if (loading) {
     return (
       <div className="gform-loading">
@@ -275,7 +278,7 @@ const StudentForm = ({ formId }) => {
   if (error && !formConfig) {
     return (
       <div className="gform-error-page">
-        <div className="gform-error-icon">⚠️</div>
+        <div className="gform-error-icon"></div>
         <h2>Error al cargar el formulario</h2>
         <p>{error}</p>
       </div>
@@ -289,6 +292,17 @@ const StudentForm = ({ formId }) => {
         <h1>¡Respuesta registrada!</h1>
         <p>Gracias por completar el formulario, {studentInfo.first_name}.</p>
         <p className="gform-success-subtitle">Tus respuestas han sido guardadas correctamente.</p>
+      </div>
+    );
+  }
+
+  // Si formConfig está cargado, pero no hay preguntas
+  if (formConfig && (!formConfig.questions || formConfig.questions.length === 0)) {
+     return (
+      <div className="gform-error-page">
+        <div className="gform-error-icon"></div>
+        <h2>Formulario sin contenido</h2>
+        <p>Este formulario fue creado, pero no contiene preguntas.</p>
       </div>
     );
   }
@@ -323,7 +337,8 @@ const StudentForm = ({ formId }) => {
             placeholder="Ingresa tu número de documento"
           />
         </div>
-
+        
+        {/* ... (el resto de los campos de studentInfo) ... */}
         <div className="gform-field">
           <label className="gform-label">
             Nombre <span className="gform-required">*</span>
@@ -380,7 +395,7 @@ const StudentForm = ({ formId }) => {
         </div>
       </div>
 
-      {formConfig.questions.map((question, index) => renderQuestion(question, index))}
+      {(formConfig?.questions || []).map((question, index) => renderQuestion(question, index))}
 
       <div className="gform-footer">
         <button
