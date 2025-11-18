@@ -253,7 +253,6 @@ const FormCreator = ({ onBack }) => {
                   placeholder="Email del estudiante"
                   className="student-email-input"
                 />
-                <button className="clear-student-btn" onClick={() => { setSelectedStudent(null); setSearchTerm(''); setShowSuggestions(false); }}>Limpiar</button>
               </div>
             </div>
 

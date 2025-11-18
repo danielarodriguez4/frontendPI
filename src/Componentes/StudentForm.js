@@ -44,6 +44,7 @@ const StudentForm = ({ formId }) => {
           console.log('El ID en la URL no es un objeto JSON codificado. Usando como ID directo para backend.');
         }
         
+
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/${currentFormId}`
         );

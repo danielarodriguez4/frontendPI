@@ -54,11 +54,12 @@
     background-color: #222D56 !important;
     color: white;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 24px;
 }
 
+/*Contenido de la tabla */
 .tabla-estudiantes td {
-    font-size: 16px;
+    font-size: 24px;
 }
 
 .tabla-estudiantes tbody tr:hover {
@@ -68,7 +69,6 @@
 .tabla-estudiantes input {
     width: 100%;
     padding: 6px;
-    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
@@ -215,11 +215,11 @@ color: white !important;
     
     .tabla-estudiantes th, .tabla-estudiantes td {
         padding: 8px;
-        font-size: 14px;
+        font-size: 20px;
     }
     
     .tabla-estudiantes th {
-        font-size: 16px;
+        font-size: 18px;
     }
 }
 
@@ -253,7 +253,7 @@ color: white !important;
     
     .tabla-estudiantes th, .tabla-estudiantes td {
         padding: 6px;
-        font-size: 12px;
+        font-size: 20px;
     }
     
     .tabla-estudiantes th {
