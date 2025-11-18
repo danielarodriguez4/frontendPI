@@ -206,7 +206,7 @@ button:hover {
     margin: 40px auto;
     padding: 40px;
     width: auto; 
-    max-width: 30%; 
+    max-width: 50%; 
     max-height: 60%;
     background-color: #ededf1;
     border-radius: 12px;
@@ -223,10 +223,10 @@ button:hover {
     max-width: 100%;
 }
 .acompanamiento-image {
-    width: 30%;
+    width: 40%;
     max-width: 30%; 
     min-width: 30%; 
-    height: 60%;
+    height: 70%;
     display: block;
     object-fit: contain;
     border-radius: 8px; 
