@@ -1,5 +1,44 @@
 /* index.css - Estilos generales */
+/* Importar fuentes de Google */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Merriweather:wght@300;400;700&display=swap');
 
+/* Variables de fuentes */
+:root {
+  --font-main: 'Impact', 'Arial Black', sans-serif;
+  --font-secondary: 'Oswald', sans-serif;
+  --font-body: 'Merriweather', Georgia, serif;
+}
+
+/* Estilos base */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Encabezados usan Impact */
+h1, h2, h3, h4, h5, h6, .header-title {
+  font-family: var(--font-main);
+}
+
+/* Elementos secundarios (botones, labels) usan Oswald */
+button, .mode-btn, .filter-label, .filter-select, .button-secondary {
+  font-family: var(--font-secondary);
+}
+
+/* Contenido y formularios usan Merriweather */
+p, input, select, textarea, label, .student-name, .table-cell {
+  font-family: var(--font-body);
+}
+
+/* Ajustes responsive */
+@media (max-width: 720px) {
+  h1, h2 { 
+    font-size: 1.1rem; 
+  }
+}
 
 body {
   margin: 0;
