@@ -61,11 +61,6 @@ const FormCreator = ({ onBack }) => {
 
     const questionsPayload = buildQuestionsPayload();
 
-    if (!selectedStudent) {
-      setFormError('Seleccione un estudiante antes de generar el URL.');
-      setIsGenerating(false);
-      return;
-    }
     if (!questionsPayload || questionsPayload.length === 0) {
       setFormError('Agregue al menos una pregunta con texto antes de generar el URL.');
       setIsGenerating(false);
@@ -76,13 +71,12 @@ const FormCreator = ({ onBack }) => {
       const token = localStorage.getItem('token');
       
       const formPayload = {
-        name: "Formulario para " + selectedStudent.first_name,
-        description: "Formulario generado automáticamente",
+        name: "Caracterización para " + selectedStudent.first_name,
         date: new Date().toISOString(),
 
         questions_info: buildQuestionsPayload().map((q, index) => ({
           position: index + 1,
-          section: 1, // si no manejas secciones, déjalo fijo
+          section: 1,
           id_parent_question: "",
           needed_answers: [],
           id_question: q.id,
@@ -263,47 +257,6 @@ const FormCreator = ({ onBack }) => {
       <div className="formcreator-container">
         <div className="formcreator-body">
           <div className="formcreator-questions">
-            <div className="student-select-box">
-              <label>Estudiante</label>
-              <div className="student-row">
-                <div className="student-suggestions-wrapper" ref={suggestionsRef}>
-                  <input
-                    type="text"
-                    className="student-search-input"
-                    placeholder="Buscar estudiante por nombre..."
-                    value={selectedStudent ? selectedStudent.fullName : searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setShowSuggestions(true);
-                      setSelectedStudent(null);
-                    }}
-                    onFocus={() => setShowSuggestions(true)}
-                  />
-                  {showSuggestions && (
-                    <ul className="student-suggestions">
-                      {students.filter(s => (s.fullName || '').toLowerCase().includes((searchTerm || '').toLowerCase())).slice(0, 50).map(s => (
-                        <li key={s.id} onMouseDown={() => { setSelectedStudent(s); setShowSuggestions(false); setSearchTerm(''); }}>
-                          <span className="s-name">{s.fullName || `${s.first_name} ${s.last_name}`}</span>
-                          <span className="s-email">{s.email}</span>
-                        </li>
-                      ))}
-                      {students.filter(s => (s.fullName || '').toLowerCase().includes((searchTerm || '').toLowerCase())).length === 0 && (
-                        <li className="no-students">No se encontraron</li>
-                      )}
-                    </ul>
-                  )}
-                </div>
-
-                <input
-                  type="email"
-                  readOnly
-                  value={selectedStudent ? selectedStudent.email : ''}
-                  placeholder="Email del estudiante"
-                  className="student-email-input"
-                />
-              </div>
-            </div>
-
             <div className="mode-switch">
               <button className={"mode-btn " + (mode === 'select' ? 'active' : '')} onClick={() => setMode('select')}>Seleccionar preguntas</button>
               <button className={"mode-btn " + (mode === 'manual' ? 'active' : '')} onClick={() => setMode('manual')}>Crear preguntas manualmente</button>

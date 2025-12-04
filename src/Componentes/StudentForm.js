@@ -37,11 +37,25 @@ const StudentForm = ({ formId }) => {
 
         const config = response.data?.data || response.data;
 
-        if (!config || !Array.isArray(config.questions)) {
+        let questions = config.questions;
+
+        if (!questions && Array.isArray(config.questions_info)) {
+          questions = config.questions_info.map(q => ({
+            id: q.id_question,
+            text: q.question ||"Pregunta",
+            type: q.type,
+            options: q.options || q.needed_answers || [],
+          }));
+        }
+
+        if (!questions || !Array.isArray(questions)) {
           throw new Error("Formato de formulario inválido.");
         }
 
-        setFormConfig(config);
+        setFormConfig({
+          ...config,
+          questions,
+        });
 
         // Información del estudiante
         if (config.student_info) {
@@ -56,10 +70,12 @@ const StudentForm = ({ formId }) => {
 
         // Respuestas iniciales
         const initial = {};
-        config.questions.forEach(q => {
+        questions.forEach(q => {
           initial[q.id] = q.type === 'multiple_choice' ? [] : '';
         });
         setAnswers(initial);
+
+
 
       } catch (err) {
         console.error('Error cargando formulario:', err);
@@ -128,17 +144,15 @@ const StudentForm = ({ formId }) => {
     setSubmitting(true);
 
     try {
-      const answersPayload = formConfig.questions.map(q => ({
-        question_id: q.id,
-        question_text: q.text,
-        answer: answers[q.id]
-      }));
-
       const payload = {
-        student: studentInfo,
-        answers: answersPayload
-      };
-
+        id_form: formId,
+        answers: formConfig.questions.map(q => ({
+          id_question: q.id,
+          answers: Array.isArray(answers[q.id])
+            ? answers[q.id]                     
+            : [answers[q.id]]                   
+          }))
+          };
       await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/answers`,
         payload,
@@ -233,49 +247,87 @@ const StudentForm = ({ formId }) => {
   if (error) return <div className="gform-error">{error}</div>;
   if (success) return <div className="gform-success">¡Formulario enviado con éxito!</div>;
 
-  return (
-    <div className="student-form-container">
-      <h1 className="gform-title">Formulario de Caracterización</h1>
-
+return (
+    <div className="gform-container">
+      <div className="gform-header">
+        <h1 className="gform-title">{formConfig.name}</h1>
+        <p className="gform-description">{formConfig.description}</p>
+      </div>
       <div className="gform-section">
-        <h2>Información del estudiante</h2>
+        <h2 className="gform-section-title">Información del estudiante</h2>
 
-        <input 
-          type="text"
-          placeholder="Nombre"
-          value={studentInfo.first_name}
-          onChange={(e) => setStudentInfo({ ...studentInfo, first_name: e.target.value })}
-        />
+        <div className="gform-field">
+          <label className="gform-label">
+            Documento de identidad <span className="gform-required">*</span>
+          </label>
+          <input
+            type="text"
+            className="gform-input"
+            value={studentInfo.number_id}
+            onChange={(e) =>
+              setStudentInfo({ ...studentInfo, number_id: e.target.value })
+            }
+          />
+        </div>
 
-        <input 
-          type="text"
-          placeholder="Apellido"
-          value={studentInfo.last_name}
-          onChange={(e) => setStudentInfo({ ...studentInfo, last_name: e.target.value })}
-        />
+        <div className="gform-field">
+          <label className="gform-label">Nombre *</label>
+          <input
+            type="text"
+            className="gform-input"
+            value={studentInfo.first_name}
+            onChange={(e) =>
+              setStudentInfo({ ...studentInfo, first_name: e.target.value })
+            }
+          />
+        </div>
 
-        <input 
-          type="email"
-          placeholder="Correo"
-          value={studentInfo.email}
-          onChange={(e) => setStudentInfo({ ...studentInfo, email: e.target.value })}
-        />
+        <div className="gform-field">
+          <label className="gform-label">Apellido *</label>
+          <input
+            type="text"
+            className="gform-input"
+            value={studentInfo.last_name}
+            onChange={(e) =>
+              setStudentInfo({ ...studentInfo, last_name: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="gform-field">
+          <label className="gform-label">Correo *</label>
+          <input
+            type="email"
+            className="gform-input"
+            value={studentInfo.email}
+            onChange={(e) =>
+              setStudentInfo({ ...studentInfo, email: e.target.value })
+            }
+          />
+        </div>
       </div>
 
-      <div className="gform-section">
-        <h2>Preguntas</h2>
-        {formConfig.questions.map((q, i) => renderQuestion(q, i))}
-      </div>
+      {/* PREGUNTAS */}
+      {formConfig.questions.map((q, index) => (
+        <div key={q.id} className="gform-question-card">
+          <div className="gform-question-title">{q.text}</div>
+          {renderQuestion(q, index)}
+        </div>
+      ))}
 
-      <button 
-        className="gform-submit-btn"
-        onClick={handleSubmit}
-        disabled={submitting}
-      >
-        {submitting ? 'Enviando...' : 'Enviar respuestas'}
-      </button>
+      {/* FOOTER */}
+      <div className="gform-footer">
+        <button
+          className="gform-submit-btn"
+          disabled={submitting}
+          onClick={handleSubmit}
+        >
+          {submitting ? "Enviando..." : "Enviar"}
+        </button>
+      </div>
     </div>
-  );
+);
 };
 
 export default StudentForm;
+ 
