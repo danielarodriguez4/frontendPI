@@ -23,13 +23,10 @@ const NotificationCenter = () => {
           ]);
           console.log('Respuesta priority:', res1.data);
           console.log('Respuesta alerts:', res2.data);
-          // Usar array correcto según estructura de la respuesta
-          // Extraer correctamente el array de prioridades y alertas
           const priorityArray = Array.isArray(res1.data.data) ? res1.data.data : [];
           const alertsArray = Array.isArray(res2.data.data) ? res2.data.data : [];
           console.log('priorityArray:', priorityArray);
           console.log('alertsArray:', alertsArray);
-          // Combinar sin filtrar por fecha para depuración
           const all = [...priorityArray, ...alertsArray];
           setNotifications(all);
         } catch (err) {
@@ -77,13 +74,11 @@ const NotificationCenter = () => {
             <ul className="notification-list">
               {notifications.map((n, i) => (
                 <li key={i} className="notification-item">
-                  {/* Prioridad: mostrar aunque falte algún campo */}
                   {n.name && (
                     <>
                       <div className="notification-title">Prioridad: {n.name}</div>
                       {n.level !== undefined && <div className="notification-level">Nivel: {n.level}</div>}
                       {n.sessions_per_month !== undefined && <div className="notification-sessions">Sesiones/mes: {n.sessions_per_month}</div>}
-                      {n.created_at && <div className="notification-date">Creado: {new Date(n.created_at).toLocaleString()}</div>}
                     </>
                   )}
                   {/* Alerta */}
@@ -91,7 +86,6 @@ const NotificationCenter = () => {
                     <>
                       <div className="notification-title">{n.title || 'Alerta'}</div>
                       {n.message && <div className="notification-message">{n.message}</div>}
-                      {n.date && <div className="notification-date">{new Date(n.date).toLocaleString()}</div>}
                     </>
                   )}
                 </li>

@@ -80,12 +80,14 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    font-size: 23px;
 }
 .notification-item {
     padding: 18px 24px;
     border-bottom: 1px solid #f0f0f0;
     cursor: pointer;
     transition: background 0.2s;
+        font-size: 23px;
 }
 .notification-item:last-child {
     border-bottom: none;
@@ -98,11 +100,7 @@
     color: #222D56;
     font-size: 30px;
 }
-.notification-date {
-    font-size: 12px;
-    color: #888;
-    margin-top: 2px;
-}
+
 .notification-loading,
 .notification-error,
 .notification-empty {
@@ -111,7 +109,6 @@
     color: #888;
 }
 
-/* Ensure bell image is visible and clickable */
 .notification-bell {
     display: block;
     width: 40px;
