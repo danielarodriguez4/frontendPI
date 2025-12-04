@@ -1,177 +1,175 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import '../Estilos/StudentForm.css';
 
 const StudentForm = ({ formId }) => {
-
   const [formConfig, setFormConfig] = useState(null);
   const [studentInfo, setStudentInfo] = useState({
     number_id: '',
     first_name: '',
     last_name: '',
-    phone_number: '',
     email: ''
   });
+
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
+  // ===========================================================
+  // CARGAR FORMULARIO + JOIN CON BANCO DE PREGUNTAS
+  // ===========================================================
   useEffect(() => {
-    document.title = 'Caracterización FATV';
-
-    if (!formId) {
-      setError('Enlace inválido.');
-      setLoading(false);
-      return;
-    }
-
     const loadForm = async () => {
       try {
-        console.log("Cargando formulario con ID:", formId);
-
-        const response = await axios.get(
+        // 1. Obtener el formulario (creado desde FormCreator)
+        const resForm = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/${formId}`
         );
 
-        const config = response.data?.data || response.data;
+        const formData = resForm.data?.data || resForm.data;
 
-        let questions = config.questions;
+        // 2. Obtener banco de preguntas
+        const resBank = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/questions/all`
+        );
 
-        if (!questions && Array.isArray(config.questions_info)) {
-          questions = config.questions_info.map(q => ({
-            id: q.id_question,
-            text: q.question ||"Pregunta",
-            type: q.type,
-            options: q.options || q.needed_answers || [],
-          }));
-        }
+        const bank = resBank.data?.data || resBank.data;
 
-        if (!questions || !Array.isArray(questions)) {
-          throw new Error("Formato de formulario inválido.");
-        }
+        // 3. Unir questions_info (id_question, position) con el banco
+        const formattedQuestions = formData.questions_info
+          .map(qi => {
+            const real = bank.find(b => b.id === qi.id_question);
+            if (!real) return null;
 
+            return {
+              id: real.id,
+              text: real.question,
+              type: real.id_question_type,
+              options: real.options || [],
+              position: qi.position
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => a.position - b.position);
+
+        // Guardar estructura completa
         setFormConfig({
-          ...config,
-          questions,
+          ...formData,
+          questions: formattedQuestions
         });
 
-        // Información del estudiante
-        if (config.student_info) {
+        // Pre-fill del estudiante si viene del backend
+        if (formData.student_info) {
           setStudentInfo({
-            number_id: config.student_info.number_id || '',
-            first_name: config.student_info.first_name || '',
-            last_name: config.student_info.last_name || '',
-            phone_number: config.student_info.phone_number || '',
-            email: config.student_info.email || ''
+            number_id: formData.student_info.number_id || '',
+            first_name: formData.student_info.first_name || '',
+            last_name: formData.student_info.last_name || '',
+            email: formData.student_info.email || ''
           });
         }
 
-        // Respuestas iniciales
+        // Inicializar respuestas
         const initial = {};
-        questions.forEach(q => {
-          initial[q.id] = q.type === 'multiple_choice' ? [] : '';
+        formattedQuestions.forEach(q => {
+          if (q.type === 3) initial[q.id] = [];       // múltiple
+          else initial[q.id] = "";                     // texto / única / V/F
         });
         setAnswers(initial);
 
-
-
       } catch (err) {
-        console.error('Error cargando formulario:', err);
-        setError('No se pudo cargar el formulario.');
+        Swal.fire("Error", "No se pudo cargar el formulario", "error");
       } finally {
         setLoading(false);
       }
     };
 
     loadForm();
-
-    return () => {
-      document.title = 'Administrador FATV';
-    };
   }, [formId]);
 
+  // ===========================================================
+  // MANEJO DE RESPUESTAS
+  // ===========================================================
   const handleAnswerChange = (questionId, value, type) => {
     setAnswers(prev => {
-      if (type === 'multiple_choice') {
-        const exists = prev[questionId]?.includes(value);
-        const updated = exists
-          ? prev[questionId].filter(v => v !== value)
-          : [...prev[questionId], value];
-        return { ...prev, [questionId]: updated };
+      if (type === 3) {
+        const exists = prev[questionId].includes(value);
+        return {
+          ...prev,
+          [questionId]: exists
+            ? prev[questionId].filter(v => v !== value)
+            : [...prev[questionId], value]
+        };
       }
       return { ...prev, [questionId]: value };
     });
   };
 
-  const validateForm = () => {
-    if (!studentInfo.first_name.trim()) {
-      setError('Por favor ingresa tu nombre');
-      return false;
-    }
-    if (!studentInfo.last_name.trim()) {
-      setError('Por favor ingresa tu apellido');
-      return false;
-    }
-    if (!studentInfo.email.trim()) {
-      setError('Por favor ingresa tu correo electrónico');
-      return false;
-    }
+  // ===========================================================
+  // VALIDACIÓN
+  // ===========================================================
+  const validate = () => {
+    if (!studentInfo.number_id.trim())
+      return Swal.fire("Falta información", "Por favor ingresa tu cédula", "warning");
 
-    const unanswered = formConfig.questions.filter(q => {
-      const value = answers[q.id];
-      if (q.type === 'multiple_choice') return !value || value.length === 0;
-      return !value || value.trim() === '';
+    if (!studentInfo.first_name.trim())
+      return Swal.fire("Falta información", "Por favor ingresa tu nombre", "warning");
+
+    if (!studentInfo.last_name.trim())
+      return Swal.fire("Falta información", "Por favor ingresa tu apellido", "warning");
+
+    if (!studentInfo.email.trim())
+      return Swal.fire("Falta información", "Por favor ingresa tu correo", "warning");
+
+    const empty = formConfig.questions.some(q => {
+      const v = answers[q.id];
+      if (q.type === 3) return v.length === 0;
+      return !v || v === "";
     });
 
-    if (unanswered.length > 0) {
-      setError('Por favor responde todas las preguntas');
-      return false;
+    if (empty) {
+      return Swal.fire("Formulario incompleto", "Responde todas las preguntas", "warning");
     }
 
     return true;
   };
 
-  const handleSubmit = async () => {
-    setError(null);
-
-    if (!validateForm()) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
+  // ===========================================================
+  // ENVIAR FORMULARIO
+  // ===========================================================
+  const submit = async () => {
+    if (!validate()) return;
 
     setSubmitting(true);
-
     try {
       const payload = {
         id_form: formId,
+        student: studentInfo,
         answers: formConfig.questions.map(q => ({
           id_question: q.id,
-          answers: Array.isArray(answers[q.id])
-            ? answers[q.id]                     
-            : [answers[q.id]]                   
-          }))
-          };
+          answers: Array.isArray(answers[q.id]) ? answers[q.id] : [answers[q.id]]
+        }))
+      };
+
       await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/answers`,
-        payload,
-        { headers: { 'Content-Type': 'application/json' } }
+        payload
       );
 
-      setSuccess(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      Swal.fire("¡Listo!", "El formulario fue enviado con éxito", "success");
 
     } catch (err) {
-      console.error('Error enviando respuestas:', err);
-      setError(err.response?.data?.message || 'Error al enviar respuestas');
+      Swal.fire("Error", "No se pudo enviar el formulario", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
+  // ===========================================================
+  // RENDER DE PREGUNTAS
+  // ===========================================================
   const renderQuestion = (q, index) => {
-    const answer = answers[q.id];
+    const val = answers[q.id];
 
     return (
       <div key={q.id} className="gform-question-card">
@@ -180,16 +178,18 @@ const StudentForm = ({ formId }) => {
           <span className="gform-required">*</span>
         </div>
 
-        {q.type === 'text' && (
+        {/* tipo 1: texto */}
+        {q.type === 1 && (
           <input
             type="text"
             className="gform-text-input"
-            value={answer}
-            onChange={(e) => handleAnswerChange(q.id, e.target.value, q.type)}
+            value={val}
+            onChange={e => handleAnswerChange(q.id, e.target.value, q.type)}
           />
         )}
 
-        {q.type === 'single_choice' && (
+        {/* tipo 2: opción única */}
+        {q.type === 2 && (
           <div className="gform-options">
             {q.options.map((op, i) => (
               <label key={i} className="gform-radio-option">
@@ -197,8 +197,8 @@ const StudentForm = ({ formId }) => {
                   type="radio"
                   name={q.id}
                   value={op}
-                  checked={answer === op}
-                  onChange={(e) => handleAnswerChange(q.id, e.target.value, q.type)}
+                  checked={val === op}
+                  onChange={e => handleAnswerChange(q.id, e.target.value, q.type)}
                 />
                 {op}
               </label>
@@ -206,15 +206,16 @@ const StudentForm = ({ formId }) => {
           </div>
         )}
 
-        {q.type === 'multiple_choice' && (
+        {/* tipo 3: múltiple */}
+        {q.type === 3 && (
           <div className="gform-options">
             {q.options.map((op, i) => (
               <label key={i} className="gform-checkbox-option">
                 <input
                   type="checkbox"
                   value={op}
-                  checked={answer.includes(op)}
-                  onChange={(e) => handleAnswerChange(q.id, e.target.value, q.type)}
+                  checked={val.includes(op)}
+                  onChange={e => handleAnswerChange(q.id, e.target.value, q.type)}
                 />
                 {op}
               </label>
@@ -222,112 +223,105 @@ const StudentForm = ({ formId }) => {
           </div>
         )}
 
-        {q.type === 'true_false' && (
+        {/* tipo 4: verdadero/falso */}
+        {q.type === 4 && (
           <div className="gform-options">
-            {['Verdadero', 'Falso'].map((op, i) => (
+            {["Verdadero", "Falso"].map((op, i) => (
               <label key={i} className="gform-radio-option">
                 <input
                   type="radio"
                   name={q.id}
                   value={op}
-                  checked={answer === op}
-                  onChange={(e) => handleAnswerChange(q.id, e.target.value, q.type)}
+                  checked={val === op}
+                  onChange={e => handleAnswerChange(q.id, e.target.value, q.type)}
                 />
                 {op}
               </label>
             ))}
           </div>
         )}
-
       </div>
     );
   };
 
-  if (loading) return <div className="loading">Cargando...</div>;
-  if (error) return <div className="gform-error">{error}</div>;
-  if (success) return <div className="gform-success">¡Formulario enviado con éxito!</div>;
+  // ===========================================================
+  // RENDER PRINCIPAL
+  // ===========================================================
+  if (loading || !formConfig) {
+    return <div className="loading">Cargando...</div>;
+  }
 
-return (
+  return (
     <div className="gform-container">
       <div className="gform-header">
-        <h1 className="gform-title">{formConfig.name}</h1>
-        <p className="gform-description">{formConfig.description}</p>
+        <h1 className="gform-title">{formConfig?.name}</h1>
+        <p className="gform-description">{formConfig?.description}</p>
       </div>
+
+      {/* DATOS DEL ESTUDIANTE */}
       <div className="gform-section">
         <h2 className="gform-section-title">Información del estudiante</h2>
 
+        {/* Cédula */}
         <div className="gform-field">
-          <label className="gform-label">
-            Documento de identidad <span className="gform-required">*</span>
-          </label>
+          <label className="gform-label">Cédula *</label>
           <input
             type="text"
             className="gform-input"
             value={studentInfo.number_id}
-            onChange={(e) =>
-              setStudentInfo({ ...studentInfo, number_id: e.target.value })
-            }
+            onChange={e => setStudentInfo({ ...studentInfo, number_id: e.target.value })}
           />
         </div>
 
+        {/* Nombres */}
         <div className="gform-field">
-          <label className="gform-label">Nombre *</label>
+          <label className="gform-label">Nombres *</label>
           <input
             type="text"
             className="gform-input"
             value={studentInfo.first_name}
-            onChange={(e) =>
-              setStudentInfo({ ...studentInfo, first_name: e.target.value })
-            }
+            onChange={e => setStudentInfo({ ...studentInfo, first_name: e.target.value })}
           />
         </div>
 
+        {/* Apellidos */}
         <div className="gform-field">
-          <label className="gform-label">Apellido *</label>
+          <label className="gform-label">Apellidos *</label>
           <input
             type="text"
             className="gform-input"
             value={studentInfo.last_name}
-            onChange={(e) =>
-              setStudentInfo({ ...studentInfo, last_name: e.target.value })
-            }
+            onChange={e => setStudentInfo({ ...studentInfo, last_name: e.target.value })}
           />
         </div>
 
+        {/* Email */}
         <div className="gform-field">
-          <label className="gform-label">Correo *</label>
+          <label className="gform-label">Correo electrónico *</label>
           <input
             type="email"
             className="gform-input"
             value={studentInfo.email}
-            onChange={(e) =>
-              setStudentInfo({ ...studentInfo, email: e.target.value })
-            }
+            onChange={e => setStudentInfo({ ...studentInfo, email: e.target.value })}
           />
         </div>
       </div>
 
-      {/* PREGUNTAS */}
-      {formConfig.questions.map((q, index) => (
-        <div key={q.id} className="gform-question-card">
-          <div className="gform-question-title">{q.text}</div>
-          {renderQuestion(q, index)}
-        </div>
-      ))}
+      {/* Preguntas */}
+      {formConfig.questions.map((q, index) => renderQuestion(q, index))}
 
-      {/* FOOTER */}
+      {/* Botón */}
       <div className="gform-footer">
         <button
           className="gform-submit-btn"
           disabled={submitting}
-          onClick={handleSubmit}
+          onClick={submit}
         >
           {submitting ? "Enviando..." : "Enviar"}
         </button>
       </div>
     </div>
-);
+  );
 };
 
 export default StudentForm;
- 
