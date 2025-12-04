@@ -4,8 +4,6 @@ import { Button } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-
-
 const FormCreator = ({ onBack }) => {
   const [questions, setQuestions] = useState([]); 
   const [selected, setSelected] = useState(() => questions.map(q => q.id));
@@ -19,6 +17,7 @@ const FormCreator = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const suggestionsRef = useRef(null);
 
   const toggleQuestion = (id) => {
@@ -54,70 +53,120 @@ const FormCreator = ({ onBack }) => {
         }));
   };
 
-  const handleGenerateUrl = () => {
-      setFormError(null);
-      setFormSuccess(null);
-      setGeneratedUrl(null);
+  const handleGenerateUrl = async () => {
+    setFormError(null);
+    setFormSuccess(null);
+    setGeneratedUrl(null);
+    setIsGenerating(true);
 
-      const questionsPayload = buildQuestionsPayload();
+    const questionsPayload = buildQuestionsPayload();
 
-      if (!selectedStudent) {
-          setFormError('Seleccione un estudiante antes de generar el URL.');
-          return;
-      }
-      if (!questionsPayload || questionsPayload.length === 0) {
-          setFormError('Agregue al menos una pregunta con texto antes de generar el URL.');
-          return;
-      }
+    if (!selectedStudent) {
+      setFormError('Seleccione un estudiante antes de generar el URL.');
+      setIsGenerating(false);
+      return;
+    }
+    if (!questionsPayload || questionsPayload.length === 0) {
+      setFormError('Agregue al menos una pregunta con texto antes de generar el URL.');
+      setIsGenerating(false);
+      return;
+    }
 
-      // Crear el JSON del formulario con la información del estudiante
-      const formConfig = {
-          studentInfo: {
-              number_id: selectedStudent.number_id,
-              first_name: selectedStudent.first_name,
-              last_name: selectedStudent.last_name,
-              phone_number: selectedStudent.phone_number || '',
-              email: selectedStudent.email
-          },
-          questions: questionsPayload,
-          createdAt: new Date().toISOString()
+    try {
+      const token = localStorage.getItem('token');
+      
+      const formPayload = {
+        name: "Formulario para " + selectedStudent.first_name,
+        description: "Formulario generado automáticamente",
+        date: new Date().toISOString(),
+
+        questions_info: buildQuestionsPayload().map((q, index) => ({
+          position: index + 1,
+          section: 1, // si no manejas secciones, déjalo fijo
+          id_parent_question: "",
+          needed_answers: [],
+          id_question: q.id,
+          optional: false
+        }))
       };
 
-      console.log('Configuración del formulario:', formConfig);
+
+      console.log('Enviando formulario al backend:', formPayload);
+
+      // Enviar al backend para crear el formulario
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/`,
+        formPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('Respuesta del backend:', response.data);
+
+      const formId = response.data?.data?.id || response.data?.id;
       
-      // Generar URL con el JSON codificado
-      const formId = encodeURIComponent(JSON.stringify(formConfig)); // Cambiado a encodeURIComponent
-      
+      if (!formId) {
+        throw new Error('El backend no devolvió un ID de formulario');
+      }
+
       const baseUrl = window.location.origin;
       const studentFormUrl = `${baseUrl}/student-form/${formId}`;
       
       setGeneratedUrl(studentFormUrl);
       setFormSuccess('URL generada correctamente. Comparte este enlace con el estudiante.');
+      
+      Swal.fire({
+        title: '¡Formulario creado!',
+        text: 'El formulario ha sido generado exitosamente',
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#673ab7'
+      });
+
+    } catch (error) {
+      console.error('Error al generar URL:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Error al crear el formulario';
+      setFormError(errorMsg);
+      
+      Swal.fire({
+        title: 'Error',
+        text: errorMsg,
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
-    const copyUrlToClipboard = () => {
-        if (generatedUrl) {
-          navigator.clipboard.writeText(generatedUrl).then(() => {
-            Swal.fire({
-              title: '¡Copiado!',
-              text: 'El URL ha sido copiado al portapapeles',
-              icon: 'success',
-              confirmButtonText: 'Aceptar',
-              confirmButtonColor: '#673ab7',
-              timer: 2000
-            });
-          }).catch(err => {
-            console.error('Error al copiar:', err);
-            Swal.fire({
-              title: 'Error',
-              text: 'No se pudo copiar el URL',
-              icon: 'error',
-              confirmButtonText: 'Aceptar',
-              confirmButtonColor: '#d33'
-            });
-          });
-        }
-      };
+  const copyUrlToClipboard = () => {
+    if (generatedUrl) {
+      navigator.clipboard.writeText(generatedUrl).then(() => {
+        Swal.fire({
+          title: '¡Copiado!',
+          text: 'El URL ha sido copiado al portapapeles',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#673ab7',
+          timer: 2000
+        });
+      }).catch(err => {
+        console.error('Error al copiar:', err);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo copiar el URL',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#d33'
+        });
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -167,7 +216,7 @@ const FormCreator = ({ onBack }) => {
         const list = response.data?.data;
 
         if (!Array.isArray(list)) {
-          console.error(" El backend NO devolvió una lista en 'data'");
+          console.error("El backend NO devolvió una lista en 'data'");
           return;
         }
 
@@ -194,7 +243,6 @@ const FormCreator = ({ onBack }) => {
 
     fetchQuestions();
   }, []);
-
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -373,13 +421,21 @@ const FormCreator = ({ onBack }) => {
                   </div>
                 </div>
               )}
-              <Button variant="contained" color="primary" onClick={handleGenerateUrl} className="send-btn">Generar URL del formulario</Button>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={handleGenerateUrl} 
+                className="send-btn"
+                disabled={isGenerating}
+              >
+                {isGenerating ? 'Generando...' : 'Generar URL del formulario'}
+              </Button>
             </div>
           </div>
-         </div>
-       </div>
-     </div>
-   );
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default FormCreator;
