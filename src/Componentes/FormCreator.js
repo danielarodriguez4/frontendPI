@@ -502,10 +502,10 @@ const buildQuestionsPayload = () => {
               )}
               <Button 
                 variant="contained" 
-                color="primary" 
                 onClick={handleGenerateUrl} 
                 className="send-btn"
                 disabled={isGenerating}
+                style={{ backgroundColor: '#222D56', color: 'white', fontSize: '20px' }}
               >
                 {isGenerating ? 'Generando...' : 'Generar URL del formulario'}
               </Button>
