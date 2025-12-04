@@ -46,12 +46,12 @@ const FormCreator = ({ onBack }) => {
           options: configuredQuestions[q.id]?.options || [] 
         }))
       : manualQuestions.filter(m => (m.text || '').trim()).map((m, idx) => ({ 
-          id: `manual_${idx + 1}`, 
-          text: m.text, 
-          type: m.type || 'text', 
-          options: m.options || [] 
-        }));
-  };
+                id: m.id || `manual_${idx + 1}`,
+                text: m.text, 
+                type: m.type || 'text', 
+                options: m.options || [] 
+              }));
+        };
 
   const handleGenerateUrl = async () => {
     setFormError(null);
@@ -80,14 +80,18 @@ const FormCreator = ({ onBack }) => {
         description: "Diligencia esta caracterización para conocerte mejor",
         date: new Date().toISOString(),
 
-        questions_info: buildQuestionsPayload().map((q, index) => ({
-          position: index + 1,
-          section: 1, 
-          id_parent_question: "",
-          needed_answers: [],
-          id_question: q.id,
-          optional: false
+        questions_info: questionsPayload.map((q, index) => ({
+            position: index + 1,
+            section: 1,
+            id_parent_question: "",
+            needed_answers: [],
+            id_question: mode === 'select' ? q.id : (q.id || `q_temp_${Date.now()}_${index}`),
+            text: q.text,
+            type: q.type, 
+            options: q.options, 
+            optional: false
         }))
+
       };
 
 
@@ -334,6 +338,7 @@ const FormCreator = ({ onBack }) => {
                         <div key={id} className="config-row">
                           <div className="config-question-text">{q.text}</div>
                           <select value={cfg.type} onChange={(e) => setConfiguredQuestions(c => ({ ...c, [id]: { ...c[id], type: e.target.value, options: e.target.value === 'true_false' ? ['Verdadero','Falso'] : (c[id]?.options || []) } }))} className="config-type-select">
+     
                             <option value="text">Texto libre</option>
                             <option value="single_choice">Opción única</option>
                             <option value="multiple_choice">Múltiple respuesta</option>

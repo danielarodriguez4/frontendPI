@@ -16,64 +16,161 @@ const StudentForm = ({ formId }) => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // ===========================================================
-  // CARGAR FORMULARIO + JOIN CON BANCO DE PREGUNTAS
-  // ===========================================================
+
   useEffect(() => {
     const loadForm = async () => {
       try {
-        // 1. Obtener el formulario (creado desde FormCreator)
+
         const resForm = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/${formId}`
         );
 
         const formData = resForm.data?.data || resForm.data;
 
-        // 2. Obtener banco de preguntas
+
         const resBank = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/questions/all`
         );
+        const bankList = resBank.data?.data || resBank.data || [];
 
-        const bank = resBank.data?.data || resBank.data;
 
-        // 3. Unir questions_info (id_question, position) con el banco
-        const formattedQuestions = formData.questions_info
-          .map(qi => {
-            const real = bank.find(b => b.id === qi.id_question);
-            if (!real) return null;
+        console.log('DEBUG bankList[0]:', bankList[0]);
+
+        const bankMap = new Map();
+        bankList.forEach(b => {
+          const possibleIds = [
+            b.id,
+            b._id,
+            (b._id && b._id.$oid),
+            b._id_str,
+            b._id?.toString && b._id.toString(),
+            b.id_question,
+            b.idQuestion
+          ].filter(Boolean).map(v => String(v));
+          possibleIds.forEach(pid => bankMap.set(pid, b));
+        });
+        console.log('DEBUG bankMap keys (sample):', Array.from(bankMap.keys()).slice(0,30));
+        const rawList = formData?.questions_info
+          || formData?.questions
+          || formData?.questionsInfo
+          || [];
+        console.log('DEBUG rawList:', rawList);
+
+        
+        const formattedQuestions = await Promise.all(
+          rawList.map(async (qi = {}, idx) => {
+            const refRaw = qi.id_question ?? qi.id ?? qi._id ?? qi.idQuestion ?? null;
+            let refId = refRaw;
+            if (refId && typeof refId === 'object') {
+              refId = refId.id || refId._id || refId.$oid || refId.toString?.() || null;
+            }
+            refId = refId ? String(refId) : null;
+
+            let bankEntry = refId ? bankMap.get(refId) : undefined;
+
+            if (!bankEntry && refId) {
+              try {
+                const resQ = await axios.get(
+                  `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/questions/${refId}`
+                );
+                const qData = resQ.data?.data || resQ.data;
+                if (qData) {
+                  bankEntry = qData;
+                  console.log(`DEBUG: fetched question ${refId} from backend`, qData);
+                }
+              } catch (err) {
+                console.warn(`DEBUG: no se pudo obtener pregunta ${refId} individualmente`, err?.message || err);
+              }
+            }
+
+            const id = refId || qi.id || qi._id || `q-${idx}-${Date.now()}`;
+
+            const text = (qi.text || qi.question || qi.title || qi.name || bankEntry?.text || bankEntry?.question || bankEntry?.title || '').toString().trim();
+
+            const rawType = qi.type ?? qi.question_type ?? qi.type_name ?? qi.type_id ?? bankEntry?.type ?? bankEntry?.question_type ?? '';
+
+            const rawOptions = qi.options || qi.answers || qi.choices || qi.options_list || bankEntry?.options || bankEntry?.choices || [];
+            // Normalizar opciones como array de strings
+            let options = Array.isArray(rawOptions)
+              ? rawOptions.map(o => {
+                  if (typeof o === 'string') return o;
+                  if (o === null || o === undefined) return String(o);
+                  return String(o.label || o.text || o.value || o.name || o);
+                }).filter(Boolean)
+              : [];
+
+            if ((options.length === 0) && bankEntry) {
+              const bankOpts = Array.isArray(bankEntry.options) ? bankEntry.options
+                                : Array.isArray(bankEntry.choices) ? bankEntry.choices
+                                : null;
+              if (bankOpts && bankOpts.length) {
+                options = bankOpts.map(o => (typeof o === 'string' ? o : String(o.label || o.text || o.value || o.name || o)));
+              }
+            }
+
+            // Determinar tipo: 1=text, 2=single, 3=multiple, 4=true_false
+let questionType = 1; // Inicialmente es Texto
+            
+            // Opciones estandarizadas de V/F para comparación
+            const isTrueFalseSet = (options.length === 2 && options.some(o => o.toLowerCase().includes('verdadero')) && options.some(o => o.toLowerCase().includes('falso')));
+
+            // 1. Determinar por tipo explícito (si existe)
+            if (typeof rawType === 'number') {
+              questionType = rawType;
+            } else if (typeof rawType === 'string' && rawType.trim() !== '') {
+              const t = rawType.toLowerCase();
+              if (t.includes('multiple') || t.includes('checkbox') || t.includes('multi')) questionType = 3;
+              else if (t.includes('true_false') || t.includes('boolean') || t.includes('truefalse') || t.includes('tf') || t.includes('verdadero') || t.includes('falso')) questionType = 4;
+              else if (t.includes('radio') || t.includes('single') || t.includes('unique') || t.includes('one')) questionType = 2;
+              else if (t.includes('text') || t.includes('string') || t.includes('input')) questionType = 1;
+            } 
+            
+            if (questionType === 1 || questionType === 2) { 
+                 if (options.length > 2) {
+                    questionType = 3; // Múltiple
+                 } else if (isTrueFalseSet) {
+                    questionType = 4; 
+                    options = ['Verdadero', 'Falso']; 
+                 } else if (options.length === 2 || options.length === 1) {
+                    questionType = 2; 
+                 } else {
+                    questionType = 1; 
+                 }
+            }
+            
+            if (questionType === 4 && options.length === 0) {
+              options = ['Verdadero', 'Falso'];
+            }
+
+            if (!text || text.length === 0) {
+              console.warn(`Pregunta sin texto en index ${idx}, refId=${refId}`, { qi, bankEntry });
+            }
 
             return {
-              id: real.id,
-              text: real.question,
-              type: real.id_question_type,
-              options: real.options || [],
-              position: qi.position
+              id,
+              text: text || 'Pregunta sin texto',
+              type: questionType,
+              options,
+              position: qi.position ?? qi.order ?? (idx + 1)
             };
           })
-          .filter(Boolean)
-          .sort((a, b) => a.position - b.position);
+        );
 
-        // Guardar estructura completa
+        const finalQuestions = formattedQuestions
+          .filter(Boolean)
+          .sort((a, b) => (a.position || 0) - (b.position || 0));
+
+        console.log('DEBUG formattedQuestions:', finalQuestions);
+
         setFormConfig({
           ...formData,
-          questions: formattedQuestions
+          questions: finalQuestions
         });
 
-        // Pre-fill del estudiante si viene del backend
-        if (formData.student_info) {
-          setStudentInfo({
-            number_id: formData.student_info.number_id || '',
-            first_name: formData.student_info.first_name || '',
-            last_name: formData.student_info.last_name || '',
-            email: formData.student_info.email || ''
-          });
-        }
-
-        // Inicializar respuestas
         const initial = {};
-        formattedQuestions.forEach(q => {
-          if (q.type === 3) initial[q.id] = [];       // múltiple
-          else initial[q.id] = "";                     // texto / única / V/F
+        finalQuestions.forEach(q => {
+          if (q.type === 3) initial[q.id] = [];       
+          else initial[q.id] = "";                     
         });
         setAnswers(initial);
 
@@ -87,9 +184,6 @@ const StudentForm = ({ formId }) => {
     loadForm();
   }, [formId]);
 
-  // ===========================================================
-  // MANEJO DE RESPUESTAS
-  // ===========================================================
   const handleAnswerChange = (questionId, value, type) => {
     setAnswers(prev => {
       if (type === 3) {
@@ -105,9 +199,6 @@ const StudentForm = ({ formId }) => {
     });
   };
 
-  // ===========================================================
-  // VALIDACIÓN
-  // ===========================================================
   const validate = () => {
     if (!studentInfo.number_id.trim())
       return Swal.fire("Falta información", "Por favor ingresa tu cédula", "warning");
@@ -134,9 +225,7 @@ const StudentForm = ({ formId }) => {
     return true;
   };
 
-  // ===========================================================
-  // ENVIAR FORMULARIO
-  // ===========================================================
+
   const submit = async () => {
     if (!validate()) return;
 
@@ -152,7 +241,7 @@ const StudentForm = ({ formId }) => {
       };
 
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/answers`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/answers/`,
         payload
       );
 
@@ -165,9 +254,6 @@ const StudentForm = ({ formId }) => {
     }
   };
 
-  // ===========================================================
-  // RENDER DE PREGUNTAS
-  // ===========================================================
   const renderQuestion = (q, index) => {
     const val = answers[q.id];
 
@@ -244,27 +330,24 @@ const StudentForm = ({ formId }) => {
     );
   };
 
-  // ===========================================================
-  // RENDER PRINCIPAL
-  // ===========================================================
   if (loading || !formConfig) {
-    return <div className="loading">Cargando...</div>;
+
+    return <div className="gform-loading">Cargando...</div>; 
   }
 
-  return (
+ return (
     <div className="gform-container">
       <div className="gform-header">
         <h1 className="gform-title">{formConfig?.name}</h1>
         <p className="gform-description">{formConfig?.description}</p>
       </div>
 
-      {/* DATOS DEL ESTUDIANTE */}
       <div className="gform-section">
         <h2 className="gform-section-title">Información del estudiante</h2>
 
-        {/* Cédula */}
+        {/* Campos de estudiante */}
         <div className="gform-field">
-          <label className="gform-label">Cédula *</label>
+          <label className="gform-label">Cédula <span className="gform-required">*</span></label>
           <input
             type="text"
             className="gform-input"
@@ -273,9 +356,8 @@ const StudentForm = ({ formId }) => {
           />
         </div>
 
-        {/* Nombres */}
         <div className="gform-field">
-          <label className="gform-label">Nombres *</label>
+          <label className="gform-label">Nombres <span className="gform-required">*</span></label>
           <input
             type="text"
             className="gform-input"
@@ -284,9 +366,8 @@ const StudentForm = ({ formId }) => {
           />
         </div>
 
-        {/* Apellidos */}
         <div className="gform-field">
-          <label className="gform-label">Apellidos *</label>
+          <label className="gform-label">Apellidos <span className="gform-required">*</span></label>
           <input
             type="text"
             className="gform-input"
@@ -295,9 +376,8 @@ const StudentForm = ({ formId }) => {
           />
         </div>
 
-        {/* Email */}
         <div className="gform-field">
-          <label className="gform-label">Correo electrónico *</label>
+          <label className="gform-label">Correo electrónico <span className="gform-required">*</span></label>
           <input
             type="email"
             className="gform-input"
@@ -307,10 +387,9 @@ const StudentForm = ({ formId }) => {
         </div>
       </div>
 
-      {/* Preguntas */}
+      {/* RENDERIZADO DE PREGUNTAS CON OPCIONES */}
       {formConfig.questions.map((q, index) => renderQuestion(q, index))}
 
-      {/* Botón */}
       <div className="gform-footer">
         <button
           className="gform-submit-btn"

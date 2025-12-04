@@ -179,6 +179,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  font-size: 12px;
 }
 
 .gform-radio-option,
@@ -203,6 +204,7 @@ body {
   margin-right: 12px;
   cursor: pointer;
   flex-shrink: 0;
+  font-size: 14px !important;
 }
 
 .gform-radio-option input[type="radio"] {
@@ -214,7 +216,7 @@ body {
 }
 
 .gform-option-text {
-  font-size: 18px;
+  font-size: 14px;
   color: #202124;
   line-height: 20px;
 }
