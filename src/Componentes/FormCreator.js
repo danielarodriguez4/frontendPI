@@ -4,11 +4,24 @@ import { Button } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
+const mapTypeToBackend = (type) => {
+    switch (type) {
+      case 'text':
+        return "6907fecf128fd20a55377835"; 
+      case 'single_choice':
+        return "6908227395ecaa45d56b5d84"; 
+      case 'multiple_choice':
+        return "69080917bd94203556594133"; 
+      case 'true_false':
+        return "6908227e95ecaa45d56b5d85"; 
+    }
+  };
+
 const FormCreator = ({ onBack }) => {
   const [questions, setQuestions] = useState([]); 
   const [selected, setSelected] = useState(() => questions.map(q => q.id));
   const [mode, setMode] = useState('select'); 
-  const [manualQuestions, setManualQuestions] = useState([{ id: 'm1', text: '', type: 'text', options: [] }]);
+  const [manualQuestions, setManualQuestions] = useState([]);
   const [configuredQuestions, setConfiguredQuestions] = useState({});
   const [formError, setFormError] = useState(null);
   const [formSuccess, setFormSuccess] = useState(null);
@@ -20,7 +33,7 @@ const FormCreator = ({ onBack }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const suggestionsRef = useRef(null);
 
-  const toggleQuestion = (id) => {
+const toggleQuestion = (id) => {
     setSelected(prev => {
       const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
       if (!prev.includes(id)) {
@@ -37,21 +50,21 @@ const FormCreator = ({ onBack }) => {
     });
   };
 
-  const buildQuestionsPayload = () => {
+const buildQuestionsPayload = () => {
     return mode === 'select'
       ? questions.filter(q => selected.includes(q.id)).map(q => ({ 
           id: q.id, 
           text: q.text, 
-          type: configuredQuestions[q.id]?.type || 'text', 
+          type: configuredQuestions[q.id]?.type || q.type, // Verifica aquí
           options: configuredQuestions[q.id]?.options || [] 
         }))
       : manualQuestions.filter(m => (m.text || '').trim()).map((m, idx) => ({ 
-                id: m.id || `manual_${idx + 1}`,
-                text: m.text, 
-                type: m.type || 'text', 
-                options: m.options || [] 
-              }));
-        };
+          id: m.id || `manual_${idx + 1}`,
+          text: m.text, 
+          type: m.type || 'text', // Asegúrate de que esto esté configurado correctamente
+          options: m.options || [] 
+        }));
+};
 
   const handleGenerateUrl = async () => {
     setFormError(null);
@@ -59,94 +72,155 @@ const FormCreator = ({ onBack }) => {
     setGeneratedUrl(null);
     setIsGenerating(true);
 
-    const questionsPayload = buildQuestionsPayload();
+    let questionsPayload = buildQuestionsPayload();
 
     if (!selectedStudent) {
-      setFormError('Seleccione un estudiante antes de generar el URL.');
-      setIsGenerating(false);
-      return;
+        setFormError('Seleccione un estudiante antes de generar el URL.');
+        setIsGenerating(false);
+        return;
     }
     if (!questionsPayload || questionsPayload.length === 0) {
-      setFormError('Agregue al menos una pregunta con texto antes de generar el URL.');
-      setIsGenerating(false);
-      return;
+        setFormError('Agregue al menos una pregunta con texto antes de generar el URL.');
+        setIsGenerating(false);
+        return;
     }
 
-    try {
-      const token = localStorage.getItem('token');
-      
-      const formPayload = {
+   const formPayload = {
         name: "Caracterización para " + selectedStudent.first_name,
         description: "Diligencia esta caracterización para conocerte mejor",
         date: new Date().toISOString(),
+        questions_info: questionsPayload.map((q, index) => {
+            console.log('Tipo de pregunta:', q.type); // Agrega este log para verificar el tipo
+            return {
+                position: index + 1,
+                section: 1,
+                id_parent_question: "",
+                needed_answers: [],
+                id_question: q.id, 
+                optional: false
+            };
+        })
+    };
 
-        questions_info: questionsPayload.map((q, index) => ({
-            position: index + 1,
-            section: 1,
-            id_parent_question: "",
-            needed_answers: [],
-            id_question: mode === 'select' ? q.id : (q.id || `q_temp_${Date.now()}_${index}`),
-            text: q.text,
-            type: q.type, 
-            options: q.options, 
-            optional: false
-        }))
+    console.log('Enviando formulario al backend:', formPayload);
 
-      };
+    try {
+        const token = localStorage.getItem('token');
 
+        if (mode === 'manual') {
+            const newQuestionsWithIds = [];
 
-      console.log('Enviando formulario al backend:', formPayload);
+            for (const q of questionsPayload) {
+                // Validar opciones antes de crear el payload
+                if ((q.type === 'single_choice' || q.type === 'multiple_choice') && (!q.options || q.options.length === 0)) {
+                    throw new Error(`Las preguntas de tipo ${q.type} deben tener al menos una opción.`);
+                }
 
-      // Enviar al backend para crear el formulario
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/`,
-        formPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+                const questionBankPayload = {
+                    id_question_type: mapTypeToBackend(q.type),
+                    name: q.text.substring(0, 50), 
+                    question: q.text,
+                    options: (q.options || []).map(String),
+                };
+
+                console.log('PAYLOAD A /questions:', questionBankPayload);
+                console.log('id_question_type:', questionBankPayload.id_question_type); // Verifica el ID de tipo
+
+                const response = await axios.post(
+                    `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/questions/`,
+                    questionBankPayload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+
+                const newId = response.data?.data?.id || response.data?.id;
+
+                if (!newId) {
+                    throw new Error(`El backend no devolvió un ID para la pregunta: ${q.text}`);
+                }
+                newQuestionsWithIds.push({
+                    ...q,
+                    id: newId, 
+                    type: mapTypeToBackend(q.type),
+                });
+            }
+
+            questionsPayload = newQuestionsWithIds;
         }
-      );
 
-      console.log('Respuesta del backend:', response.data);
+        const formPayload = {
+            name: "Caracterización para " + selectedStudent.first_name,
+            description: "Diligencia esta caracterización para conocerte mejor",
+            date: new Date().toISOString(),
+            questions_info: questionsPayload.map((q, index) => ({
+                position: index + 1,
+                section: 1,
+                id_parent_question: "",
+                needed_answers: [],
+                id_question: q.id,
+                text: q.text,
+                type: mapTypeToBackend(q.type), 
+                options: q.options, 
+                optional: false
+            }))
+        };
 
-      const formId = response.data?.data?.id || response.data?.id;
-      
-      if (!formId) {
-        throw new Error('El backend no devolvió un ID de formulario');
-      }
+        console.log('Enviando formulario al backend:', formPayload);
 
-      const baseUrl = window.location.origin;
-      const studentFormUrl = `${baseUrl}/student-form/${formId}`;
-      
-      setGeneratedUrl(studentFormUrl);
-      setFormSuccess('URL generada correctamente. Comparte este enlace con el estudiante.');
-      
-      Swal.fire({
-        title: '¡Formulario creado!',
-        text: 'El formulario ha sido generado exitosamente',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#673ab7'
-      });
+        // Enviar al backend para crear el formulario
+        const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/api/v2/forms/`,
+            formPayload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        console.log('Respuesta del backend:', response.data);
+
+        const formId = response.data?.data?.id || response.data?.id;
+
+        if (!formId) {
+            throw new Error('El backend no devolvió un ID de formulario');
+        }
+
+        const baseUrl = window.location.origin;
+        const studentFormUrl = `${baseUrl}/student-form/${formId}`;
+
+        setGeneratedUrl(studentFormUrl);
+        setFormSuccess('URL generada correctamente. Comparte este enlace con el estudiante.');
+
+        Swal.fire({
+            title: '¡Formulario creado!',
+            text: 'El formulario ha sido generado exitosamente',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#673ab7'
+        });
 
     } catch (error) {
-      console.error('Error al generar URL:', error);
-      const errorMsg = error.response?.data?.message || error.message || 'Error al crear el formulario';
-      setFormError(errorMsg);
-      
-      Swal.fire({
-        title: 'Error',
-        text: errorMsg,
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d33'
-      });
+        console.error('Error al generar URL:', error);
+        const errorMsg = error.response?.data?.message || error.message || 'Error al crear el formulario';
+        setFormError(errorMsg);
+
+        Swal.fire({
+            title: 'Error',
+            text: errorMsg,
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#d33'
+        });
     } finally {
-      setIsGenerating(false);
+        setIsGenerating(false);
     }
-  };
+};
 
   const copyUrlToClipboard = () => {
     if (generatedUrl) {
@@ -228,8 +302,8 @@ const FormCreator = ({ onBack }) => {
           id: q.id,
           text: q.question,             
           name: q.name,
-          options: q.options || [],    
-          type: q.id_question_type
+          options: q.options || [],   
+          type: mapTypeToBackend(q.id_question_type)
         }));
 
         setQuestions(loaded);
