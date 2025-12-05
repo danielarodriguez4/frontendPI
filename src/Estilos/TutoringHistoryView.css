@@ -89,13 +89,17 @@ input.filter-select {
   padding: 10px 14px;
   box-sizing: border-box;
   display: inline-block;
+  
 }
 
 /* Layout for calendar trigger next to the visible filter */
 .filter-with-calendar {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  gap: 12px;
+  font-size: 20px;
+}
+
+.filter-with-calendar * {
+  font-size: 20px;
 }
 
 .calendar-trigger {
@@ -111,17 +115,20 @@ input.filter-select {
 }
 
 .calendar-trigger svg {
-  width: 20px;
-  height: 20px;
+  width: 200px;
+  height: 200px;
   color: #374151;
 }
 
 .hidden-month-input {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: 200px;
+  height: 200px;
   opacity: 0;
-  pointer-events: none;
+  font-size: 20px;
+}
+.hidden-month-input::-webkit-calendar-picker-indicator {
+  transform: scale(3);
 }
 
 .filter-select:focus {
@@ -160,8 +167,8 @@ input.filter-select {
 }
 
 .header-icon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
 .table-body {
@@ -726,13 +733,15 @@ input.filter-select {
     align-items: stretch;
   }
   
-  .filter-select {
-    width: 100%;
-    font-size: 20px;
-  }
+.filter-select {
+  font-size: 16px;   
+  padding: 10px 14px;  
+  height: 45px;         
+  min-width: 180px;     
+}
   
   .table-cell {
-    padding: 12px 16px;
+    padding: 20px 24px;
   }
   
   .student-info {
@@ -936,4 +945,36 @@ input.filter-select {
 
 .modal-accept-button:hover {
   background-color: #218838; 
+}
+.month-card-wrapper {
+  position: relative;
+}
+
+.month-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  font-size: 18px;
+  min-width: 260px;
+  user-select: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+
+.month-card:hover {
+  border-color: #3b61d0;
+  box-shadow: 0 2px 8px rgba(59,97,208,0.2);
+}
+
+.real-month-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
 }

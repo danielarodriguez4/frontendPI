@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, User, BookOpen, Clock, FileText, Edit3} from 'lucide-react';
+import MonthPicker from "../Componentes/MonthPicker";
+
 
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -475,12 +477,9 @@ const TutoringHistoryView = () => {
                 </option>
               ))}
             </select>
-            <input
-              id="filter-month"
-              type="month"
+            <MonthPicker
               value={filterMonth}
-              onChange={(e) => setFilterMonth(e.target.value)}
-              className="filter-select"
+              onChange={(v) => setFilterMonth(v)}
             />
           </div>
         </div>
