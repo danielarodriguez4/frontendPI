@@ -269,6 +269,8 @@ const handleSubmit = async (e) => {
         id_session_type: formData.tipo,
         notes: formData.observaciones,
         date: `${fullDate}T${fullTime}:00`, 
+        id_vulnerability_type: "685c2d33d96df17161191887",
+        id_contact_reason:"693305b68d375622ce1f0487",
       };
 
       console.log('Datos enviados al backend:', backendData);
