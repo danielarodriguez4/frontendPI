@@ -161,7 +161,7 @@ const handleStudentInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- Funciones para generar opciones de fecha y hora ---
+  // Funciones para generar opciones de fecha y hora
   const generateDays = () => {
     const days = [];
     for (let i = 1; i <= 31; i++) {
@@ -347,7 +347,7 @@ const handleSubmit = async (e) => {
       <div className="form-container">
       <h2>Añadir acompañamiento</h2>
       <form onSubmit={handleSubmit}>
-        <label>Estudiante:</label>
+        <label>Estudiante:<span className="required-asterisk">*</span></label>
         <div className="autocomplete-container" ref={studentInputRef}>
           <input
             type="text"
@@ -399,7 +399,7 @@ const handleSubmit = async (e) => {
           )}
         </div>
 
-        <label>Tipo de acompañamiento:</label>
+        <label>Tipo de acompañamiento:<span className="required-asterisk">*</span></label>
         <select name="tipo" value={formData.tipo} onChange={handleChange} required>
           <option value="">Seleccione...</option>
           {sessionTypes.length > 0 ? (
@@ -413,7 +413,7 @@ const handleSubmit = async (e) => {
           )}
         </select>
 
-        <label>Profesional responsable:</label>
+        <label>Profesional responsable: <span className="required-asterisk">*</span></label>
         <select
           name="profesional"
           value={formData.profesional}
@@ -433,10 +433,10 @@ const handleSubmit = async (e) => {
           )}
         </select>
 
-            <label>Fecha:</label>
+            <label>Fecha: <span className="required-asterisk">*</span></label>
             <div className="date-time-select-group">
                 <select value={selectedDay} onChange={handleDayChange} required>
-                    <option value="">Día</option>
+                    <option value="">Día </option>
                     {generateDays().map(day => (
                         <option key={day} value={day}>{day}</option>
                     ))}
@@ -455,10 +455,10 @@ const handleSubmit = async (e) => {
                 </select>
             </div>
 
-            <label>Hora:</label>
+            <label>Hora: <span className="required-asterisk">*</span></label>
             <div className="date-time-select-group">
                 <select value={selectedHour} onChange={handleHourChange} required>
-                    <option value="">Hora</option>
+                    <option value="">Hora </option>
                     {generateHours().map(hour => (
                         <option key={hour} value={hour}>{hour}</option>
                     ))}
